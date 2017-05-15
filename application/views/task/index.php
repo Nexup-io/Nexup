@@ -2,7 +2,7 @@
     <?php
     if ($type_id == 2) {
         ?>
-        <div class="whoisnext-div">
+        <div class="whoisnext-div custom_cursor">
             <?php
             $btn_cls = '';
             if (empty($tasks)) {
@@ -21,7 +21,7 @@
                     ?></span>
                 <!--<span class="tooltiptext-task-next"></span>-->
             </div>
-            <a class="whoisnext-btn custom_cursor">Who's Next</a>
+            <a class="whoisnext-btn custom_cursor">Nexup</a>
         </div>
         <?php
     }
@@ -102,58 +102,71 @@
         </span>
     </div>
 
-    <div class="add-data-body">
+    <?php
+    $hide_add_item_cls = '';
+    $collapsable_div = '';
+    if ($is_locked == 1) {
+        $hide_add_item_cls = ' hide_add_item';
+        $collapsable_div = ' collapse_div';
+    }
+    ?>
+    <div class="add-data-body<?php echo $collapsable_div; ?>">
         <ul class="add-data-body-ul" id="TaskAdd">
             <li id="add_task_li">
-                <div class="add-data-div"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" placeholder="Item" /></div>
+
+                <div class="add-data-div<?php echo $hide_add_item_cls; ?>"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" placeholder="Item" /></div>
                 <div class="add_task_cls" style="display: none;"></div>
             </li>
         </ul>
         <?php
         $sort_class = '';
-        $move_btn_cls ='';
+        $move_btn_cls = '';
         if ($config['allow_move'] == 'True') {
             $sort_class = 'tasks_lists_display';
         }
-        if(empty($tasks) || $config['allow_move'] != 'True'){
-            $move_btn_cls =' hide_move_btn';
+        if (empty($tasks) || $config['allow_move'] != 'True') {
+            $move_btn_cls = ' hide_move_btn';
         }
         ?>
-        <button type="button" class="btn btn-default enable-move<?php echo $move_btn_cls; ?>">Enable Rearrange Items</button>
-        <ul class="add-data-body-ul <?php echo $sort_class; ?>" id="TaskList">
-            <?php
-            if (!empty($tasks)) {
-                foreach ($tasks as $task):
-                    ?>
-                    <li id="task_<?php echo $task->TaskId; ?>" class="task_li" data-id="<?php echo $task->TaskId; ?>">
+        <!--<button type="button" class="btn btn-default enable-move<?php echo $move_btn_cls; ?>">Enable Rearrange Items</button>-->
 
-                        <div class="add-data-div edit_task <?php
-                        if ($task->IsCompleted) {
-                            echo 'completed_task';
-                        }
-                        ?>" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>">
-                            <span class="icon-more"></span>
-                            <span id="span_task_<?php echo $task->TaskId; ?>" class="task_name_span"><?php echo $task->TaskName; ?></span>
-                            <div class="opertaions pull-right">
-                                <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>"></a>
-                                <?php
-                                if ($type_id == 5) {
-                                    ?>
-                                    <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>"></a>
-                                    <?php
-                                }
-                                ?>
-                            </div>
-                        </div>
-
-                    </li>
-                    <?php
-                endforeach;
-                ?>
+        <div id="TaskListDiv">
+            <h3 id="TaskListHead"></h3>
+            <ul class="add-data-body-ul <?php echo $sort_class; ?>" id="TaskList">
                 <?php
-            }
-            ?>
-        </ul>
+                if (!empty($tasks)) {
+                    foreach ($tasks as $task):
+                        ?>
+                        <li id="task_<?php echo $task->TaskId; ?>" class="task_li" data-id="<?php echo $task->TaskId; ?>">
+
+                            <div class="add-data-div edit_task <?php
+                            if ($task->IsCompleted) {
+                                echo 'completed_task';
+                            }
+                            ?>" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>">
+                                <span class="icon-more"></span>
+                                <span id="span_task_<?php echo $task->TaskId; ?>" class="task_name_span"><?php echo $task->TaskName; ?></span>
+                                <div class="opertaions pull-right">
+                                    <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                    <?php
+                                    if ($type_id == 5) {
+                                        ?>
+                                        <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                        <?php
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+
+                        </li>
+                        <?php
+                    endforeach;
+                    ?>
+                    <?php
+                }
+                ?>
+            </ul>
+        </div>
     </div>
 </section>
 
@@ -208,9 +221,9 @@
                     ?>
                     <?php
                     if ($this->session->userdata('logged_in')) {
-                    ?>
-                    <button type="submit" name="invite_btn" id="invite_btn" data-link="<?php echo base_url() . 'item/' . $slug; ?>" data-listid="<?php echo $list_id; ?>">Send Invitations</button>
-                    <?php
+                        ?>
+                        <button type="submit" name="invite_btn" id="invite_btn" data-link="<?php echo base_url() . 'item/' . $slug; ?>" data-listid="<?php echo $list_id; ?>">Send Invitations</button>
+                        <?php
                     }
                     ?>
                     <button type="submit" name="close_share" id="close_share" class="close_share" data-dismiss="modal">Close</button>

@@ -38,17 +38,6 @@
                         <div class="nav-view">
                             <a class="icon-nine-circles-button custom_cursor" href="<?php echo base_url() . 'lists'; ?>"> </a>
                         </div>
-                        <?php if ($this->session->userdata('logged_in')) { ?>
-                            <div class="h-nav dropdown">
-                                <a class="icon-more custom_cursor" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                    <li><a><?php echo $this->session->userdata('first_name') . ' ' . $this->session->userdata('last_name'); ?></a></li>
-                                    <li><a href="<?php echo base_url() . 'profile'; ?>">Profile</a></li>
-                                    <li><a href="<?php echo base_url() . 'logout'; ?>">Logout</a></li>
-                                </ul>
-                            </div>
-                        <?php } ?>
-
                         <?php if (isset($_SESSION['unauth_visit']) && !empty($_SESSION['unauth_visit']) || isset($_SESSION['auth_visit']) && !empty($_SESSION['auth_visit'])) { ?>
                             <div class="h-nav dropdown">
                                 <a title="History" class="icon-history custom_cursor" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>
@@ -77,6 +66,17 @@
                             <?php
                         }
                         ?>
+                        <?php if ($this->session->userdata('logged_in')) { ?>
+                            <div class="h-nav dropdown">
+                                <a class="icon-more custom_cursor" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a><?php echo $this->session->userdata('first_name') . ' ' . $this->session->userdata('last_name'); ?></a></li>
+                                    <li><a href="<?php echo base_url() . 'profile'; ?>">Profile</a></li>
+                                    <li><a href="<?php echo base_url() . 'logout'; ?>">Logout</a></li>
+                                </ul>
+                            </div>
+                        <?php } ?>
+
                         <?php if (!$this->session->userdata('logged_in')) { ?>
 
                             <div class="h-nav nav-inflo-login">
@@ -356,14 +356,14 @@
 
             var isTouchDevice = 'ontouchstart' in document.documentElement;
             if (isTouchDevice) {
-                if ($('#TaskList li.task_li').length > 0) {
-                    $('.enable-move').removeClass('hide_move_btn');
-                } else {
-                    $('.enable-move').removeClass('hide_move_btn');
-                    $('.enable-move').addClass('hide_move_btn');
-                }
+//                if ($('#TaskList li.task_li').length > 0) {
+//                    $('.enable-move').removeClass('hide_move_btn');
+//                } else {
+//                    $('.enable-move').removeClass('hide_move_btn');
+//                    $('.enable-move').addClass('hide_move_btn');
+//                }
             } else {
-                $('.enable-move').hide();
+//                $('.enable-move').hide();
                 $(document).on('mouseover', '.task_li', function () {
                     var did = $(this).attr('data-id');
                     $('#task_' + did + ' .icon-more').css({'visibility': 'visible'});
@@ -950,6 +950,7 @@
                                     $('span#next_task_name').text($('#TaskList li:first-child').text());
                                     $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
                                 }
+                                $('.whoisnext-div .button-outer').removeClass('whosnext_img_bg');
                             }
                             $('.icon-lock2').removeClass('lock_hide');
                             $('.icon-lock-open2').removeClass('lock_hide');
@@ -1146,6 +1147,9 @@
 
                             if (res == 'success') {
                                 $('#task_' + task_id).remove();
+                                if($('li.task_li').length == 0){
+                                    $('.whoisnext-div .button-outer').addClass('whosnext_img_bg');
+                                }
                             } else {
                                 alert('Something went wrong. Please try again!');
                             }
@@ -1250,7 +1254,7 @@
             });
 
             //Who's next call
-            $(document).on('click', '.whoisnext-btn', function () {
+            $(document).on('click', '.whoisnext-btn, .whoisnext-div .button-outer', function () {
                 if ($('.icon-settings').attr('data-locked') == 1) {
                     alert('This list is locked. Please unlock it to perform any operation!');
                     return false;
@@ -1317,10 +1321,17 @@
                         } else if (res == 'success') {
                             $("#TaskList").sortable("disable");
                             $('.icon-settings').attr('data-locked', '1');
+                            if($('.hide_add_item').length == 0){
+                                $('#add_task_li .add-data-div').addClass('hide_add_item');
+                            }
                             $('.delete_task').hide();
                             $('#listLock_lnk').remove();
                             $('#listUnlock_lnk').remove();
                             $('.config_icons').append('<a class="icon-lock-open2 custom_cursor" id="listUnlock_lnk" data-id="' + list_id + '" data-slug="' + list_slug + '"></a>');
+                            $('#TaskListDiv').accordion({
+                                collapsible: true,
+                                active: false
+                            });
                         }
                     }
                 });
@@ -1345,10 +1356,12 @@
                         } else if (res == 'success') {
                             $("#TaskList").sortable("enable");
                             $('.icon-settings').attr('data-locked', '0');
+                            $('#add_task_li .add-data-div').removeClass('hide_add_item');
                             $('.delete_task').show();
                             $('#listLock_lnk').remove();
                             $('#listUnlock_lnk').remove();
                             $('.config_icons').append('<a class="icon-lock2 custom_cursor" id="listLock_lnk" data-id="' + list_id + '" data-slug="' + list_slug + '"></a>');
+                            $('#TaskListDiv').accordion("destroy");
                         }
                     }
                 });
@@ -1378,6 +1391,14 @@
                     $('.ui-sortable-handle').css('visibility', 'visible');
                 }
             });
+            
+            if($('.collapse_div').length > 0){
+                $('#TaskListDiv').accordion({
+                    collapsible: true,
+                    active: false
+                });
+            }
+            
 
         </script>
 
