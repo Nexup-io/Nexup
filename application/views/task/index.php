@@ -2,14 +2,14 @@
     <?php
     if ($type_id == 2) {
         ?>
-        <div class="whoisnext-div custom_cursor">
+        <div class="whoisnext-div">
             <?php
             $btn_cls = '';
             if (empty($tasks)) {
                 $btn_cls = ' whosnext_img_bg';
             }
             ?>
-            <div class="button-outer<?php echo $btn_cls; ?>" data-toggle="tooltip" title="<?php
+            <div class="button-outer custom_cursor<?php echo $btn_cls; ?>" data-toggle="tooltip" title="<?php
             if (!empty($tasks)) {
                 echo $tasks[0]->TaskName;
             }
@@ -21,7 +21,7 @@
                     ?></span>
                 <!--<span class="tooltiptext-task-next"></span>-->
             </div>
-            <a class="whoisnext-btn custom_cursor">Nexup</a>
+            <a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a>
         </div>
         <?php
     }
@@ -60,7 +60,29 @@
         <!--<a class="icon-edit custom_cursor edit_list_task" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" id="edit_list_task_page" style="<?php echo $hide_list; ?>"></a>-->
         <a data-toggle="modal" data-target="#share-contact" id="share_list" class="icon-share custom_cursor" style="<?php echo $hide_list; ?>"> </a>
         <div class="plus-category">
-            <a class="icon-settings custom_cursor" id="config_lnk" <?php
+            <?php
+            $class_hide_settings = '';
+            $calss_hide_lock = '';
+            if(isset($_SESSION['logged_in']) && $_SESSION['id'] != $list_owner_id){
+                $class_hide_settings = ' hide_config';
+            }elseif(!isset($_SESSION['logged_in']) && $is_locked == 1){
+                $class_hide_settings = ' hide_config';
+            }else{
+                $calss_hide_lock = ' hide_lock';
+            }
+            if($is_locked == 1){
+            ?>
+            <a class="icon-lock2 custom_cursor<?php echo $calss_hide_lock; ?>" id="config_lcoked" <?php
+            if ($is_locked == 1) {
+                echo 'data-locked="1"';
+            } else {
+                echo 'data-locked="0"';
+            }
+            ?>></a>
+            <?php
+            }
+            ?>
+            <a class="icon-settings custom_cursor<?php echo $class_hide_settings; ?>" id="config_lnk" <?php
             if ($is_locked == 1) {
                 echo 'data-locked="1"';
             } else {

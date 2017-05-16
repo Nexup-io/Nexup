@@ -44,8 +44,7 @@ input[type=checkbox] {display: none;}
 input[type=radio]:checked + label:before { content: "\2022"; color: #f3f3f3; font-size: 30px; text-align: center; line-height: 18px;}
 input[type=checkbox]:checked + label:before {content: "\2713";font-size: 15px; color: #fff;text-align:center; line-height:15px;background:#01b9e6;border:1px solid #01b9e6; }
 .button-outer{display:block;width:100%;margin:0 0 25px;}
-.whoisnext-div .button-outer{position: relative;top: -35px;max-width: 400px;height: 160px;margin: 0 auto;background:#fff none repeat scroll 0 0;border:2px solid #01b9e6; border-radius:4px;color:#fff;overflow: visible;display: block;padding: 10px;}
-.whoisnext-div .whoisnext-btn {width: 250px !important;margin: 0 auto;}
+.whoisnext-div .whoisnext-btn {width: 250px !important;margin: 0 auto;display: inline-block;}
 .button-outer button, .whoisnext-btn{border:2px solid #4d4d4d;background:#4d4d4d;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;text-align:center;color:#fff;line-height:18px;padding:15px;display:block;font-size:14px;font-weight:700;width:100%;letter-spacing:0.02em;}
 .button-outer button:hover, .whoisnext-btn:hover{background:#fff;color:#4d4d4d;text-decoration:none;}
 .redirect-register{display:block;}
@@ -280,7 +279,7 @@ ul#history_dd li{padding:6px;}
 ul#listType_dd li.list_type_cls{border-top:1px solid #ccc;}
 ul#listType_dd li.list_type_cls:first-child{border-top:0px none;}
 .h-nav.dropdown {vertical-align:middle;}
-#next_task_name{pointer-events:none;font-size: 50px;color: #01b9e6;font-weight: bolder;display: block;left: 50%;top: 50%; transform: translate(-50%, -50%); position: relative;max-width: 400px; width: 90%;white-space: nowrap; text-overflow: ellipsis;overflow: hidden;}
+#next_task_name{pointer-events:none;font-size: 28px;color: #01b9e6;font-weight: bolder;display: block;left: 50%;top: 50%; transform: translate(-50%, -50%); position: relative;max-width: 400px; width: 90%;overflow: hidden;}
 #config_btn_div{text-align:center;}
 #config_btn_div.button-outer button{max-width:250px;display:inline-block;}
 #config_btn_div.button-outer button.close_config{color:#4d4d4d; background:#fff; border-color:#4d4d4d;}
@@ -307,10 +306,14 @@ ul#listType_dd li.list_type_cls:first-child{border-top:0px none;}
 #share-contact{z-index: 99999;}
 .hide_move_btn{display: none !important;}
 .hide_add_item{display: none;}
-.ui-icon.ui-icon-triangle-1-s, .ui-state-active .ui-icon.ui-icon-triangle-1-s, .ui-button:active .ui-icon.ui-icon-triangle-1-s {background-image: url(images/arrow-point-to-down.png);}
-.ui-icon.ui-icon-triangle-1-e, .ui-state-hover .ui-icon.ui-icon-triangle-1-e, .ui-state-focus .ui-icon.ui-icon-triangle-1-e, .ui-button:hover .ui-icon.ui-icon-triangle-1-e, .ui-button:focus .ui-icon.ui-icon-triangle-1-e{background-image: url(images/arrow-point-to-right.png) !important;}
+.ui-icon.ui-icon-triangle-1-s, .ui-state-active .ui-icon.ui-icon-triangle-1-s, .ui-button:active .ui-icon.ui-icon-triangle-1-s {background-image: url(images/minus.png);height: 40px;width: 40px;background-position: center;background-size: 26px;}
+.ui-icon.ui-icon-triangle-1-e, .ui-state-hover .ui-icon.ui-icon-triangle-1-e, .ui-state-focus .ui-icon.ui-icon-triangle-1-e, .ui-button:hover .ui-icon.ui-icon-triangle-1-e, .ui-button:focus .ui-icon.ui-icon-triangle-1-e{background-image: url(images/plus.png) !important;background-position: center;background-size: 26px;height: 40px;width: 40px;}
 .ui-icon-triangle-1-s {background-position: 0 0; background-size:16px;}
 .ui-icon-triangle-1-e {background-position: 0 0; background-size:9px;}
 div.ui-accordion-header, h3.ui-accordion-header {position: absolute !important;}
 #TaskListHead{border: transparent;background: transparent;}
 #TaskList{border: transparent;}
+.avatar_menu img{border-radius: 100%;border: 2px solid #04aed5;height: 50px;overflow: hidden;width: 50px;}
+.hide_config, .hide_lock{display: none !important;}
+#TaskListHead{margin-top: -30px;}
+.whoisnext-div .button-outer{position: relative;top: -41px;max-width: 440px;height: 200px;margin: 0 auto;background: #fff none repeat scroll 0 0;border: 2px solid #01b9e6;border-radius: 4px;color: #fff;overflow: visible;display: inline-block;margin-right: 30px;padding: 10px;}

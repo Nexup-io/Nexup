@@ -68,7 +68,8 @@
                         ?>
                         <?php if ($this->session->userdata('logged_in')) { ?>
                             <div class="h-nav dropdown">
-                                <a class="icon-more custom_cursor" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>
+                                <!--<a class="icon-more custom_cursor" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>-->
+                                <a id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="avatar_menu custom_cursor"><img src="<?php echo $_SESSION['image']; ?>" alt="User profile picture" id="imgpreview"></a>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                     <li><a><?php echo $this->session->userdata('first_name') . ' ' . $this->session->userdata('last_name'); ?></a></li>
                                     <li><a href="<?php echo base_url() . 'profile'; ?>">Profile</a></li>
@@ -99,7 +100,7 @@
         <input type="hidden" id="hdnuserid"/>
         <input type="hidden" id="hdnaccesstoken"/>
         <footer id="footer">
-            <p>© <?php echo date('Y'); ?> Copyright - All Right Reserved.</p>
+            <p>Â© <?php echo date('Y'); ?> Copyright - All Right Reserved.</p>
         </footer>
 
 
@@ -682,6 +683,9 @@
                                     $('#history_dd li[value="<?php echo base_url() . 'item/' ?>' + resp[1] + '"] a').text(list_txt);
                                 }
                                 $('#edit_list_name').remove();
+                                if($('#task_name').length == 1){
+                                    $('#task_name').focus();
+                                }
                                 $('.edit_list_cls').remove();
                                 $('#edit_list_name').removeClass('list-error');
                                 $('.listname_' + did_edit).text(list_txt);
@@ -1227,8 +1231,16 @@
                                 if (type_id != 2) {
                                     $('.whoisnext-div').remove();
                                 } else {
+                                    var task_name = '';
+                                    if($('#TaskList .task_li').length > 0){
+                                        task_name = $('#TaskList li:first-child').text();
+                                    }
                                     if ($('.whoisnext-div').length == 0) {
-                                        $('#content').prepend('<div class="whoisnext-div"><div class="button-outer"><a class="whoisnext-btn custom_cursor"><img src="<?php echo base_url(); ?>assets/img/logo-02.png" alt=""></a><span id="next_task_name"></span></div></div>');
+                                        if(task_name == ''){
+                                        $('#content').prepend('<div class="whoisnext-div"><div class="button-outer whosnext_img_bg"><span id="next_task_name">' + task_name + '</span></div><a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a></div>');
+                                    }else{
+                                        $('#content').prepend('<div class="whoisnext-div"><div class="button-outer"><span id="next_task_name">' + task_name + '</span></div><a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a></div>');
+                                    }
                                     }
                                 }
                                 $('#ListType_msg').html('You have successfully changed list type.');
@@ -1399,6 +1411,29 @@
                 });
             }
             
+            $(function() {
+
+                var next_task = $(".whoisnext-div #next_task_name");
+
+                var numWords = next_task.text().length;
+
+                if ((numWords >= 1) && (numWords < 10)) {
+                    next_task.css("font-size", "50px");
+                }
+                else if ((numWords >= 10) && (numWords < 20)) {
+                    next_task.css("font-size", "36px");
+                }
+                else if ((numWords >= 20) && (numWords < 30)) {
+                    next_task.css("font-size", "30px");
+                }
+                else if ((numWords >= 30) && (numWords < 40)) {
+                    next_task.css("font-size", "26px");
+                }
+                else {
+                    next_task.css("font-size", "20px");
+                }    
+
+            });
 
         </script>
 
