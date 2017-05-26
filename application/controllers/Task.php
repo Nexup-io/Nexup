@@ -6,7 +6,7 @@ class Task extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model(array('TasksModel'));
+        $this->load->model(array('TasksModel', 'ListsModel'));
     }
 
     /**
@@ -14,7 +14,7 @@ class Task extends CI_Controller {
      * @author SG
      */
     public function index() {
-        
+
         $data['title'] = 'Nexup';
         $data['list_id'] = 0;
         $data['list_name'] = 'Untitled List';
@@ -69,7 +69,7 @@ class Task extends CI_Controller {
                     $data['config']['show_completed'] = $list_got->ShowCompleted;
                     $data['config']['allow_move'] = $list_got->IsMovable;
                     $data['list_owner_id'] = $list_got->CreateByUserId;
-                    if(strtolower($list_got->IsLocked) == 'true'){
+                    if (strtolower($list_got->IsLocked) == 'true') {
                         $data['is_locked'] = 1;
                     }
 
@@ -140,6 +140,7 @@ class Task extends CI_Controller {
                 echo 'empty';
                 exit;
             }
+            $date_add = date('Y-m-d H:i:s');
 
             $header = array('Content-Type: application/json');
             if (isset($_SESSION['xauthtoken'])) {
@@ -151,12 +152,29 @@ class Task extends CI_Controller {
             $data['Apikey'] = API_KEY;
 
             if ($this->input->post('list_id') == 0) {
+                
+
                 $send_data['Apikey'] = API_KEY;
                 if ($this->input->post('list_name') == '') {
                     $send_data['Listname'] = 'Untitled';
                 } else {
                     $send_data['Listname'] = $this->input->post('list_name');
                 }
+
+                $store['name'] = $send_data['Listname'];
+                $store['list_type_id'] = 1;
+                if (isset($_SESSION['logged_in'])) {
+                    $store['user_id'] = $_SESSION['id'];
+                }
+                $store['created'] = $date_add;
+                $store['modified'] = $date_add;
+                $addList = $this->ListsModel->add_list($store);
+                if ($addList == 0) {
+                    echo 'fail';
+                    exit;
+                }
+
+
                 $send_data = json_encode($send_data);
 
                 $ch1 = curl_init();
@@ -206,6 +224,11 @@ class Task extends CI_Controller {
                     $_SESSION['last_slug'] = $response1['data']->ListSlug;
                     $data['Listid'] = $response1['data']->ListId;
 
+                    $update_list_local['slug'] = $response1['data']->ListSlug;
+                    $update_list_local['url'] = '/' . $response1['data']->ListSlug;
+                    $update_list_local['list_inflo_id'] = $response1['data']->ListId;
+                    $this->ListsModel->update_list_data($addList, $update_list_local);
+
                     if (!$this->session->userdata('logged_in')) {
                         if ($this->session->userdata('list_id') != null) {
                             $list_arr = $this->session->userdata('list_id');
@@ -221,6 +244,16 @@ class Task extends CI_Controller {
                 }
             } else {
                 $data['Listid'] = trim($this->input->post('list_id'));
+            }
+            
+            $add_task['user_id'] = $_SESSION['id'];
+            $add_task['list_inflo_id'] = $data['Listid'];
+            $add_task['value'] = trim($this->input->post('task_name'));
+            $add_task['created'] = $date_add;
+            $add_task['modified'] = $date_add;
+            $task_add = $this->TasksModel->add_task($add_task);
+            if($task_add == 0){
+                echo 'fail'; exit;
             }
 
 
@@ -246,6 +279,8 @@ class Task extends CI_Controller {
                 $_SESSION['task_id'] = $task_arr;
             }
             if (isset($response['success']) && $response['success'] == 1) {
+                $update_task['task_inflo_id'] = $response['data']->TaskId;
+                $task_update = $this->TasksModel->update_task($task_add, $update_task);
                 $ret_arr = array();
                 $ret_arr[0] = $data['Listid'];
                 $ret_str = '<li id="task_' . $response['data']->TaskId . '" class="task_li" data-id="' . $response['data']->TaskId . '">';
@@ -491,40 +526,39 @@ class Task extends CI_Controller {
             return json_encode($response['data']->ListTytpe);
         }
     }
-    
-    
+
     /**
      * Get next item in list
      * @author SG
      */
     public function get_next_task() {
         if ($this->input->post()) {
-                $data_send['Apikey'] = API_KEY;
-                $data_send['Listid'] = $this->input->post('Listid');
-                $data_send['Taskid'] = $this->input->post('Taskid');
-                $post_send = json_encode($data_send);
-                $header = array('Content-Type: application/json');
-                if (isset($_SESSION['xauthtoken'])) {
-                    $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
-                    array_push($header, $val);
-                }
+            $data_send['Apikey'] = API_KEY;
+            $data_send['Listid'] = $this->input->post('Listid');
+            $data_send['Taskid'] = $this->input->post('Taskid');
+            $post_send = json_encode($data_send);
+            $header = array('Content-Type: application/json');
+            if (isset($_SESSION['xauthtoken'])) {
+                $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+                array_push($header, $val);
+            }
 
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, API_URL . "Account/NextTask");
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $post_send);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                $server_output = curl_exec($ch);
-                $response = (array) json_decode($server_output);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, API_URL . "Account/NextTask");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_send);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $server_output = curl_exec($ch);
+            $response = (array) json_decode($server_output);
 //                p($response); exit;
-                if (isset($response['success']) && $response['success'] == 1) {
-                    $next_arr = (array) $response['data']->NextTask;
-                    echo $next_arr['TaskName'];
-                } else {
-                    echo 'fail';
-                }
+            if (isset($response['success']) && $response['success'] == 1) {
+                $next_arr = (array) $response['data']->NextTask;
+                echo $next_arr['TaskName'];
+            } else {
+                echo 'fail';
+            }
             exit;
         }
     }
@@ -535,36 +569,36 @@ class Task extends CI_Controller {
      */
     public function next_task() {
         if ($this->input->post()) {
-            if(!isset($_SESSION['logged_in'])){
+            if (!isset($_SESSION['logged_in'])) {
                 echo 'not allowed';
                 exit;
             }
-                $data_send['Apikey'] = API_KEY;
-                $data_send['Listid'] = $this->input->post('Listid');
-                $data_send['Taskid'] = $this->input->post('Taskid');
-                $data_send['IsUpdate'] = 1;
-                $post_send = json_encode($data_send);
-                $header = array('Content-Type: application/json');
-                if (isset($_SESSION['xauthtoken'])) {
-                    $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
-                    array_push($header, $val);
-                }
+            $data_send['Apikey'] = API_KEY;
+            $data_send['Listid'] = $this->input->post('Listid');
+            $data_send['Taskid'] = $this->input->post('Taskid');
+            $data_send['IsUpdate'] = 1;
+            $post_send = json_encode($data_send);
+            $header = array('Content-Type: application/json');
+            if (isset($_SESSION['xauthtoken'])) {
+                $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+                array_push($header, $val);
+            }
 
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, API_URL . "Account/NextTask");
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $post_send);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                $server_output = curl_exec($ch);
-                $response = (array) json_decode($server_output);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, API_URL . "Account/NextTask");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_send);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $server_output = curl_exec($ch);
+            $response = (array) json_decode($server_output);
 //                p($response); exit;
-                if (isset($response['success']) && $response['success'] == 1) {
-                    echo 'success';
-                } else {
-                    echo 'fail';
-                }
+            if (isset($response['success']) && $response['success'] == 1) {
+                echo 'success';
+            } else {
+                echo 'fail';
+            }
             exit;
         }
     }

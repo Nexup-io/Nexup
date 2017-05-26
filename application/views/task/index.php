@@ -64,7 +64,10 @@
             $class_hide_settings = '';
             $calss_hide_lock = '';
             if(isset($_SESSION['logged_in']) && $_SESSION['id'] != $list_owner_id){
-                $class_hide_settings = ' hide_config';
+                if($list_owner_id > 0){
+                    $class_hide_settings = ' hide_config';
+                }
+                
             }elseif(!isset($_SESSION['logged_in']) && $is_locked == 1){
                 $class_hide_settings = ' hide_config';
             }else{

@@ -29,73 +29,36 @@ class ListsModel extends CI_Model {
      */
     public function find_user_lists($user_id) {
         $condition = array('lists.user_id' => $user_id, 'lists.is_deleted' => 0);
-        $rst = $this->db->select('lists.*, count(list_data.id) as items');
-        $this->db->join('list_data', 'lists.id = list_data.list_id', 'left');
+//        $rst = $this->db->select('lists.*, count(list_data.id) as items');
+        $rst = $this->db->select('lists.list_inflo_id as ListId, lists.slug as ListSlug, lists.name as ListName, count(list_data.id) as total_items');
+        $this->db->join('list_data', 'lists.list_inflo_id = list_data.list_inflo_id', 'left');
         $this->db->where($condition);
         $this->db->group_by('lists.id');
         $query = $this->db->get('lists');
 
         return $query->result_array();
     }
-
-    /**
-     * Check if list exists before adding new list (before login)
-     * @author SG
-     */
-    public function find_existing_public_list($list_name) {
-        $condition = array('name' => $list_name, 'user_id' => NULL);
-        $rst = $this->db->select('*');
-        $this->db->where($condition);
-        $query = $this->db->get('lists');
-        return $query->row_array();
-    }
-
-    /**
-     * Check if list exists before adding new list (after login)
-     * @author SG
-     */
-    public function find_existing_user_list($list_name, $user_id) {
-        $condition = array('name' => $list_name, 'user_id' => $user_id);
-        $rst = $this->db->select('*');
-        $this->db->where($condition);
-        $query = $this->db->get('lists');
-        return $query->row_array();
-    }
-
     
     /**
-     * Add new list (before login)
+     * Find total items added by user
      * @author SG
      */
-    public function add_public_list($data) {
-        $condition_find = array('slug LIKE' => $data['slug'] . '%');
-        $found_slug = $this->db->select('count(id) as total');
-        $this->db->where($condition_find);
-        $query = $this->db->get('lists');
-        $slug_count = $query->row_array();
-        if ($slug_count > 0) {
-            $data['slug'] = $data['slug'] . '-' . $slug_count['total'];
-        }
+    public function find_total_user_lists($user_id) {
+        $condition = array('list_data.user_id' => $user_id, 'list_data.is_deleted' => 0);
+        $rst = $this->db->select('count(list_data.id) as total_items');
+        $this->db->where($condition);
+        $this->db->group_by('list_data.list_inflo_id');
+        $query = $this->db->get('list_data');
 
-        $this->db->insert('lists', $data);
-        return $this->db->insert_id();
+        $total = $query->row_array();
+        return $total['total_items'];
     }
-
     
     /**
-     * Add new list (after login)
+     * Add new list
      * @author SG
      */
-    public function add_user_list($data) {
-        $condition_find = array('slug LIKE' => $data['slug'] . '%');
-        $found_slug = $this->db->select('count(id) as total');
-        $this->db->where($condition_find);
-        $query = $this->db->get('lists');
-        $slug_count = $query->row_array();
-        if ($slug_count['total'] > 0) {
-            $data['slug'] = $data['slug'] . '-' . $slug_count['total'];
-        }
-
+    public function add_list($data) {
         $this->db->insert('lists', $data);
         return $this->db->insert_id();
     }
@@ -145,45 +108,36 @@ class ListsModel extends CI_Model {
      * Find list name
      * @author SG
      */
-    public function find_list_data($list_id, $user_id) {
-        $condition = array('lists.id' => $list_id, 'lists.user_id' => $user_id);
+    public function find_list_by_slug($slug, $user_id) {
+        $condition = array('lists.slug' => $slug, 'lists.user_id' => $user_id);
         $this->db->select('lists.name');
         $this->db->where($condition);
         $query = $this->db->get('lists');
-        return $query->row_array();
+        $list_name =  $query->row_array();
+//        echo $list_name['name']; exit;
+        return $list_name['name'];
     }
     
-    
-    /**
-     * Check if list exists
-     * @author SG
-     */
-    public function check_existing($list_id, $list_name, $user_id){
-        $condition = array('id<>' => $list_id, 'name' => $list_name, 'user_id' => $user_id);
-        $this->db->select('*');
-        $this->db->where($condition);
-        $query = $this->db->get('lists');
-        return $query->row_array();
-    }
-
     /**
      * Update list
      * @author SG
      */
-    public function update_list_data($user_id, $list_id, $list_data) {
-        $condition = array('id' => $list_id, 'user_id' => $user_id);
+    public function update_list_data($list_id, $list_data) {
+        $condition = array('list_inflo_id' => $list_id);
         $this->db->where($condition);
         return $this->db->update('lists', $list_data);
     }
     
+    
     /**
-     * Add history
+     * Delete list
      * @author SG
      */
-    public function add_history($data){
-        $this->db->insert('operation_history', $data);
-        return $this->db->insert_id();
+    public function delete_list($list_id){
+        $condition = array('list_inflo_id' => $list_id);
+        $this->db->where($condition);
+        $list_data['is_deleted'] = 1;
+        return $this->db->update('lists', $list_data);
     }
-    
 
 }

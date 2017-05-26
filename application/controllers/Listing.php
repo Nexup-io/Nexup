@@ -19,51 +19,58 @@ class Listing extends CI_Controller {
         $this->session->unset_userdata('visited_create');
         $this->session->unset_userdata('new_list');
         $this->session->unset_userdata('last_slug');
-        $header = array('Content-Type: application/json');
-        if (isset($_SESSION['xauthtoken'])) {
-            $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
-            array_push($header, $val);
-        }
-        $lists_get['apikey'] = API_KEY;
-
-        if ($this->uri->segment(2) != '') {
-            $lists_get['Listname'] = urldecode($this->uri->segment(2));
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, API_URL . "Account/GetList");
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($lists_get));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $server_output = curl_exec($ch);
-            $response = (array) json_decode($server_output);
-        } else {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, API_URL . "Account/GetList");
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($lists_get));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $server_output = curl_exec($ch);
-            $response = (array) json_decode($server_output);
-        }
-
-//        p($response); exit;
-
-        if (isset($response['success']) && $response['success'] == 1) {
-            if (isset($response['data']->listdata)) {
-                $data['lists'] = $response['data']->listdata;
-            } elseif (isset($response['data']->List)) {
-                $data['lists'] = $response['data']->List;
-            }
-
-            if (isset($response['data']->totalTaskCount)) {
-                $data['totalTaskCount'] = $response['data']->totalTaskCount;
-            }
-        } else {
-            $data['lists'] = array();
-        }
+        
+        $data['lists'] = $this->ListsModel->find_user_lists($_SESSION['id']);
+        $data['totalTaskCount'] = $this->ListsModel->find_total_user_lists($_SESSION['id']);
+//        p($data['lists']); exit;
+        
+        
+        
+//        $header = array('Content-Type: application/json');
+//        if (isset($_SESSION['xauthtoken'])) {
+//            $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+//            array_push($header, $val);
+//        }
+//        $lists_get['apikey'] = API_KEY;
+//
+//        if ($this->uri->segment(2) != '') {
+//            $lists_get['Listname'] = urldecode($this->uri->segment(2));
+//            $ch = curl_init();
+//            curl_setopt($ch, CURLOPT_URL, API_URL . "Account/GetList");
+//            curl_setopt($ch, CURLOPT_POST, 1);
+//            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+//            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($lists_get));
+//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//            $server_output = curl_exec($ch);
+//            $response = (array) json_decode($server_output);
+//        } else {
+//            $ch = curl_init();
+//            curl_setopt($ch, CURLOPT_URL, API_URL . "Account/GetList");
+//            curl_setopt($ch, CURLOPT_POST, 1);
+//            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+//            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($lists_get));
+//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//            $server_output = curl_exec($ch);
+//            $response = (array) json_decode($server_output);
+//        }
+//
+////        p($response); exit;
+//
+//        if (isset($response['success']) && $response['success'] == 1) {
+//            if (isset($response['data']->listdata)) {
+//                $data['lists'] = $response['data']->listdata;
+//            } elseif (isset($response['data']->List)) {
+//                $data['lists'] = $response['data']->List;
+//            }
+//
+//            if (isset($response['data']->totalTaskCount)) {
+//                $data['totalTaskCount'] = $response['data']->totalTaskCount;
+//            }
+//        } else {
+//            $data['lists'] = array();
+//        }
 
         $this->template->load('default_template', 'list/index', $data);
     }
@@ -78,6 +85,22 @@ class Listing extends CI_Controller {
                 echo 'empty';
                 exit;
             }
+            
+            $date_add = date('Y-m-d H:i:s');
+            $store['name'] = trim($this->input->post('list_name'));
+            $store['list_type_id'] = 1;
+            if(isset($_SESSION['logged_in'])){
+                $store['user_id'] = $_SESSION['id'];
+            }
+            $store['created'] = $date_add;
+            $store['modified'] = $date_add;
+            $addList = $this->ListsModel->add_list($store);
+            if($addList == 0){
+                echo 'fail';
+                exit;
+            }
+            
+            
             $data['Apikey'] = API_KEY;
             $data['Listname'] = trim($this->input->post('list_name'));
             $post_data = json_encode($data);
@@ -107,12 +130,9 @@ class Listing extends CI_Controller {
                         array_push($visited_arr['list_name'], $response['data']->ListName);
                         array_push($visited_arr['list_slug'], $response['data']->ListSlug);
 
-//                        $visited_arr['list_id'][] = $response['data']->ListId;
-//                        $visited_arr['list_name'][] = $response['data']->ListName;
-//                        $visited_arr['list_slug'][] = $response['data']->ListSlug;
                         $_SESSION['auth_visit'] = $visited_arr;
                     } else {
-                        $visited_arr['list_id'][] = $data['list_id'];
+                        $visited_arr['list_id'][] = $response['data']->ListId;
                         $visited_arr['list_name'][] = $response['data']->ListName;
                         $visited_arr['list_slug'][] = $response['data']->ListSlug;
                         $_SESSION['auth_visit'] = $visited_arr;
@@ -136,6 +156,12 @@ class Listing extends CI_Controller {
                         $_SESSION['unauth_visit'] = $visited_arr;
                     }
                 }
+                
+                $update_list_local['slug'] = $response['data']->ListSlug;
+                $update_list_local['url'] = '/' . $response['data']->ListSlug;
+                $update_list_local['list_inflo_id'] = $response['data']->ListId;
+                $this->ListsModel->update_list_data($addList, $update_list_local);
+                
 
                 $_SESSION['last_slug'] = $response['data']->ListSlug;
 
@@ -191,36 +217,39 @@ class Listing extends CI_Controller {
         if ($this->input->post()) {
 
             $slug = $this->input->post('list_slug');
+            
+            $list_name = $this->ListsModel->find_list_by_slug($slug, $_SESSION['id']);
+            echo $list_name;
 
-            $url_to_call = API_URL . "Account/GetTasks";
-
-
-            $header = array('Content-Type: application/json');
-            if (isset($_SESSION['xauthtoken'])) {
-                $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
-                array_push($header, $val);
-            }
-            $lists_get['Apikey'] = API_KEY;
-            $lists_get['Listslug'] = $slug;
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url_to_call);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($lists_get));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $server_output = curl_exec($ch);
-            $response = (array) json_decode($server_output);
-            if (isset($response['success']) && $response['success'] == 1) {
-                if (!empty($response['data'])) {
-                    echo $response['data'][0]->ListName;
-                } else {
-                    echo 'not found';
-                }
-            } else {
-                echo 'not allowed';
-            }
+//            $url_to_call = API_URL . "Account/GetTasks";
+//
+//
+//            $header = array('Content-Type: application/json');
+//            if (isset($_SESSION['xauthtoken'])) {
+//                $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+//                array_push($header, $val);
+//            }
+//            $lists_get['Apikey'] = API_KEY;
+//            $lists_get['Listslug'] = $slug;
+//
+//            $ch = curl_init();
+//            curl_setopt($ch, CURLOPT_URL, $url_to_call);
+//            curl_setopt($ch, CURLOPT_POST, 1);
+//            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+//            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($lists_get));
+//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//            $server_output = curl_exec($ch);
+//            $response = (array) json_decode($server_output);
+//            if (isset($response['success']) && $response['success'] == 1) {
+//                if (!empty($response['data'])) {
+//                    echo $response['data'][0]->ListName;
+//                } else {
+//                    echo 'not found';
+//                }
+//            } else {
+//                echo 'not allowed';
+//            }
         }
         exit;
     }
@@ -236,6 +265,10 @@ class Listing extends CI_Controller {
                 echo 'empty';
                 exit;
             }
+            
+            $data_list['name'] = trim($this->input->post('edit_list_name'));
+            $update_local = $this->ListsModel->update_list_data($this->input->post('list_id'), $data_list);
+            
 
             $data['Apikey'] = API_KEY;
             $data['Listname'] = trim($this->input->post('edit_list_name'));
@@ -278,6 +311,13 @@ class Listing extends CI_Controller {
      */
     public function delete() {
         if ($this->input->post()) {
+            
+            $del = $this->ListsModel->delete_list($this->input->post('list_id'));
+            
+            if($del == 0){
+                echo 'fail';
+                exit;
+            }
 
             $data['Apikey'] = API_KEY;
             $data['Listid'] = trim($this->input->post('list_id'));

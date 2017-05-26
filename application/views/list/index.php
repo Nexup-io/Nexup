@@ -50,7 +50,6 @@
                 <?php
                 if(!empty($lists)){
                 foreach ($lists as $list):
-                    $list = (array) $list;
                     if (!$this->session->userdata('logged_in')) {
                         if ($this->session->userdata('list_id') != null) {
                             if (in_array($list['ListId'], $this->session->userdata('list_id'))) {
@@ -59,8 +58,8 @@
                                     <div class="list-body-box custom_cursor">
                                         <a href="<?php echo base_url() . 'item/' . $list['ListSlug']; ?>" data-id="<?php echo $list['ListId']; ?>" data-slug="<?php echo $list['ListSlug']; ?>">
                                             <big id="listname_<?php echo $list['ListId']; ?>" class="listname_<?php echo $list['ListId']; ?>"><?php echo $list['ListName'] ?></big>
-                                            <small><?php echo sizeof($list['TaskList']); ?> <?php
-                                                if (sizeof($list['TaskList']) > 1) {
+                                            <small><?php echo $list['total_items']; ?> <?php
+                                                if ($list['total_items'] > 1) {
                                                     echo 'Items';
                                                 } else {
                                                     echo 'Item';
@@ -87,8 +86,8 @@
                             <div class="list-body-box custom_cursor">
                                 <a href="<?php echo base_url() . 'item/' . $list['ListSlug']; ?>" data-id="<?php echo $list['ListId']; ?>" data-slug="<?php echo $list['ListSlug']; ?>">
                                     <big id="listname_<?php echo $list['ListId']; ?>" class="listname_<?php echo $list['ListId']; ?>"><?php echo $list['ListName'] ?></big>
-                                    <small><?php echo sizeof($list['TaskList']); ?> <?php
-                                        if (sizeof($list['TaskList']) > 1) {
+                                    <small><?php echo $list['total_items']; ?> <?php
+                                        if ($list['total_items'] > 1) {
                                             echo 'Items';
                                         } else {
                                             echo 'Item';

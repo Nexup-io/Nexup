@@ -8,6 +8,17 @@ class TasksModel extends CI_Model {
     public function __construct() {
         parent::__construct();
     }
+    
+    
+    public function add_task($data){
+        $this->db->insert('list_data', $data);
+        return $this->db->insert_id();
+    }
+    public function update_task($task_id, $data){
+        $condition = array('id' => $task_id);
+        $this->db->where($condition);
+        return $this->db->update('list_data', $data);
+    }
 
     
     /**

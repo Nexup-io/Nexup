@@ -69,7 +69,7 @@
                         <?php if ($this->session->userdata('logged_in')) { ?>
                             <div class="h-nav dropdown">
                                 <!--<a class="icon-more custom_cursor" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>-->
-                                <a id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="avatar_menu custom_cursor"><img src="<?php echo $_SESSION['image']; ?>" alt="User profile picture" id="imgpreview"></a>
+                                <a id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="avatar_menu custom_cursor"><img src="<?php if(@getimagesize($_SESSION['image'])) { echo $_SESSION['image']; } else { echo 'https://demo.inflo.io/Images/profile_thum.jpg';} ?>" alt="Avatar" id="imgpreview"></a>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                     <li><a><?php echo $this->session->userdata('first_name') . ' ' . $this->session->userdata('last_name'); ?></a></li>
                                     <li><a href="<?php echo base_url() . 'profile'; ?>">Profile</a></li>
@@ -81,7 +81,7 @@
                         <?php if (!$this->session->userdata('logged_in')) { ?>
 
                             <div class="h-nav nav-inflo-login">
-                                <div class="social-login"><a class="inflologinlink btn btn-inflo"><img class="inflo-icon" src="http://34.206.184.180/assets/img/inflo-alpha.png" alt=""> Login</a></div>
+                                <div class="social-login"><a class="inflologinlink btn btn-inflo"><img class="inflo-icon" src="<?php echo base_url(); ?>/assets/img/inflo-alpha.png" alt=""> Login</a></div>
                             </div>
                         <?php } ?>
                     </div>
