@@ -19,13 +19,21 @@ class Listing extends CI_Controller {
         $this->session->unset_userdata('visited_create');
         $this->session->unset_userdata('new_list');
         $this->session->unset_userdata('last_slug');
-        
-        $data['lists'] = $this->ListsModel->find_user_lists($_SESSION['id']);
-        $data['totalTaskCount'] = $this->ListsModel->find_total_user_lists($_SESSION['id']);
-//        p($data['lists']); exit;
-        
-        
-        
+        if (isset($_SESSION['logged_in'])) {
+            $data['lists'] = $this->ListsModel->find_user_lists($_SESSION['id']);
+            $data['totalTaskCount'] = $this->ListsModel->find_total_user_lists($_SESSION['id']);
+        } elseif (isset($_SESSION['list_id'])) {
+            $list_ids = '(' . implode(',', $_SESSION['list_id']) . ')';
+            $data['lists'] = $this->ListsModel->find_user_lists_by_ids($list_ids);
+            $data['totalTaskCount'] = array();
+        } else {
+            $data['lists'] = array();
+            $data['totalTaskCount'] = array();
+        }
+
+
+
+
 //        $header = array('Content-Type: application/json');
 //        if (isset($_SESSION['xauthtoken'])) {
 //            $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
@@ -85,22 +93,22 @@ class Listing extends CI_Controller {
                 echo 'empty';
                 exit;
             }
-            
+
             $date_add = date('Y-m-d H:i:s');
             $store['name'] = trim($this->input->post('list_name'));
             $store['list_type_id'] = 1;
-            if(isset($_SESSION['logged_in'])){
+            if (isset($_SESSION['logged_in'])) {
                 $store['user_id'] = $_SESSION['id'];
             }
             $store['created'] = $date_add;
             $store['modified'] = $date_add;
             $addList = $this->ListsModel->add_list($store);
-            if($addList == 0){
+            if ($addList == 0) {
                 echo 'fail';
                 exit;
             }
-            
-            
+
+
             $data['Apikey'] = API_KEY;
             $data['Listname'] = trim($this->input->post('list_name'));
             $post_data = json_encode($data);
@@ -156,12 +164,12 @@ class Listing extends CI_Controller {
                         $_SESSION['unauth_visit'] = $visited_arr;
                     }
                 }
-                
+
                 $update_list_local['slug'] = $response['data']->ListSlug;
                 $update_list_local['url'] = '/' . $response['data']->ListSlug;
                 $update_list_local['list_inflo_id'] = $response['data']->ListId;
                 $this->ListsModel->update_list_data($addList, $update_list_local);
-                
+
 
                 $_SESSION['last_slug'] = $response['data']->ListSlug;
 
@@ -217,7 +225,7 @@ class Listing extends CI_Controller {
         if ($this->input->post()) {
 
             $slug = $this->input->post('list_slug');
-            
+
             $list_name = $this->ListsModel->find_list_by_slug($slug, $_SESSION['id']);
             echo $list_name;
 
@@ -255,6 +263,30 @@ class Listing extends CI_Controller {
     }
 
     /**
+     * Edit List on nexup database
+     * @author SG
+     */
+    public function update() {
+        if ($this->input->post()) {
+            if (empty($this->input->post('edit_list_name'))) {
+                echo 'empty';
+                exit;
+            }
+            $data_list['name'] = trim($this->input->post('edit_list_name'));
+            $update_local = $this->ListsModel->update_list_data($this->input->post('list_id'), $data_list);
+            $ret_arr = array();
+            if ($update_local) {
+                $ret_arr[0] = (int)$this->input->post('list_id');
+                $ret_arr[1] = $this->ListsModel->find_list_slug_by_id($ret_arr[0]);
+                echo json_encode($ret_arr);
+            } else {
+                echo 'fail';
+            }
+            exit;
+        }
+    }
+
+    /**
      * Edit List
      * @author SG
      */
@@ -265,10 +297,10 @@ class Listing extends CI_Controller {
                 echo 'empty';
                 exit;
             }
-            
-            $data_list['name'] = trim($this->input->post('edit_list_name'));
-            $update_local = $this->ListsModel->update_list_data($this->input->post('list_id'), $data_list);
-            
+
+//            $data_list['name'] = trim($this->input->post('edit_list_name'));
+//            $update_local = $this->ListsModel->update_list_data($this->input->post('list_id'), $data_list);
+
 
             $data['Apikey'] = API_KEY;
             $data['Listname'] = trim($this->input->post('edit_list_name'));
@@ -306,18 +338,28 @@ class Listing extends CI_Controller {
     }
 
     /**
+     * Delete List from nexup database
+     * @author SG
+     */
+    public function remove() {
+        if ($this->input->post()) {
+            $del = $this->ListsModel->delete_list($this->input->post('list_id'));
+
+            if ($del == 0) {
+                echo 'fail';
+            } else {
+                echo 'success';
+            }
+            exit;
+        }
+    }
+
+    /**
      * Delete List
      * @author SG
      */
     public function delete() {
         if ($this->input->post()) {
-            
-            $del = $this->ListsModel->delete_list($this->input->post('list_id'));
-            
-            if($del == 0){
-                echo 'fail';
-                exit;
-            }
 
             $data['Apikey'] = API_KEY;
             $data['Listid'] = trim($this->input->post('list_id'));
@@ -567,6 +609,27 @@ class Listing extends CI_Controller {
     }
 
     /**
+     * Change list type on nexup database
+     * @author SG
+     */
+    public function change_listType() {
+        if (!empty($this->input->post())) {
+            if ($this->input->post('list_id') == 0) {
+                echo 'not allowed';
+                exit;
+            }
+            $change['list_type_id'] = $this->input->post('type_id');
+            $res = $this->ListsModel->change_list_type($this->input->post('list_id'), $change);
+            if ($res) {
+                echo 'success';
+            } else {
+                echo 'fail';
+            }
+            exit;
+        }
+    }
+
+    /**
      * Change list type
      * @author SG
      */
@@ -606,13 +669,35 @@ class Listing extends CI_Controller {
             exit;
         }
     }
-    
-    
+
+    /*
+     * Lock list on nexup database
+     * @author SG
+     */
+
+    public function lock_nexup_list() {
+        if ($this->input->post()) {
+            if ($this->input->post('Listid') == 0) {
+                echo 'not allowed';
+                exit;
+            }
+            $Listid = $this->input->post('Listid');
+            $data_update['is_locked'] = $this->input->post('Lock');
+            $res = $this->ListsModel->update_list_data($Listid, $data_update);
+            if ($res) {
+                echo 'success';
+            } else {
+                echo 'fail';
+            }
+            exit;
+        }
+    }
+
     /**
      * Lock a list
      * @author SG
      */
-    public function lock_list(){
+    public function lock_list() {
         if ($this->input->post()) {
             if (!empty($this->input->post())) {
                 if ($this->input->post('Listid') == 0) {

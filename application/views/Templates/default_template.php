@@ -69,7 +69,13 @@
                         <?php if ($this->session->userdata('logged_in')) { ?>
                             <div class="h-nav dropdown">
                                 <!--<a class="icon-more custom_cursor" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>-->
-                                <a id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="avatar_menu custom_cursor"><img src="<?php if(@getimagesize($_SESSION['image'])) { echo $_SESSION['image']; } else { echo 'https://demo.inflo.io/Images/profile_thum.jpg';} ?>" alt="Avatar" id="imgpreview"></a>
+                                <a id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="avatar_menu custom_cursor"><img src="<?php
+                                    if (@getimagesize($_SESSION['image'])) {
+                                        echo $_SESSION['image'];
+                                    } else {
+                                        echo 'https://demo.inflo.io/Images/profile_thum.jpg';
+                                    }
+                                    ?>" alt="Avatar" id="imgpreview"></a>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                     <li><a><?php echo $this->session->userdata('first_name') . ' ' . $this->session->userdata('last_name'); ?></a></li>
                                     <li><a href="<?php echo base_url() . 'profile'; ?>">Profile</a></li>
@@ -629,7 +635,7 @@
                         operation = 'edit';
                         data_send.list_id = did_edit;
                         data_send.edit_list_name = list_txt;
-                        call_url = "<?php echo base_url() . 'listing/edit'; ?>"
+                        call_url = "<?php echo base_url() . 'listing/update'; ?>"
                     } else {
                         operation = 'add';
                         data_send.list_name = list_txt;
@@ -670,7 +676,7 @@
                                         ddl_history += '</div>';
 //                                        alert(ddl_history);
 //                                        $('.history_div').html(ddl_history);
-                                        $('.nav-inflo-login').before(ddl_history);
+                                        $('.nav-view').after(ddl_history);
                                     } else {
                                         var ddl_history_option = '<li class="history_options" value="<?php echo base_url() . 'item/' ?>' + resp[1] + '" data-slug="' + resp[1] + '"><a href="<?php echo base_url() . 'item/' ?>' + resp[1] + '">' + list_txt + '</a></li>';
                                         $('#history_dd').prepend(ddl_history_option);
@@ -681,9 +687,17 @@
                                     $('.edit_list_task').attr('data-slug', resp[1]);
                                 } else if (operation == 'edit') {
                                     $('#history_dd li[value="<?php echo base_url() . 'item/' ?>' + resp[1] + '"] a').text(list_txt);
+                                    $.ajax({
+                                        url: "<?php echo base_url() . 'listing/edit'; ?>",
+                                        type: 'POST',
+                                        data: data_send,
+                                        success: function (resp) {
+
+                                        }
+                                    });
                                 }
                                 $('#edit_list_name').remove();
-                                if($('#task_name').length == 1){
+                                if ($('#task_name').length == 1) {
                                     $('#task_name').focus();
                                 }
                                 $('.edit_list_cls').remove();
@@ -720,7 +734,7 @@
                 if (cnf) {
                     var did_del = $(this).attr('data-id');
                     $.ajax({
-                        url: "listing/delete",
+                        url: "listing/remove",
                         type: 'POST',
                         data: {
                             'list_id': did_del,
@@ -728,6 +742,16 @@
                         success: function (res) {
                             if (res == 'success') {
                                 $('#list_' + did_del).remove();
+                                $.ajax({
+                                    url: "listing/delete",
+                                    type: 'POST',
+                                    data: {
+                                        'list_id': did_del,
+                                    },
+                                    success: function (resp) {
+                                    }
+                                });
+
                             } else if (res == 'fail') {
                                 alert('Something went wrong. List was not deleted. Please try again!')
                             }
@@ -1050,7 +1074,7 @@
                     $('.edit_task_cls').hide();
                     $('#task_' + did_edit + ' .add-data-div').removeClass('list-error');
                     $.ajax({
-                        url: "<?php echo base_url() . 'item/edit'; ?>",
+                        url: "<?php echo base_url() . 'item/update'; ?>",
                         type: 'POST',
                         data: {
                             'ListId': list_id,
@@ -1068,6 +1092,17 @@
                                 $('.edit_task_cls').remove();
                                 $('#task_' + did_edit + ' .add-data-div').removeClass('list-error');
                                 $('#task_' + did_edit + ' .add-data-div .opertaions').removeClass('hide_operations');
+                                $.ajax({
+                                    url: "<?php echo base_url() . 'item/edit'; ?>",
+                                    type: 'POST',
+                                    data: {
+                                        'ListId': list_id,
+                                        'TaskId': did_edit,
+                                        'Taskname': edit_task_name
+                                    },
+                                    success: function (response) {
+                                    }
+                                });
                             }
                         }
                     });
@@ -1136,12 +1171,12 @@
 
             //Delete task ajax call
             $(document).on('click', '.delete_task', function () {
-                var cnfrm = confirm('Are you sure want to delete this task?');
+                var cnfrm = confirm('Are you sure want to delete this item?');
                 if (cnfrm) {
                     var task_id = $(this).attr('data-id');
                     var ListId = $(this).attr('data-listid');
                     $.ajax({
-                        url: "<?php echo base_url() . 'item/delete'; ?>",
+                        url: "<?php echo base_url() . 'item/remove'; ?>",
                         type: 'POST',
                         data: {
                             'TaskId': task_id,
@@ -1151,9 +1186,19 @@
 
                             if (res == 'success') {
                                 $('#task_' + task_id).remove();
-                                if($('li.task_li').length == 0){
+                                if ($('li.task_li').length == 0) {
                                     $('.whoisnext-div .button-outer').addClass('whosnext_img_bg');
                                 }
+                                $.ajax({
+                                    url: "<?php echo base_url() . 'item/delete'; ?>",
+                                    type: 'POST',
+                                    data: {
+                                        'TaskId': task_id,
+                                        'ListId': ListId
+                                    },
+                                    success: function (res) {
+                                    }
+                                });
                             } else {
                                 alert('Something went wrong. Please try again!');
                             }
@@ -1220,7 +1265,7 @@
 
                 } else {
                     $.ajax({
-                        url: '<?php echo base_url() . 'update_listType'; ?>',
+                        url: '<?php echo base_url() . 'change_listType'; ?>',
                         type: 'POST',
                         data: {
                             'list_id': list_id,
@@ -1232,21 +1277,31 @@
                                     $('.whoisnext-div').remove();
                                 } else {
                                     var task_name = '';
-                                    if($('#TaskList .task_li').length > 0){
+                                    if ($('#TaskList .task_li').length > 0) {
                                         task_name = $('#TaskList li:first-child').text();
                                     }
                                     if ($('.whoisnext-div').length == 0) {
-                                        if(task_name == ''){
-                                        $('#content').prepend('<div class="whoisnext-div"><div class="button-outer whosnext_img_bg"><span id="next_task_name">' + task_name + '</span></div><a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a></div>');
-                                    }else{
-                                        $('#content').prepend('<div class="whoisnext-div"><div class="button-outer"><span id="next_task_name">' + task_name + '</span></div><a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a></div>');
-                                    }
+                                        if (task_name == '') {
+                                            $('#content').prepend('<div class="whoisnext-div"><div class="button-outer whosnext_img_bg"><span id="next_task_name">' + task_name + '</span></div><a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a></div>');
+                                        } else {
+                                            $('#content').prepend('<div class="whoisnext-div"><div class="button-outer"><span id="next_task_name">' + task_name + '</span></div><a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a></div>');
+                                        }
                                     }
                                 }
                                 $('#ListType_msg').html('You have successfully changed list type.');
                                 $('#ListType_msg').removeClass('alert-danger');
                                 $('#ListType_msg').addClass('alert-success');
                                 $('#ListType_msg').show();
+                                $.ajax({
+                                    url: '<?php echo base_url() . 'update_listType'; ?>',
+                                    type: 'POST',
+                                    data: {
+                                        'list_id': list_id,
+                                        'type_id': type_id
+                                    },
+                                    success: function (res) {
+                                    }
+                                });
                             } else if (res == 'not allowed') {
                                 $('#ListType_msg').html('Please create/select a list to proceed!');
                                 $('#ListType_msg').removeClass('alert-success');
@@ -1319,7 +1374,7 @@
                 var list_id = $(this).attr('data-id');
                 var list_slug = $(this).attr('data-slug');
                 $.ajax({
-                    url: '<?php echo base_url() . 'lock_list'; ?>',
+                    url: '<?php echo base_url() . 'lock_nexup_list'; ?>',
                     type: 'POST',
                     data: {
                         'Listid': list_id,
@@ -1333,7 +1388,7 @@
                         } else if (res == 'success') {
                             $("#TaskList").sortable("disable");
                             $('.icon-settings').attr('data-locked', '1');
-                            if($('.hide_add_item').length == 0){
+                            if ($('.hide_add_item').length == 0) {
                                 $('#add_task_li .add-data-div').addClass('hide_add_item');
                             }
                             $('.delete_task').hide();
@@ -1343,6 +1398,16 @@
                             $('#TaskListDiv').accordion({
                                 collapsible: true,
                                 active: false
+                            });
+                            $.ajax({
+                                url: '<?php echo base_url() . 'lock_list'; ?>',
+                                type: 'POST',
+                                data: {
+                                    'Listid': list_id,
+                                    'Lock': 1,
+                                },
+                                success: function (res) {
+                                }
                             });
                         }
                     }
@@ -1354,7 +1419,7 @@
                 var list_id = $(this).attr('data-id');
                 var list_slug = $(this).attr('data-slug');
                 $.ajax({
-                    url: '<?php echo base_url() . 'lock_list'; ?>',
+                    url: '<?php echo base_url() . 'lock_nexup_list'; ?>',
                     type: 'POST',
                     data: {
                         'Listid': list_id,
@@ -1374,6 +1439,16 @@
                             $('#listUnlock_lnk').remove();
                             $('.config_icons').append('<a class="icon-lock2 custom_cursor" id="listLock_lnk" data-id="' + list_id + '" data-slug="' + list_slug + '"></a>');
                             $('#TaskListDiv').accordion("destroy");
+                            $.ajax({
+                                url: '<?php echo base_url() . 'lock_list'; ?>',
+                                type: 'POST',
+                                data: {
+                                    'Listid': list_id,
+                                    'Lock': 0,
+                                },
+                                success: function (res) {
+                                }
+                            });
                         }
                     }
                 });
@@ -1403,15 +1478,15 @@
                     $('.ui-sortable-handle').css('visibility', 'visible');
                 }
             });
-            
-            if($('.collapse_div').length > 0){
+
+            if ($('.collapse_div').length > 0) {
                 $('#TaskListDiv').accordion({
                     collapsible: true,
                     active: false
                 });
             }
-            
-            $(function() {
+
+            $(function () {
 
                 var next_task = $(".whoisnext-div #next_task_name");
 
@@ -1431,7 +1506,7 @@
                 }
                 else {
                     next_task.css("font-size", "20px");
-                }    
+                }
 
             });
 

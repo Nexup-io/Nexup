@@ -11,12 +11,12 @@
             ?>
             <div class="button-outer custom_cursor<?php echo $btn_cls; ?>" data-toggle="tooltip" title="<?php
             if (!empty($tasks)) {
-                echo $tasks[0]->TaskName;
+                echo $tasks[0]['TaskName'];
             }
             ?>">
                 <span id="next_task_name"><?php
                     if (!empty($tasks)) {
-                        echo $tasks[0]->TaskName;
+                        echo $tasks[0]['TaskName'];
                     }
                     ?></span>
                 <!--<span class="tooltiptext-task-next"></span>-->
@@ -101,7 +101,7 @@
                     <?php
                     foreach ($list_types as $listType):
                         ?>
-                        <li id="listType_<?php echo $listType->ListTypeId; ?>" class="list_type_cls custom_cursor" data-typeId="<?php echo $listType->ListTypeId; ?>" data-listid="<?php echo $list_id; ?>"><?php echo $listType->ListTypeName; ?></li>
+                        <li id="listType_<?php echo $listType['ListTypeId']; ?>" class="list_type_cls custom_cursor" data-typeId="<?php echo $listType['ListTypeId']; ?>" data-listid="<?php echo $list_id; ?>"><?php echo $listType['ListTypeName']; ?></li>
                         <?php
                     endforeach;
                     ?>
@@ -146,7 +146,7 @@
         <?php
         $sort_class = '';
         $move_btn_cls = '';
-        if ($config['allow_move'] == 'True') {
+        if ($config['allow_move'] == 1) {
             $sort_class = 'tasks_lists_display';
         }
         if (empty($tasks) || $config['allow_move'] != 'True') {
@@ -162,21 +162,21 @@
                 if (!empty($tasks)) {
                     foreach ($tasks as $task):
                         ?>
-                        <li id="task_<?php echo $task->TaskId; ?>" class="task_li" data-id="<?php echo $task->TaskId; ?>">
+                        <li id="task_<?php echo $task['TaskId']; ?>" class="task_li" data-id="<?php echo $task['TaskId']; ?>">
 
                             <div class="add-data-div edit_task <?php
-                            if ($task->IsCompleted) {
+                            if ($task['IsCompleted']) {
                                 echo 'completed_task';
                             }
-                            ?>" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>">
+                            ?>" data-id="<?php echo $task['TaskId'] ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
                                 <span class="icon-more"></span>
-                                <span id="span_task_<?php echo $task->TaskId; ?>" class="task_name_span"><?php echo $task->TaskName; ?></span>
+                                <span id="span_task_<?php echo $task['TaskId']; ?>" class="task_name_span"><?php echo $task['TaskName']; ?></span>
                                 <div class="opertaions pull-right">
-                                    <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                    <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $task['TaskId']; ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
                                     <?php
                                     if ($type_id == 5) {
                                         ?>
-                                        <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $task->TaskId ?>" data-task="<?php echo $task->TaskName; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                        <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $task['TaskId']; ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
                                         <?php
                                     }
                                     ?>
@@ -306,49 +306,6 @@
         </div>
     </div>
 </div>
-
-
-<div class="modal fade listType-modal" id="listTypesModal" tabindex="-3" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="listTypesmodal-head">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cancel"></span></button>
-                <h2>Select List Type</h2>
-            </div>
-            <div class="listTypemodal-body">
-
-                <div id="ListType_msg" class="alert no-border" style="display: none;">
-
-                </div>
-
-                <?php
-                foreach ($list_types as $listType):
-                    $radio_checked = '';
-                    if ($type_id == $listType->ListTypeId) {
-                        $radio_checked = 'checked="checked"';
-                    }
-                    ?>
-                    <div class="radio-outer">
-                        <div class="radio">
-                            <input id="listType_<?php echo $listType->ListTypeId; ?>" class="list_type_cls" type="radio" name="listType" value="True" data-typeId="<?php echo $listType->ListTypeId; ?>" <?php echo $radio_checked; ?>>
-                            <label for="listType_<?php echo $listType->ListTypeId; ?>"><?php echo $listType->ListTypeName; ?></label>
-                        </div>
-                    </div>
-                    <?php
-                endforeach;
-                ?>
-
-                <div class="button-outer">
-                    <button type="submit" name="update_listType_btn" id="update_listType_btn" data-listid="<?php echo $list_id; ?>">Update List Type</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 <style>
     .edit-list-class{width: auto;position:relative;}
     input#edit_list_name { border: 1px solid #f5f3f3;}
