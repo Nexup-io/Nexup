@@ -72,6 +72,7 @@ $route['item/delete'] = 'task/delete';
 $route['item/remove'] = 'task/remove';
 $route['get_next_task'] = 'task/get_next_task';
 $route['next_task'] = 'task/next_task';
+$route['next_item'] = 'task/next_item';
 $route['item/(:any)'] = 'task/index';
 $route['login'] = 'user/login';
 $route['inflo_login'] = 'user/inflologin';

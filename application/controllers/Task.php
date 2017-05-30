@@ -703,6 +703,65 @@ class Task extends CI_Controller {
     }
 
     /**
+     * Update list with next item in list (traverse in round robin list) on nexup database
+     * @author SG
+     */
+    public function next_item(){
+        if ($this->input->post()) {
+            $today_date = date('Y-m-d H:i:s');
+            if (!isset($_SESSION['logged_in'])) {
+                echo 'not allowed';
+                exit;
+            }
+            $items = $this->TasksModel->get_tasks($this->input->post('Listid'));
+            
+            $last_updated_order = 0;
+            $item_size = sizeof($items);
+            $current_order_store = array();
+            $new_order_store = array();
+            array_push($current_order_store, $items[0]['TaskId']);
+            
+            for($i = 1; $i < $item_size; $i++){
+                array_push($current_order_store, $items[$i]['TaskId']);
+                $item_id = $items[$i]['TaskId'];
+                $new_ord['order'] = $i;
+                $updated = $this->TasksModel->update_task_data($this->input->post('Listid'), $item_id, $new_ord);
+                $last_updated_order = $i;
+                array_push($new_order_store, $items[$i]['TaskId']);
+            }
+            array_push($new_order_store, $items[0]['TaskId']);
+            
+            $save_history['list_inflo_id'] = $this->input->post('Listid');
+            if(isset($_SESSION['logged_in'])){
+                $save_history['user_id'] = $_SESSION['id'];
+            }
+            $save_history['old_order'] = implode(',',$current_order_store);
+            $save_history['new_order'] = implode(',',$new_order_store);
+            if($this->input->post('comment')){
+                $save_history['comment'] = $this->input->post('comment');
+            }
+                $save_history['created'] = $today_date;
+                $save_history['modified'] = $today_date;
+            
+            
+            $store_history = $this->TasksModel->save_history($save_history);
+            
+            
+            $new_order['order'] = $last_updated_order + 1;
+            $updated_final = $this->TasksModel->update_task_data($this->input->post('Listid'), $this->input->post('Taskid'), $new_order);
+            if($updated_final > 0){
+                echo 'success';
+            }else{
+                echo 'fail';
+            }
+            exit;
+            
+        }
+    }
+
+    
+
+    /**
      * Update list with next item in list (traverse in round robin list)
      * @author SG
      */

@@ -28,7 +28,7 @@ class ListsModel extends CI_Model {
      * @author SG
      */
     public function find_user_lists($user_id) {
-        $condition = array('lists.user_id' => $user_id, 'lists.is_deleted' => 0);
+        $condition = array('lists.user_id' => $user_id, 'lists.is_deleted' => 0, 'list_data.is_deleted' => 0);
         $rst = $this->db->select('lists.list_inflo_id as ListId, lists.slug as ListSlug, lists.name as ListName, count(list_data.id) as total_items');
         $this->db->join('list_data', 'lists.list_inflo_id = list_data.list_inflo_id', 'left');
         $this->db->where($condition);

@@ -1338,7 +1338,7 @@
             }
             ?>;
                 $.ajax({
-                    url: '<?php echo base_url() . 'next_task'; ?>',
+                    url: '<?php echo base_url() . 'next_item'; ?>',
                     type: 'POST',
                     data: {
                         'Listid': list_id,
@@ -1349,6 +1349,16 @@
                             $('#TaskList li:first-child').appendTo('#TaskList');
                             $('#next_task_name').html($('#TaskList li:first-child').text());
                             $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
+                            $.ajax({
+                                url: '<?php echo base_url() . 'next_task'; ?>',
+                                type: 'POST',
+                                data: {
+                                    'Listid': list_id,
+                                    'Taskid': last_task_id
+                                },
+                                success: function (resp) {
+                                }
+                            });
                         } else if (res == 'not allowed') {
                             alert('You are not allowed to perform this action. Please login to proceed with it!');
                         } else if (res == 'fail') {

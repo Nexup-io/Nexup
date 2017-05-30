@@ -38,8 +38,9 @@ class TasksModel extends CI_Model {
      */
     public function get_tasks($list_id) {
         $condition = array('list_data.list_inflo_id' => $list_id, 'list_data.is_deleted' => 0);
-        $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted');
+        $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted, order');
         $this->db->where($condition);
+        $this->db->order_by('list_data.order', 'asc');
         $query = $this->db->get('list_data');
         return $query->result_array();
     }
@@ -99,6 +100,15 @@ class TasksModel extends CI_Model {
         $query = $this->db->get('list_data');
         $res = $query->row_array();
         return $res['order'];
+    }
+    
+    /*
+     * Save history of cycle through list items
+     * @author SG
+     */
+    public function save_history($data){
+        $this->db->insert('cycle_history', $data);
+        return $this->db->insert_id();
     }
 
 }
