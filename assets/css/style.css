@@ -44,9 +44,10 @@ input[type=checkbox] {display: none;}
 input[type=radio]:checked + label:before { content: "\2022"; color: #f3f3f3; font-size: 30px; text-align: center; line-height: 18px;}
 input[type=checkbox]:checked + label:before {content: "\2713";font-size: 15px; color: #fff;text-align:center; line-height:15px;background:#01b9e6;border:1px solid #01b9e6; }
 .button-outer{display:block;width:100%;margin:0 0 25px;}
-.whoisnext-div .whoisnext-btn {width: 250px !important;margin: 0 auto;display: inline-block;}
-.button-outer button, .whoisnext-btn{border:2px solid #4d4d4d;background:#4d4d4d;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;text-align:center;color:#fff;line-height:18px;padding:15px;display:block;font-size:14px;font-weight:700;width:100%;letter-spacing:0.02em;}
-.button-outer button:hover, .whoisnext-btn:hover{background:#fff;color:#4d4d4d;text-decoration:none;}
+/*.whoisnext-div .whoisnext-btn, .whoisnext-div .whoisnext-btn-cmnt {width: 250px !important;margin: 0 auto;display: inline-block;}*/
+.whoisnext-div .whoisnext-btn, .whoisnext-div .whoisnext-btn-cmnt {width: 250px !important;margin: 10px auto;display: block;}
+.button-outer button, .whoisnext-btn, .whoisnext-btn-cmnt{border:2px solid #4d4d4d;background:#4d4d4d;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;text-align:center;color:#fff;line-height:18px;padding:15px;display:block;font-size:14px;font-weight:700;width:100%;letter-spacing:0.02em;}
+.button-outer button:hover, .whoisnext-btn:hover, .whoisnext-btn-cmnt:hover{background:#fff;color:#4d4d4d;text-decoration:none;}
 .redirect-register{display:block;}
 .redirect-register p{color:#4c4c4c;font-size:13px;text-decoration:none;line-height:22px;margin:0;padding:0 0 20px;font-weight:400;}
 .redirect-register span{color:#01b1e0;}
@@ -260,7 +261,7 @@ ul.add-data-body-ul li.task_li span.icon-more {position: relative;right: 10px;co
 .radio-outer a:hover{color:#4d4d4d;}
 .radio label:before {border-radius:10px;}
 input[type="radio"]:checked + label::before{color: #32cef4;font-size: 45px;line-height: 20px;}
-.whoisnext-div{text-align:center;margin-bottom: 50px;}
+.whoisnext-div{text-align:center;margin-bottom: 50px; width: 100%;}
 /*.whoisnext-div .whoisnext-btn{margin: 0 auto;max-width: 200px;height: 50px;display: block;font-size: 20px;font-weight: 700;letter-spacing: 0.02em;line-height: 30px;padding: 10px;text-align: center;width: 100%;text-decoration:none;left: 45%;z-index:9999999;border:2px solid #dedede;left:0;color: #acacac;}*/
 /*.whoisnext-btn:hover{font-size: 20px !important;}*/
 
@@ -316,4 +317,10 @@ div.ui-accordion-header, h3.ui-accordion-header {position: absolute !important;}
 .avatar_menu img{border-radius: 100%;border: 2px solid #04aed5;height: 50px;overflow: hidden;width: 50px;}
 .hide_config, .hide_lock{display: none !important;}
 #TaskListHead{margin-top: -30px;}
-.whoisnext-div .button-outer{position: relative;top: -41px;max-width: 440px;height: 200px;margin: 0 auto;background: #fff none repeat scroll 0 0;border: 2px solid #01b9e6;border-radius: 4px;color: #fff;overflow: visible;display: inline-block;margin-right: 30px;padding: 10px;}
+.whoisnext-div .button-outer{position: relative;max-width: 440px;height: 200px;margin: 0 auto;background: #fff none repeat scroll 0 0;border: 2px solid #01b9e6;border-radius: 4px;color: #fff;overflow: visible;display: inline-block;margin-right: 30px;padding: 10px;}
+#nexup_btns {display: inline-block;vertical-align: top;padding-top: 63px;}
+.hide_box{display: none;}
+.whoisnext-div .cmnt-btn-div .whoisnext-btn-cmnt{width:200px !important; font-size:18px;}
+.whoisnext-div .cmnt-btn-div .add-data-div {padding:0;}
+.whoisnext-div .cmnt-btn-div .add-data-div input{border:1px solid #f5f3f3 !important;padding:8px 10px;width:200px;}
+.nexup-group{width: 60%; border: 1px solid #bbbaba; margin: 0 auto; padding: 50px 0px; border-radius: 25px;}

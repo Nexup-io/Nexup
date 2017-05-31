@@ -1320,6 +1320,66 @@
                 }
             });
 
+            $(document).on('click', '.whoisnext-btn-cmnt', function () {
+            if($('#nexup_cmnt_span').hasClass('hide_box')){
+                    $('#nexup_cmnt_span').removeClass('hide_box');
+                }else{
+                    $('#nexup_cmnt_span').addClass('hide_box');
+                }
+                $('#nexup_comment').focus();
+                return false;
+            });
+
+            $(document).on('keydown', '#nexup_comment', function (evt) {
+                var key_code = evt.keyCode;
+                if (key_code == 27) {
+                    $('#nexup_comment').val('');
+                    $('#nexup_cmnt_span').addClass('hide_box');
+                } else if (key_code == 13) {
+                    if ($('.icon-settings').attr('data-locked') == 1) {
+                        alert('This list is locked. Please unlock it to perform any operation!');
+                        return false;
+                    }
+                    if ($('#TaskList li').length < 2) {
+                        return false;
+                    }
+                    var last_task_id = $('#TaskList li:first-child').attr('data-id');
+                    var list_id = <?php if (isset($list_id)) {echo $list_id;} else {echo 0;} ?>;
+                    var comment = $('#nexup_comment').val();
+                    $.ajax({
+                        url: '<?php echo base_url() . 'next_item'; ?>',
+                        type: 'POST',
+                        data: {
+                            'Listid': list_id,
+                            'Taskid': last_task_id,
+                            'comment': comment
+                        },
+                        success: function (res) {
+                            if (res == 'success') {
+                                $('#nexup_comment').val('');
+                                $('#TaskList li:first-child').appendTo('#TaskList');
+                                $('#next_task_name').html($('#TaskList li:first-child').text());
+                                $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
+                                $.ajax({
+                                    url: '<?php echo base_url() . 'next_task'; ?>',
+                                    type: 'POST',
+                                    data: {
+                                        'Listid': list_id,
+                                        'Taskid': last_task_id
+                                    },
+                                    success: function (resp) {
+                                    }
+                                });
+                            } else if (res == 'not allowed') {
+                                alert('You are not allowed to perform this action. Please login to proceed with it!');
+                            } else if (res == 'fail') {
+                                alert('Something went wrong. Please try again!');
+                            }
+                        }
+                    });
+                }
+            });
+
             //Who's next call
             $(document).on('click', '.whoisnext-btn, .whoisnext-div .button-outer', function () {
                 if ($('.icon-settings').attr('data-locked') == 1) {
@@ -1367,7 +1427,6 @@
                     }
                 });
             });
-
 
             //Display next item on who's next button mouse hover
 //            $(document).on('mouseover', '.whoisnext-div .button-outer .whoisnext-btn', function () {

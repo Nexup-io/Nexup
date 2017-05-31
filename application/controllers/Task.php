@@ -709,10 +709,10 @@ class Task extends CI_Controller {
     public function next_item(){
         if ($this->input->post()) {
             $today_date = date('Y-m-d H:i:s');
-            if (!isset($_SESSION['logged_in'])) {
-                echo 'not allowed';
-                exit;
-            }
+//            if (!isset($_SESSION['logged_in'])) {
+//                echo 'not allowed';
+//                exit;
+//            }
             $items = $this->TasksModel->get_tasks($this->input->post('Listid'));
             
             $last_updated_order = 0;
