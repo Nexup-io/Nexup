@@ -276,7 +276,7 @@ class Listing extends CI_Controller {
             $update_local = $this->ListsModel->update_list_data($this->input->post('list_id'), $data_list);
             $ret_arr = array();
             if ($update_local) {
-                $ret_arr[0] = (int)$this->input->post('list_id');
+                $ret_arr[0] = (int) $this->input->post('list_id');
                 $ret_arr[1] = $this->ListsModel->find_list_slug_by_id($ret_arr[0]);
                 echo json_encode($ret_arr);
             } else {
@@ -567,6 +567,46 @@ class Listing extends CI_Controller {
             echo json_encode($data_ret);
             exit;
         }
+    }
+
+    /*
+     * Update configuration of list on nexup database
+     * @author SG
+     */
+
+    public function update_config() {
+        if ($this->input->post()) {
+            if ($this->input->post('list_id') == 0) {
+                echo 'not allowed';
+                exit;
+            }
+            
+            if(strtolower($this->input->post('allow_move')) == 'true'){
+                $update_config['allow_move'] = 1;
+            }else{
+                $update_config['allow_move'] = 0;
+            }
+            
+            if(strtolower($this->input->post('show_completed')) == 'true'){
+                $update_config['show_completed'] = 1;
+            }else{
+                $update_config['show_completed'] = 0;
+            }
+            
+            $update = $this->ListsModel->update_list_data($this->input->post('list_id'), $update_config);
+            
+            if($update){
+                echo 'success';
+            }else{
+                echo 'fail';
+            }
+            
+            exit;
+        }
+//        
+//        $data_update['Listid'] = $this->input->post('list_id');
+//        $data_update['IsMovable'] = $this->input->post('allow_move');
+//        $data_update['ShowCompleted'] = $this->input->post('show_completed');
     }
 
     /**

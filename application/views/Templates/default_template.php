@@ -263,17 +263,29 @@
                 handle: '.icon-more',
                 update: function (event, ui) {
                     var task_id = $(ui.item).attr('data-id');
+                    var list_id = $(ui.item).children().attr('data-listid');
                     $.ajax({
-                        url: '<?php echo base_url() . 'item_order' ?>',
+                        url: '<?php echo base_url() . 'order_change' ?>',
                         type: 'POST',
                         data: {
                             OrderId: ui.item.index() + 1,
-                            Taskid: task_id
+                            Taskid: task_id,
+                            ListId: list_id,
                         },
                         success: function (res) {
                             if (res == 'success') {
                                 $('span#next_task_name').text($('#TaskList li:first-child').text());
                                 $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
+                                $.ajax({
+                                    url: '<?php echo base_url() . 'item_order' ?>',
+                                    type: 'POST',
+                                    data: {
+                                        OrderId: ui.item.index() + 1,
+                                        Taskid: task_id
+                                    },
+                                    success: function (res) {
+                                    }
+                                });
                             }
                         }
                     });
@@ -304,7 +316,7 @@
                 }
 
                 $.ajax({
-                    url: '<?php echo base_url() . 'save_config' ?>',
+                    url: '<?php echo base_url() . 'update_config' ?>',
                     type: 'POST',
                     data: {
                         'list_id': list_id,
@@ -344,6 +356,17 @@
                                     });
                                 }
                             }
+                            $.ajax({
+                                url: '<?php echo base_url() . 'save_config' ?>',
+                                type: 'POST',
+                                data: {
+                                    'list_id': list_id,
+                                    'allow_move': allow_move,
+                                    'show_completed': show_completed
+                                },
+                                success: function (res) {
+                                }
+                            });
                         } else if (res == 'not allowed') {
                             $('#config_msg').html('You have not created list. Please create list to proceed!');
                             $('#config_msg').addClass('alert-danger');
@@ -688,7 +711,7 @@
                                 } else if (operation == 'edit') {
                                     $('#history_dd li[value="<?php echo base_url() . 'item/' ?>' + resp[1] + '"] a').text(list_txt);
                                     $.ajax({
-                                        url: "<?php echo base_url() . 'listing/edit'; ?>",
+                                        url: "<?php echo base_url() . 'listing/push'; ?>",
                                         type: 'POST',
                                         data: data_send,
                                         success: function (resp) {
@@ -1093,7 +1116,7 @@
                                 $('#task_' + did_edit + ' .add-data-div').removeClass('list-error');
                                 $('#task_' + did_edit + ' .add-data-div .opertaions').removeClass('hide_operations');
                                 $.ajax({
-                                    url: "<?php echo base_url() . 'item/edit'; ?>",
+                                    url: "<?php echo base_url() . 'item/push'; ?>",
                                     type: 'POST',
                                     data: {
                                         'ListId': list_id,
@@ -1148,7 +1171,7 @@
                 $('.edit_task_cls').hide();
                 $('#plus-edit-task').removeClass('list-error');
                 $.ajax({
-                    url: "<?php echo base_url() . 'item/edit'; ?>",
+                    url: "<?php echo base_url() . 'item/push'; ?>",
                     type: 'POST',
                     data: {
                         'ListId': list_id,
@@ -1320,10 +1343,10 @@
                 }
             });
 
-            $(document).on('click', '.whoisnext-btn-cmnt', function () {
-            if($('#nexup_cmnt_span').hasClass('hide_box')){
+            $(document).on('click', '.whoisnext-btn-cmnt, .whoisnext-div .button-outer', function () {
+                if ($('#nexup_cmnt_span').hasClass('hide_box')) {
                     $('#nexup_cmnt_span').removeClass('hide_box');
-                }else{
+                } else {
                     $('#nexup_cmnt_span').addClass('hide_box');
                 }
                 $('#nexup_comment').focus();
@@ -1344,15 +1367,21 @@
                         return false;
                     }
                     var last_task_id = $('#TaskList li:first-child').attr('data-id');
-                    var list_id = <?php if (isset($list_id)) {echo $list_id;} else {echo 0;} ?>;
+                    var list_id = <?php if (isset($list_id)) {
+                echo $list_id;
+            } else {
+                echo 0;
+            } ?>;
                     var comment = $('#nexup_comment').val();
+                    var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
                     $.ajax({
                         url: '<?php echo base_url() . 'next_item'; ?>',
                         type: 'POST',
                         data: {
                             'Listid': list_id,
                             'Taskid': last_task_id,
-                            'comment': comment
+                            'comment': comment,
+                            'user_ip': user_ip,
                         },
                         success: function (res) {
                             if (res == 'success') {
@@ -1381,7 +1410,7 @@
             });
 
             //Who's next call
-            $(document).on('click', '.whoisnext-btn, .whoisnext-div .button-outer', function () {
+            $(document).on('click', '.whoisnext-btn', function () {
                 if ($('.icon-settings').attr('data-locked') == 1) {
                     alert('This list is locked. Please unlock it to perform any operation!');
                     return false;

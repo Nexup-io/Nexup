@@ -53,8 +53,18 @@ class Task extends CI_Controller {
             $data['list_id'] = $list['list_id'];
             $data['list_slug'] = $list['list_slug'];
             $data['type_id'] = $list['type_id'];
-            $data['config']['show_completed'] = $list['show_completed'];
-            $data['config']['allow_move'] = $list['allow_move'];
+            if($list['show_completed'] == 0){
+                $show_completed = 'False';
+            }else{
+                $show_completed = 'True';
+            }
+            $data['config']['show_completed'] = $show_completed;
+            if($list['allow_move'] == 0){
+                $allow_move = 'False';
+            }else{
+                $allow_move = 'True';
+            }
+            $data['config']['allow_move'] = $allow_move;
             $data['list_owner_id'] = $list['list_owner_id'];
             $data['is_locked'] = $list['is_locked'];
             $data['tasks'] = $tasks;
@@ -211,7 +221,7 @@ class Task extends CI_Controller {
                 echo 'empty';
                 exit;
             }
-            
+
             $date_add = date('Y-m-d H:i:s');
 
             $header = array('Content-Type: application/json');
@@ -526,13 +536,12 @@ class Task extends CI_Controller {
             exit;
         }
         $remove_local = $this->TasksModel->remove_task_data($this->input->post('TaskId'));
-            if ($remove_local) {
-                echo 'success';
-            } else {
-                echo 'fail';
-            }
-            exit;
-        
+        if ($remove_local) {
+            echo 'success';
+        } else {
+            echo 'fail';
+        }
+        exit;
     }
 
     /**
@@ -604,6 +613,39 @@ class Task extends CI_Controller {
                 echo 'fail';
             }
         }
+    }
+
+    /*
+     * Change order of task on nexup database
+     * @author SG
+     */
+
+    public function order_change() {
+        if ($this->input->post()) {
+            $order_id = $this->input->post('OrderId');
+            $task_id = $this->input->post('Taskid');
+            $list_id = $this->input->post('ListId');
+            $lists = $this->TasksModel->get_tasks($list_id);
+            $update_cnt = 0;
+            foreach ($lists as $list):
+                if ($list['TaskId'] == $task_id) {
+                    $new_order = $order_id;
+                } else {
+                    if ($list['order'] >= $order_id) {
+                        $new_order = $list['order'] + 1;
+                    }
+                }
+                $update_order['order'] = $new_order;
+                $order_update = $this->TasksModel->update_task_data($list_id, $list['TaskId'], $update_order);
+                $update_cnt++;
+            endforeach;
+            if ($update_cnt > 0) {
+                echo 'success';
+            } else {
+                echo 'fail';
+            }
+        }
+        exit;
     }
 
     /**
@@ -706,22 +748,18 @@ class Task extends CI_Controller {
      * Update list with next item in list (traverse in round robin list) on nexup database
      * @author SG
      */
-    public function next_item(){
+    public function next_item() {
         if ($this->input->post()) {
             $today_date = date('Y-m-d H:i:s');
-//            if (!isset($_SESSION['logged_in'])) {
-//                echo 'not allowed';
-//                exit;
-//            }
             $items = $this->TasksModel->get_tasks($this->input->post('Listid'));
-            
+
             $last_updated_order = 0;
             $item_size = sizeof($items);
             $current_order_store = array();
             $new_order_store = array();
             array_push($current_order_store, $items[0]['TaskId']);
-            
-            for($i = 1; $i < $item_size; $i++){
+
+            for ($i = 1; $i < $item_size; $i++) {
                 array_push($current_order_store, $items[$i]['TaskId']);
                 $item_id = $items[$i]['TaskId'];
                 $new_ord['order'] = $i;
@@ -730,36 +768,36 @@ class Task extends CI_Controller {
                 array_push($new_order_store, $items[$i]['TaskId']);
             }
             array_push($new_order_store, $items[0]['TaskId']);
-            
+
             $save_history['list_inflo_id'] = $this->input->post('Listid');
-            if(isset($_SESSION['logged_in'])){
+            if (isset($_SESSION['logged_in'])) {
                 $save_history['user_id'] = $_SESSION['id'];
             }
-            $save_history['old_order'] = implode(',',$current_order_store);
-            $save_history['new_order'] = implode(',',$new_order_store);
-            if($this->input->post('comment')){
+            $save_history['old_order'] = implode(',', $current_order_store);
+            $save_history['new_order'] = implode(',', $new_order_store);
+            if ($this->input->post('comment')) {
                 $save_history['comment'] = $this->input->post('comment');
             }
-                $save_history['created'] = $today_date;
-                $save_history['modified'] = $today_date;
-            
-            
+            $save_history['created'] = $today_date;
+            $save_history['modified'] = $today_date;
+            if ($this->input->post('user_ip')) {
+                $save_history['user_ip'] = $this->input->post('user_ip');
+            }
+
+
             $store_history = $this->TasksModel->save_history($save_history);
-            
-            
+
+
             $new_order['order'] = $last_updated_order + 1;
             $updated_final = $this->TasksModel->update_task_data($this->input->post('Listid'), $this->input->post('Taskid'), $new_order);
-            if($updated_final > 0){
+            if ($updated_final > 0) {
                 echo 'success';
-            }else{
+            } else {
                 echo 'fail';
             }
             exit;
-            
         }
     }
-
-    
 
     /**
      * Update list with next item in list (traverse in round robin list)
