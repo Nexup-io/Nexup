@@ -66,6 +66,46 @@
                             <?php
                         }
                         ?>
+
+                        <?php
+                        if (isset($log_list)) {
+                            ?>
+                            <div class="h-nav dropdown">
+                                <a title="Log" class="icon-key2 custom_cursor" id="dropdownMenuLog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>
+                                <ul class="dropdown-menu" id="log_dd" aria-labelledby="dropdownMenuLog">
+                                    <?php
+                                    foreach ($log_list as $key_log => $log):
+                                        $cmt = 'Traversed on ' . $log['created'];
+//                                        $cmt = 'No Comment';
+
+                                        if (isset($_SESSION['logged_in'])) {
+                                            if ($log['user_id'] == $_SESSION['id']) {
+                                                if (!empty($log['comment'])) {
+                                                    $cmt = $log['comment'] .' (' . $log['created'] . ')';
+                                                }
+                                    ?>
+                                    <li class='log_options'><?php echo $cmt; ?></li>
+                                    <?php
+                                            }
+                                        } else {
+
+                                            if ($log['user_ip'] == $_SERVER['REMOTE_ADDR'] && $log['user_id'] == 0) {
+                                                if (!empty($log['comment'])) {
+                                                    $cmt = $log['comment'] . ' (' . $log['created'] . ')';
+                                                }
+                                    ?>
+                                    <li class='log_options'><?php echo $cmt; ?></li>          
+                                    <?php
+                                            }
+                                        }
+                                    endforeach;
+                                    ?>
+                                </ul>
+                            </div>
+                            <?php
+                        }
+                        ?>
+
                         <?php if ($this->session->userdata('logged_in')) { ?>
                             <div class="h-nav dropdown">
                                 <!--<a class="icon-more custom_cursor" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>-->
@@ -1367,11 +1407,13 @@
                         return false;
                     }
                     var last_task_id = $('#TaskList li:first-child').attr('data-id');
-                    var list_id = <?php if (isset($list_id)) {
+                    var list_id = <?php
+            if (isset($list_id)) {
                 echo $list_id;
             } else {
                 echo 0;
-            } ?>;
+            }
+            ?>;
                     var comment = $('#nexup_comment').val();
                     var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
                     $.ajax({
@@ -1399,6 +1441,11 @@
                                     success: function (resp) {
                                     }
                                 });
+                                var cm_val = 'No Comment';
+                                if(comment != ''){
+                                    cm_val = comment;
+                                }
+                                $('#log_dd').append('<li class="log_options">' + cm_val + '</li>');
                             } else if (res == 'not allowed') {
                                 alert('You are not allowed to perform this action. Please login to proceed with it!');
                             } else if (res == 'fail') {
@@ -1606,6 +1653,11 @@
                     next_task.css("font-size", "20px");
                 }
 
+            });
+            
+            
+            $(document).on('click', '.undo_btn', function (){
+                
             });
 
         </script>

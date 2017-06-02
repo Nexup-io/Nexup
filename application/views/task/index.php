@@ -23,7 +23,7 @@
                     <!--<span class="tooltiptext-task-next"></span>-->
                 </div>
                 <div id="nexup_btns">
-                    <!--<a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a>-->
+                    <a class="undo-btn custom_cursor"><span id="nexup_icon" class="icon-undo2"> </span> Undo</a>
                     <div class="cmnt-btn-div">
                         <a class="whoisnext-btn-cmnt custom_cursor"><span id="nexup_icon_cmnt" class="icon-redo2"> </span> Nexup</a>
                         <span class="add-data-div hide_box" id="nexup_cmnt_span">

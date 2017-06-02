@@ -110,5 +110,20 @@ class TasksModel extends CI_Model {
         $this->db->insert('cycle_history', $data);
         return $this->db->insert_id();
     }
+    
+    /*
+     * Find log of advance of list items by list id
+     * @author SG
+     */
+    public function find_log($list_id){
+        $condition = array('list_inflo_id' => $list_id);
+        $rst = $this->db->select('list_inflo_id, user_id, old_order, new_order, comment, user_ip, created');
+        $this->db->where($condition);
+        $query = $this->db->get('cycle_history');
+        return $query->result_array();
+    }
+    
+    
+    
 
 }

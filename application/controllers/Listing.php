@@ -168,8 +168,7 @@ class Listing extends CI_Controller {
                 $update_list_local['slug'] = $response['data']->ListSlug;
                 $update_list_local['url'] = '/' . $response['data']->ListSlug;
                 $update_list_local['list_inflo_id'] = $response['data']->ListId;
-                $this->ListsModel->update_list_data($addList, $update_list_local);
-
+                $updt = $this->ListsModel->update_list_data($addList, $update_list_local);
 
                 $_SESSION['last_slug'] = $response['data']->ListSlug;
 
@@ -187,25 +186,6 @@ class Listing extends CI_Controller {
                 $ret_arr[0] = $response['data']->ListId;
                 $ret_arr[1] = $response['data']->ListSlug;
                 $ret = json_encode($ret_arr);
-
-//                
-//                
-//                
-//                $ret = '<li id="list_' . $response['data']->ListId . '" class="list-body-li">';
-//                $ret .= '<div class="list-body-box custom_cursor">';
-//                $ret .= '<a class="list-body-box-link" data-id="' . $response['data']->ListId . '" data-slug="' . $response['data']->ListSlug . '">';
-//                $ret .= '<big>' . $response['data']->ListName . '</big>';
-//                $ret .= '<small>0 Item</small>';
-//                $ret .= '</a>';
-//                $ret .= '<div class="list-body-dropdown">';
-//                $ret .= '<a href="javascript:void(0)" class="icon-more" style="display: none;"></a>';
-//                $ret .= '</div>';
-//                $ret .= '<div class="dropdown-action">';
-//                $ret .= '<a class="icon-edit edit_list" data-id="' . $response['data']->ListId . '"> </a>';
-//                $ret .= '<a class="icon-cross-out delete_list" data-id="' . $response['data']->ListId . '"> </a>';
-//                $ret .= '</div>';
-//                $ret .= '</div>';
-//                $ret .= '</li>';
             } else {
                 $ret = 'fail';
             }

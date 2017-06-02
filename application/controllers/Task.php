@@ -24,12 +24,12 @@ class Task extends CI_Controller {
         $data['type_id'] = 1;
         $data['is_locked'] = 0;
 
-        $header = array('Content-Type: application/json');
-        array_push($header, 'Accept:');
-        if (isset($_SESSION['xauthtoken'])) {
-            $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
-            array_push($header, $val);
-        }
+//        $header = array('Content-Type: application/json');
+//        array_push($header, 'Accept:');
+//        if (isset($_SESSION['xauthtoken'])) {
+//            $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+//            array_push($header, $val);
+//        }
 
 
         $slug = '';
@@ -114,6 +114,10 @@ class Task extends CI_Controller {
                         $visited_arr['list_slug'][] = $data['list_slug'];
                         $_SESSION['unauth_visit'] = $visited_arr;
                     }
+                }
+                $log = $this->TasksModel->find_log($list['list_id']);
+                if(!empty($log)){
+                    $data['log_list'] = $log;
                 }
             } else {
                 redirect($this->agent->referrer(), 'refresh');
@@ -835,6 +839,17 @@ class Task extends CI_Controller {
             } else {
                 echo 'fail';
             }
+            exit;
+        }
+    }
+    
+    /*
+     * Function for undo the traverse
+     * @author SG
+     */
+    public function undo_nexup(){
+        if($this->input->is('post')){
+            p($this->input->post());
             exit;
         }
     }

@@ -28,9 +28,9 @@ class ListsModel extends CI_Model {
      * @author SG
      */
     public function find_user_lists($user_id) {
-        $condition = array('lists.user_id' => $user_id, 'lists.is_deleted' => 0, 'list_data.is_deleted' => 0);
+        $condition = array('lists.user_id' => $user_id, 'lists.is_deleted' => 0, 'lists.list_inflo_id > 0');
         $rst = $this->db->select('lists.list_inflo_id as ListId, lists.slug as ListSlug, lists.name as ListName, count(list_data.id) as total_items');
-        $this->db->join('list_data', 'lists.list_inflo_id = list_data.list_inflo_id', 'left');
+        $this->db->join('list_data', 'lists.list_inflo_id = list_data.list_inflo_id AND list_data.is_deleted = 0', 'left');
         $this->db->where($condition);
         $this->db->group_by('lists.id');
         $query = $this->db->get('lists');
@@ -43,10 +43,11 @@ class ListsModel extends CI_Model {
      * @author SG
      */
     public function find_total_user_lists($user_id) {
-        $condition = array('list_data.user_id' => $user_id, 'list_data.is_deleted' => 0);
+        $condition = array('list_data.user_id' => $user_id, 'list_data.is_deleted' => 0, 'lists.is_deleted' => 0);
         $rst = $this->db->select('count(list_data.id) as total_items');
+        $this->db->join('lists', 'list_data.list_inflo_id = lists.list_inflo_id AND lists.is_deleted = 0', 'left');
         $this->db->where($condition);
-        $this->db->group_by('list_data.list_inflo_id');
+//        $this->db->group_by('list_data.list_inflo_id');
         $query = $this->db->get('list_data');
 
         $total = $query->row_array();
@@ -141,7 +142,7 @@ class ListsModel extends CI_Model {
      * @author SG
      */
     public function update_list_data($list_id, $list_data) {
-        $condition = array('list_inflo_id' => $list_id);
+        $condition = array('id' => $list_id);
         $this->db->where($condition);
         return $this->db->update('lists', $list_data);
     }
