@@ -119,6 +119,7 @@ class TasksModel extends CI_Model {
         $condition = array('list_inflo_id' => $list_id);
         $rst = $this->db->select('list_inflo_id, user_id, old_order, new_order, comment, user_ip, created');
         $this->db->where($condition);
+        $this->db->order_by('id', 'desc');
         $query = $this->db->get('cycle_history');
         return $query->result_array();
     }

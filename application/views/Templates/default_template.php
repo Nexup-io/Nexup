@@ -74,30 +74,96 @@
                                 <a title="Log" class="icon-key2 custom_cursor" id="dropdownMenuLog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> </a>
                                 <ul class="dropdown-menu" id="log_dd" aria-labelledby="dropdownMenuLog">
                                     <?php
+                                    $i = 0;
                                     foreach ($log_list as $key_log => $log):
+                                        if ($i > 5) {
+                                            break;
+                                        }
+                                        $hourdiff = round((strtotime(date('Y-m-d H:i:s')) - strtotime($log['created'])) / 3600, 1);
+
                                         $cmt = 'Traversed on ' . $log['created'];
-//                                        $cmt = 'No Comment';
+                                        if ($hourdiff > 1 && $hourdiff < 24) {
+                                            if (floor($hourdiff) > 1) {
+                                                $hrs = ' hours';
+                                            } else {
+                                                $hrs = ' hour';
+                                            }
+                                            $cmt = 'Traversed on ' . floor($hourdiff) . $hrs . ' ago';
+                                        } elseif ($hourdiff <= 1) {
+                                            $min_dif = $hourdiff * 60;
+                                            if (floor($min_dif) > 1) {
+                                                $minutes = ' minutes';
+                                            } else {
+                                                $minutes = ' minute';
+                                            }
+                                            if ($min_dif > 0) {
+                                                $cmt = 'Traversed on ' . floor($min_dif) . $minutes . ' ago';
+                                            } else {
+                                                $cmt = 'Traversed Just Now';
+                                            }
+                                        }
 
                                         if (isset($_SESSION['logged_in'])) {
                                             if ($log['user_id'] == $_SESSION['id']) {
                                                 if (!empty($log['comment'])) {
-                                                    $cmt = $log['comment'] .' (' . $log['created'] . ')';
+                                                    $cmt = $log['comment'] . ' (' . $log['created'] . ')';
+                                                    if ($hourdiff > 1 && $hourdiff < 24) {
+                                                        if (floor($hourdiff) > 1) {
+                                                            $hrs = ' hours';
+                                                        } else {
+                                                            $hrs = ' hour';
+                                                        }
+                                                        $cmt = $log['comment'] . ' (' . floor($hourdiff) . $hrs . ' ago)';
+                                                    } elseif ($hourdiff <= 1) {
+                                                        $min_dif = $hourdiff * 60;
+                                                        if ($min_dif > 0) {
+                                                            if (floor($min_dif) > 1) {
+                                                                $minutes = ' minutes';
+                                                            } else {
+                                                                $minutes = ' minute';
+                                                            }
+                                                            $cmt = $log['comment'] . ' (' . floor($min_dif) . $minutes . ' ago)';
+                                                        } else {
+                                                            $cmt = $log['comment'] . ' (Just Now)';
+                                                        }
+                                                    }
                                                 }
-                                    ?>
-                                    <li class='log_options'><?php echo $cmt; ?></li>
-                                    <?php
+                                                ?>
+                                                <li class='log_options'><?php echo $cmt; ?></li>
+                                                <?php
                                             }
                                         } else {
 
                                             if ($log['user_ip'] == $_SERVER['REMOTE_ADDR'] && $log['user_id'] == 0) {
                                                 if (!empty($log['comment'])) {
                                                     $cmt = $log['comment'] . ' (' . $log['created'] . ')';
+                                                    if ($hourdiff > 1 && $hourdiff < 24) {
+                                                        if (floor($hourdiff) > 1) {
+                                                            $hrs = ' hours';
+                                                        } else {
+                                                            $hrs = ' hour';
+                                                        }
+                                                        $cmt = $log['comment'] . ' (' . floor($hourdiff) . $hrs . ' ago)';
+                                                    } elseif ($hourdiff <= 1) {
+                                                        $min_dif = $hourdiff * 60;
+                                                        if ($min_dif > 0) {
+                                                            if (floor($min_dif) > 1) {
+                                                                $minutes = ' minutes';
+                                                            } else {
+                                                                $minutes = ' minute';
+                                                            }
+                                                            $cmt = $log['comment'] . ' (' . floor($min_dif) . $minutes . ' ago)';
+                                                        } else {
+                                                            $cmt = $log['comment'] . ' (Just Now)';
+                                                        }
+                                                    }
                                                 }
-                                    ?>
-                                    <li class='log_options'><?php echo $cmt; ?></li>          
-                                    <?php
+                                                ?>
+                                                <li class='log_options'><?php echo $cmt; ?></li>          
+                                                <?php
                                             }
                                         }
+                                        $i++;
                                     endforeach;
                                     ?>
                                 </ul>
@@ -1442,10 +1508,10 @@
                                     }
                                 });
                                 var cm_val = 'No Comment';
-                                if(comment != ''){
+                                if (comment != '') {
                                     cm_val = comment;
                                 }
-                                $('#log_dd').append('<li class="log_options">' + cm_val + '</li>');
+                                $('#log_dd').prepend('<li class="log_options">' + cm_val + '(Just Now)</li>');
                             } else if (res == 'not allowed') {
                                 alert('You are not allowed to perform this action. Please login to proceed with it!');
                             } else if (res == 'fail') {
@@ -1654,10 +1720,17 @@
                 }
 
             });
-            
-            
-            $(document).on('click', '.undo_btn', function (){
-                
+
+
+            $(document).on('click', '.undo-btn', function () {
+//                var list_id = $(this).attr('data-listid');
+//                $.ajax({
+//                    url: '<?php echo base_url(); ?>listing/undo_nexup'
+//                });
+            });
+
+            $(document).on('click', '#dropdownMenuLog', function () {
+                $('#log-list').modal('show');
             });
 
         </script>

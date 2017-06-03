@@ -23,7 +23,7 @@
                     <!--<span class="tooltiptext-task-next"></span>-->
                 </div>
                 <div id="nexup_btns">
-                    <a class="undo-btn custom_cursor"><span id="nexup_icon" class="icon-undo2"> </span> Undo</a>
+                    <a class="undo-btn custom_cursor" data-listid="<?php echo $list_id; ?>"><span id="undo_icon" class="icon-undo2"> </span> Undo</a>
                     <div class="cmnt-btn-div">
                         <a class="whoisnext-btn-cmnt custom_cursor"><span id="nexup_icon_cmnt" class="icon-redo2"> </span> Nexup</a>
                         <span class="add-data-div hide_box" id="nexup_cmnt_span">
@@ -86,22 +86,22 @@
             if ($is_locked == 1) {
                 ?>
                 <a class="icon-lock2 custom_cursor<?php echo $calss_hide_lock; ?>" id="config_lcoked" <?php
-            if ($is_locked == 1) {
-                echo 'data-locked="1"';
-            } else {
-                echo 'data-locked="0"';
-            }
+                if ($is_locked == 1) {
+                    echo 'data-locked="1"';
+                } else {
+                    echo 'data-locked="0"';
+                }
                 ?>></a>
                    <?php
                }
                ?>
             <a class="icon-settings custom_cursor<?php echo $class_hide_settings; ?>" id="config_lnk" <?php
-               if ($is_locked == 1) {
-                   echo 'data-locked="1"';
-               } else {
-                   echo 'data-locked="0"';
-               }
-               ?>></a>
+            if ($is_locked == 1) {
+                echo 'data-locked="1"';
+            } else {
+                echo 'data-locked="0"';
+            }
+            ?>></a>
         </div>
         <span class="config_icons hide_data" id="config_icons">
             <a data-toggle="modal" data-target="#listConfig" id="listConfig_lnk" class="icon-wrench custom_cursor"> </a>
@@ -175,10 +175,10 @@
                         <li id="task_<?php echo $task['TaskId']; ?>" class="task_li" data-id="<?php echo $task['TaskId']; ?>">
 
                             <div class="add-data-div edit_task <?php
-                if ($task['IsCompleted']) {
-                    echo 'completed_task';
-                }
-                        ?>" data-id="<?php echo $task['TaskId'] ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
+                            if ($task['IsCompleted']) {
+                                echo 'completed_task';
+                            }
+                            ?>" data-id="<?php echo $task['TaskId'] ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
                                 <span class="icon-more"></span>
                                 <span id="span_task_<?php echo $task['TaskId']; ?>" class="task_name_span"><?php echo $task['TaskName']; ?></span>
                                 <div class="opertaions pull-right">
@@ -316,6 +316,116 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade log-modal" id="log-list" tabindex="-2" role="dialog" aria-labelledby="LogModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="logmodal-head">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cancel"></span></button>
+                <h2>Log</h2>
+            </div>
+            <div class="logmodal-body">
+                <div id="log_div" class="log_div">
+                    <ul class="dropdown-menu2" id="log_dd2" aria-labelledby="dropdownMenuLog2">
+                        <?php
+                        foreach ($log_list as $key_log => $log):
+                            $hourdiff = round((strtotime(date('Y-m-d H:i:s')) - strtotime($log['created'])) / 3600, 1);
+                            $cmt = 'Traversed on ' . $log['created'];
+
+                            if ($hourdiff > 1 && $hourdiff < 24) {
+                                if (floor($hourdiff) > 1) {
+                                    $hrs = ' hours';
+                                } else {
+                                    $hrs = ' hour';
+                                }
+                                $cmt = 'Traversed on ' . floor($hourdiff) . $hrs . ' ago';
+                            } elseif ($hourdiff <= 1) {
+                                $min_dif = $hourdiff * 60;
+                                if ($min_dif > 1) {
+                                    if (floor($min_dif) > 1) {
+                                        $minutes = ' minutes';
+                                    } else {
+                                        $minutes = ' minute';
+                                    }
+                                    $cmt = 'Traversed on ' . floor($min_dif) . $minutes . ' ago';
+                                } else {
+                                    $cmt = 'Traversed Just Now';
+                                }
+                            }
+
+                            if (isset($_SESSION['logged_in'])) {
+                                if ($log['user_id'] == $_SESSION['id']) {
+                                    if (!empty($log['comment'])) {
+                                        $cmt = $log['comment'] . ' (' . $log['created'] . ')';
+                                        if ($hourdiff > 1 && $hourdiff < 24) {
+                                            if (floor($hourdiff) > 1) {
+                                                $hrs = ' hours';
+                                            } else {
+                                                $hrs = ' hour';
+                                            }
+                                            $cmt = $log['comment'] . ' (' . floor($hourdiff) . $hrs . ' ago)';
+                                        } elseif ($hourdiff <= 1) {
+                                            $min_dif = $hourdiff * 60;
+                                            if (floor($min_dif) > 1) {
+                                                $minutes = ' minutes';
+                                            } else {
+                                                $minutes = ' minute';
+                                            }
+                                            if ($min_dif > 0) {
+                                                $cmt = $log['comment'] . ' (' . floor($min_dif) . $minutes . ' ago)';
+                                            } else {
+                                                $cmt = $log['comment'] . ' (Just Now)';
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <li class='log_options'><?php echo $cmt; ?></li>
+                                    <?php
+                                }
+                            } else {
+
+                                if ($log['user_ip'] == $_SERVER['REMOTE_ADDR'] && $log['user_id'] == 0) {
+                                    if (!empty($log['comment'])) {
+                                        $cmt = $log['comment'] . ' (' . $log['created'] . ')';
+                                        if ($hourdiff > 1 && $hourdiff < 24) {
+                                            if (floor($hourdiff) > 1) {
+                                                $hrs = ' hours';
+                                            } else {
+                                                $hrs = ' hour';
+                                            }
+                                            $cmt = $log['comment'] . ' (' . floor($hourdiff) . $hrs . ' ago)';
+                                        } elseif ($hourdiff <= 1) {
+                                            $min_dif = $hourdiff * 60;
+                                            if (floor($min_dif) > 1) {
+                                                $minutes = ' minutes';
+                                            } else {
+                                                $minutes = ' minute';
+                                            }
+                                            if ($min_dif > 0) {
+                                                $cmt = $log['comment'] . ' (' . floor($min_dif) . $minutes . ' ago)';
+                                            } else {
+                                                $cmt = $log['comment'] . ' (Just Now)';
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <li class='log_options'><?php echo $cmt; ?></li>          
+                                    <?php
+                                }
+                            }
+                        endforeach;
+                        ?>
+                    </ul>
+                </div>
+                <div class="button-outer" id="config_btn_div">
+                    <button type="submit" name="close_config" id="close_config" class="close_config" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .edit-list-class{width: auto;position:relative;}
     input#edit_list_name { border: 1px solid #f5f3f3;}
