@@ -124,6 +124,30 @@ class TasksModel extends CI_Model {
         return $query->result_array();
     }
     
+    /*
+     * Find last log of advance of list items by list id
+     * @author SG
+     */
+    public function find_last_log($list_id){
+        $condition = array('list_inflo_id' => $list_id, 'is_undone' => 0, 'is_undo' => 0);
+        $rst = $this->db->select('id,list_inflo_id, user_id, old_order, new_order, comment, user_ip, created');
+        $this->db->where($condition);
+            $this->db->limit(1);
+        $this->db->order_by('id', 'desc');
+        $query = $this->db->get('cycle_history');
+        return $query->result_array();
+    }
+    
+    
+     /*
+     * Update log
+     * @author SG
+     */
+     public function update_log($id, $data){
+         $condition = array('id' => $id);
+        $this->db->where($condition);
+        return $this->db->update('cycle_history', $data);
+     }
     
     
 

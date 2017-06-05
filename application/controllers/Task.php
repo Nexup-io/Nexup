@@ -21,6 +21,7 @@ class Task extends CI_Controller {
         $data['list_slug'] = '';
         $data['config']['show_completed'] = 'True';
         $data['config']['allow_move'] = 'True';
+        $data['config']['allow_undo'] = 0;
         $data['type_id'] = 1;
         $data['is_locked'] = 0;
 
@@ -44,7 +45,6 @@ class Task extends CI_Controller {
 
             $list = $this->ListsModel->find_list_details_by_slug($slug);
 
-
             $tasks = $this->TasksModel->get_tasks($list['list_id']);
 
 //            p($tasks); exit;
@@ -65,11 +65,10 @@ class Task extends CI_Controller {
                 $allow_move = 'True';
             }
             $data['config']['allow_move'] = $allow_move;
+            $data['config']['allow_undo'] = $list['allow_undo'];
             $data['list_owner_id'] = $list['list_owner_id'];
             $data['is_locked'] = $list['is_locked'];
             $data['tasks'] = $tasks;
-
-
 
             if (!empty($data)) {
 
@@ -844,13 +843,53 @@ class Task extends CI_Controller {
     }
     
     /*
-     * Function for undo the traverse
+     * Function for undo the last traverse
      * @author SG
      */
     public function undo_nexup(){
-        if($this->input->is('post')){
-            p($this->input->post());
-            exit;
+        if($this->input->post()){
+            
+            $items = $this->TasksModel->get_tasks($this->input->post('list_id'));
+            $item_size = sizeof($items);
+            
+            $last_log = $this->TasksModel->find_last_log($this->input->post('list_id'));
+            if(empty($last_log)){
+                echo 'fail'; exit;
+            }
+            $log_order = $last_log[0]['old_order'];
+            $current_order_store = array();
+            for ($i = 0; $i < $item_size; $i++) {
+                array_push($current_order_store, $items[$i]['TaskId']);
+            }
+            $current_order = implode(',', $current_order_store);
+            $new_order = explode(',', $log_order);
+            
+            for($j = 0; $j < $item_size; $j++){
+                $item['order'] = $j + 1;
+                $this->TasksModel->update_task_data($this->input->post('list_id'), $new_order[$j], $item);
+            }
+            $today_date = date('Y-m-d H:i:s');
+            
+            $new_history['list_inflo_id'] = $this->input->post('list_id');
+            $new_history['user_id'] = 0;
+            if(isset($_SESSION['logged_in'])){
+                $new_history['user_id'] = $_SESSION['user_id'];
+            }
+            $new_history['old_order'] = $current_order;
+            $new_history['new_order'] = $log_order;
+            $new_history['user_ip'] = $_SERVER['REMOTE_ADDR'];
+            $new_history['is_undo'] = 1;
+            $new_history['is_undone'] = 0;
+            $new_history['created'] = $today_date;
+            $new_history['modified'] = $today_date;
+            
+            $this->TasksModel->save_history($new_history);
+            
+            $log_update['is_undone'] = 1;
+            $log_update['modified'] = date('Y-m-d H:i:s');
+            $this->TasksModel->update_log($last_log[0]['id'], $log_update);
+            
+            echo $log_order; exit;
         }
     }
 

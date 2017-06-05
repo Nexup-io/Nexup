@@ -328,3 +328,4 @@ ul#log_dd li, ul#log_dd2 li{padding:15px 25px;}
 .undo-btn.custom_cursor{position:absolute;top:10px;right:10px;border: 2px solid #4d4d4d;background: #4d4d4d;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;text-align: center;color: #fff;line-height: 18px;padding:7px;display: block;font-size: 14px;font-weight: 700;letter-spacing: 0.02em;text-decoration: none;}
 .undo-btn.custom_cursor:hover{background: #fff;color:#4D4D4D;}
 ul#log_dd2{overflow: auto;}
+.disabled_undo{pointer-events: none; cursor: default;}

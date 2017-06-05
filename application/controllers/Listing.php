@@ -572,6 +572,11 @@ class Listing extends CI_Controller {
             }else{
                 $update_config['show_completed'] = 0;
             }
+            if(strtolower($this->input->post('allow_undo')) == 'true'){
+                $update_config['allow_undo'] = 1;
+            }else{
+                $update_config['allow_undo'] = 0;
+            }
             
             $update = $this->ListsModel->update_list_data($this->input->post('list_id'), $update_config);
             

@@ -420,6 +420,10 @@
                 if ($('#show_completed_item').is(':checked')) {
                     show_completed = 'True';
                 }
+                var allow_undo = 'False';
+                if ($('#undo_item').is(':checked')) {
+                    allow_undo = 'True';
+                }
 
                 $.ajax({
                     url: '<?php echo base_url() . 'update_config' ?>',
@@ -427,7 +431,8 @@
                     data: {
                         'list_id': list_id,
                         'allow_move': allow_move,
-                        'show_completed': show_completed
+                        'show_completed': show_completed,
+                        'allow_undo': allow_undo
                     },
                     success: function (res) {
                         if (res == 'success') {
@@ -435,6 +440,12 @@
                             $('#config_msg').removeClass('alert-danger');
                             $('#config_msg').addClass('alert-success');
                             $('#config_msg').show();
+                            if(allow_undo == 'False'){
+                                $('#nexup_btns .undo-btn').removeClass('disabled_undo');
+                                $('#nexup_btns .undo-btn').addClass('disabled_undo');
+                            }else{
+                                $('#nexup_btns .undo-btn').removeClass('disabled_undo');
+                            }
                             if (allow_move == 'False') {
 //                                $('#TaskList').removeClass('tasks_lists_display');
                                 $("#TaskList").sortable("disable");
@@ -462,6 +473,8 @@
                                     });
                                 }
                             }
+                            
+                            
                             $.ajax({
                                 url: '<?php echo base_url() . 'save_config' ?>',
                                 type: 'POST',
@@ -1610,6 +1623,7 @@
                                 collapsible: true,
                                 active: false
                             });
+                            
                             $.ajax({
                                 url: '<?php echo base_url() . 'lock_list'; ?>',
                                 type: 'POST',
@@ -1723,10 +1737,22 @@
 
 
             $(document).on('click', '.undo-btn', function () {
-//                var list_id = $(this).attr('data-listid');
-//                $.ajax({
-//                    url: '<?php echo base_url(); ?>listing/undo_nexup'
-//                });
+                var list_id = $(this).attr('data-listid');
+                $.ajax({
+                    url: '<?php echo base_url(); ?>undo_nexup',
+                    type: 'POST',
+                    data:{'list_id': list_id},
+                    success: function (resp) {
+                        if(resp != 'fail'){
+                            var res_arr = resp.split(",");
+                            var arr_size = res_arr.length;
+                            for(i = 0; i < arr_size; i++){
+                                $('#task_' + res_arr[i]).appendTo('#TaskList');
+                            }
+                            $('span#next_task_name').text($('#TaskList li:first-child').text());
+                        }
+                    }
+                });
             });
 
             $(document).on('click', '#dropdownMenuLog', function () {

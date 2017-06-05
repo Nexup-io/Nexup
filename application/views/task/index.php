@@ -23,7 +23,13 @@
                     <!--<span class="tooltiptext-task-next"></span>-->
                 </div>
                 <div id="nexup_btns">
-                    <a class="undo-btn custom_cursor" data-listid="<?php echo $list_id; ?>"><span id="undo_icon" class="icon-undo2"> </span> Undo</a>
+                    <?php
+                    $undo_class = '';
+                    if ($config['allow_undo'] == 0) {
+                        $undo_class = ' disabled_undo';
+                    }
+                    ?>
+                    <a class="undo-btn custom_cursor<?php echo $undo_class; ?>" data-listid="<?php echo $list_id; ?>"><span id="undo_icon" class="icon-undo2"> </span> Undo</a>
                     <div class="cmnt-btn-div">
                         <a class="whoisnext-btn-cmnt custom_cursor"><span id="nexup_icon_cmnt" class="icon-redo2"> </span> Nexup</a>
                         <span class="add-data-div hide_box" id="nexup_cmnt_span">
@@ -156,7 +162,7 @@
         <?php
         $sort_class = '';
         $move_btn_cls = '';
-        if ($config['allow_move'] == 1) {
+        if ($config['allow_move'] == 'True') {
             $sort_class = 'tasks_lists_display';
         }
         if (empty($tasks) || $config['allow_move'] != 'True') {
@@ -305,6 +311,19 @@
                         ?>
                         <input id="show_completed_item" type="checkbox" name="show_completed_item" value="True" <?php echo $show_completed; ?>>
                         <label for="show_completed_item">Show Completed Items</label>
+                    </div>	
+                </div>
+                
+                <div class="checkbox-outer">
+                    <div class="checkbox">
+                        <?php
+                        $undo_items = 'checked="checked"';
+                        if ($config['allow_undo'] == 0) {
+                            $undo_items = '';
+                        }
+                        ?>
+                        <input id="undo_item" type="checkbox" name="undo_item" value="True" <?php echo $undo_items; ?>>
+                        <label for="undo_item">Allow users to undo</label>
                     </div>	
                 </div>
 

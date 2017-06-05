@@ -120,7 +120,7 @@ class ListsModel extends CI_Model {
     
     public function find_list_details_by_slug($slug) {
         $condition = array('lists.slug' => $slug);
-        $this->db->select('lists.name as list_name, lists.list_inflo_id as list_id, lists.slug as list_slug, lists.list_type_id as type_id, lists.show_completed as show_completed, lists.allow_move as allow_move, lists.user_id as list_owner_id, lists.is_locked as is_locked');
+        $this->db->select('lists.name as list_name, lists.list_inflo_id as list_id, lists.slug as list_slug, lists.list_type_id as type_id, lists.show_completed as show_completed, lists.allow_move as allow_move, lists.allow_undo as allow_undo, lists.user_id as list_owner_id, lists.is_locked as is_locked');
         $this->db->where($condition);
         $query = $this->db->get('lists');
         $list_details =  $query->row_array();
@@ -142,7 +142,7 @@ class ListsModel extends CI_Model {
      * @author SG
      */
     public function update_list_data($list_id, $list_data) {
-        $condition = array('id' => $list_id);
+        $condition = array('list_inflo_id' => $list_id);
         $this->db->where($condition);
         return $this->db->update('lists', $list_data);
     }
