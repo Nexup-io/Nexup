@@ -1001,6 +1001,7 @@
             $(document).on('keydown', '#task_name', function (evt) {
                 var key_code = evt.keyCode;
                 if (key_code == 13) {
+                    $(this).prop('disabled', true);
                     if ($('.icon-settings').attr('data-locked') == 1) {
                         alert('This list is locked. You can not add any item in it!');
                         return false;
@@ -1043,6 +1044,7 @@
                                 $('#add_task_li').removeClass('list-error');
                                 $('#add_task_li').addClass('list-error');
                             } else {
+                                $('#task_name').prop('disabled', false);
                                 var resp = JSON.parse(res);
                                 $('#add_task_li #task_name').attr('data-listid', resp[0]);
                                 $('.add-data-head #edit_list_name').attr('data-id', resp[0]);
@@ -1164,18 +1166,22 @@
             });
 
             //Open modal of edit task and fill value in text box
-            $(document).on('click', '.task_name_span', function () {
+            $(document).on('click', '.edit_task', function (e) {
+                
                 if ($('.icon-settings').attr('data-locked') == 1) {
                     alert('This list is locked. Please unlock it to perform any operation!');
+                    return false;
+                }
+                if($(this).has('#edit_task_name').length > 0){
                     return false;
                 }
                 $('#edit_task_name').remove();
                 $('#TaskList .task_li .add-data-div span').show();
                 $('.opertaions').removeClass('hide_operations');
-                var task_nm = $(this).parent().closest('div').attr('data-task');
-                var task_id = $(this).parent().closest('div').attr('data-id');
-                var list_id = $(this).parent().closest('div').attr('data-listid');
-                var did = $(this).attr('id');
+                var task_nm = $(this).attr('data-task');
+                var task_id = $(this).attr('data-id');
+                var list_id = $(this).attr('data-listid');
+//                var did = $(this).attr('id');
                 $.ajax({
                     url: "<?php echo base_url() . 'item/get_task_data'; ?>",
                     type: 'POST',
@@ -1757,6 +1763,13 @@
 
             $(document).on('click', '#dropdownMenuLog', function () {
                 $('#log-list').modal('show');
+            });
+            
+            $(document).on('mouseover', '#TaskAdd', function (){
+                
+            });
+            $(document).on('mouseout', '#TaskAdd', function (){
+                
             });
 
         </script>
