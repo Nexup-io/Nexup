@@ -116,7 +116,7 @@ class TasksModel extends CI_Model {
      * @author SG
      */
     public function find_log($list_id){
-        $condition = array('list_inflo_id' => $list_id);
+        $condition = array('list_inflo_id' => $list_id, 'nexup_type' => 1);
         $rst = $this->db->select('list_inflo_id, user_id, old_order, new_order, comment, user_ip, created');
         $this->db->where($condition);
         $this->db->order_by('id', 'desc');
@@ -147,6 +147,15 @@ class TasksModel extends CI_Model {
          $condition = array('id' => $id);
         $this->db->where($condition);
         return $this->db->update('cycle_history', $data);
+     }
+     
+     public function get_current_item_order($list_id){
+         $condition = array('list_inflo_id' => $list_id,);
+        $rst = $this->db->select('task_inflo_id');
+        $this->db->where($condition);
+        $this->db->order_by('order', 'asc');
+        $query = $this->db->get('list_data');
+        return $query->result_array();
      }
     
     

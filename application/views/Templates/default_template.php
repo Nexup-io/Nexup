@@ -368,15 +368,25 @@
             $(".tasks_lists_display").sortable({
                 handle: '.icon-more',
                 update: function (event, ui) {
+                
+                var tasks_ids = [];
+                $('.tasks_lists_display li').each(function(e){
+                        var ids = $(this).attr('data-id');
+                        console.log(ids);
+                        tasks_ids.push(ids);
+                });
+                
                     var task_id = $(ui.item).attr('data-id');
                     var list_id = $(ui.item).children().attr('data-listid');
+                    var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
                     $.ajax({
                         url: '<?php echo base_url() . 'order_change' ?>',
                         type: 'POST',
                         data: {
                             OrderId: ui.item.index() + 1,
-                            Taskid: task_id,
+                            Taskid: JSON.stringify(tasks_ids),
                             ListId: list_id,
+                            user_ip: user_ip
                         },
                         success: function (res) {
                             if (res == 'success') {
@@ -440,10 +450,10 @@
                             $('#config_msg').removeClass('alert-danger');
                             $('#config_msg').addClass('alert-success');
                             $('#config_msg').show();
-                            if(allow_undo == 'False'){
+                            if (allow_undo == 'False') {
                                 $('#nexup_btns .undo-btn').removeClass('disabled_undo');
                                 $('#nexup_btns .undo-btn').addClass('disabled_undo');
-                            }else{
+                            } else {
                                 $('#nexup_btns .undo-btn').removeClass('disabled_undo');
                             }
                             if (allow_move == 'False') {
@@ -473,8 +483,8 @@
                                     });
                                 }
                             }
-                            
-                            
+
+
                             $.ajax({
                                 url: '<?php echo base_url() . 'save_config' ?>',
                                 type: 'POST',
@@ -1167,12 +1177,12 @@
 
             //Open modal of edit task and fill value in text box
             $(document).on('click', '.edit_task', function (e) {
-                
+
                 if ($('.icon-settings').attr('data-locked') == 1) {
                     alert('This list is locked. Please unlock it to perform any operation!');
                     return false;
                 }
-                if($(this).has('#edit_task_name').length > 0){
+                if ($(this).has('#edit_task_name').length > 0) {
                     return false;
                 }
                 $('#edit_task_name').remove();
@@ -1472,33 +1482,15 @@
                 if ($('#nexup_cmnt_span').hasClass('hide_box')) {
                     $('#nexup_cmnt_span').removeClass('hide_box');
                 } else {
-                    $('#nexup_cmnt_span').addClass('hide_box');
-                }
-                $('#nexup_comment').focus();
-                return false;
-            });
-
-            $(document).on('keydown', '#nexup_comment', function (evt) {
-                var key_code = evt.keyCode;
-                if (key_code == 27) {
-                    $('#nexup_comment').val('');
-                    $('#nexup_cmnt_span').addClass('hide_box');
-                } else if (key_code == 13) {
-                    if ($('.icon-settings').attr('data-locked') == 1) {
-                        alert('This list is locked. Please unlock it to perform any operation!');
-                        return false;
-                    }
                     if ($('#TaskList li').length < 2) {
                         return false;
                     }
                     var last_task_id = $('#TaskList li:first-child').attr('data-id');
-                    var list_id = <?php
-            if (isset($list_id)) {
+                    var list_id = <?php if (isset($list_id)) {
                 echo $list_id;
             } else {
                 echo 0;
-            }
-            ?>;
+            } ?>;
                     var comment = $('#nexup_comment').val();
                     var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
                     $.ajax({
@@ -1538,7 +1530,72 @@
                             }
                         }
                     });
+//                    $('#nexup_cmnt_span').addClass('hide_box');
                 }
+                $('#nexup_comment').focus();
+                return false;
+            });
+
+            $(document).on('keydown', '#nexup_comment', function (evt) {
+                var key_code = evt.keyCode;
+                if (key_code == 27) {
+                    $('#nexup_comment').val('');
+                    $('#nexup_cmnt_span').addClass('hide_box');
+                }
+//                else if (key_code == 13) {
+//                    if ($('.icon-settings').attr('data-locked') == 1) {
+//                        alert('This list is locked. Please unlock it to perform any operation!');
+//                        return false;
+//                    }
+//                    if ($('#TaskList li').length < 2) {
+//                        return false;
+//                    }
+//                    var last_task_id = $('#TaskList li:first-child').attr('data-id');
+//                    var list_id = <?php if (isset($list_id)) {
+                echo $list_id;
+            } else {
+                echo 0;
+            } ?>//;
+//                    var comment = $('#nexup_comment').val();
+//                    var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+//                    $.ajax({
+//                        url: '<?php echo base_url() . 'next_item'; ?>',
+//                        type: 'POST',
+//                        data: {
+//                            'Listid': list_id,
+//                            'Taskid': last_task_id,
+//                            'comment': comment,
+//                            'user_ip': user_ip,
+//                        },
+//                        success: function (res) {
+//                            if (res == 'success') {
+//                                $('#nexup_comment').val('');
+//                                $('#TaskList li:first-child').appendTo('#TaskList');
+//                                $('#next_task_name').html($('#TaskList li:first-child').text());
+//                                $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
+//                                $.ajax({
+//                                    url: '<?php echo base_url() . 'next_task'; ?>',
+//                                    type: 'POST',
+//                                    data: {
+//                                        'Listid': list_id,
+//                                        'Taskid': last_task_id
+//                                    },
+//                                    success: function (resp) {
+//                                    }
+//                                });
+//                                var cm_val = 'No Comment';
+//                                if (comment != '') {
+//                                    cm_val = comment;
+//                                }
+//                                $('#log_dd').prepend('<li class="log_options">' + cm_val + '(Just Now)</li>');
+//                            } else if (res == 'not allowed') {
+//                                alert('You are not allowed to perform this action. Please login to proceed with it!');
+//                            } else if (res == 'fail') {
+//                                alert('Something went wrong. Please try again!');
+//                            }
+//                        }
+//                    });
+//                }
             });
 
             //Who's next call
@@ -1629,7 +1686,7 @@
                                 collapsible: true,
                                 active: false
                             });
-                            
+
                             $.ajax({
                                 url: '<?php echo base_url() . 'lock_list'; ?>',
                                 type: 'POST',
@@ -1747,12 +1804,12 @@
                 $.ajax({
                     url: '<?php echo base_url(); ?>undo_nexup',
                     type: 'POST',
-                    data:{'list_id': list_id},
+                    data: {'list_id': list_id},
                     success: function (resp) {
-                        if(resp != 'fail'){
+                        if (resp != 'fail') {
                             var res_arr = resp.split(",");
                             var arr_size = res_arr.length;
-                            for(i = 0; i < arr_size; i++){
+                            for (i = 0; i < arr_size; i++) {
                                 $('#task_' + res_arr[i]).appendTo('#TaskList');
                             }
                             $('span#next_task_name').text($('#TaskList li:first-child').text());
@@ -1764,12 +1821,12 @@
             $(document).on('click', '#dropdownMenuLog', function () {
                 $('#log-list').modal('show');
             });
-            
-            $(document).on('mouseover', '#TaskAdd', function (){
-                
+
+            $(document).on('mouseover', '#TaskAdd', function () {
+                $('#add_column_li').show();
             });
-            $(document).on('mouseout', '#TaskAdd', function (){
-                
+            $(document).on('mouseout', '#TaskAdd', function () {
+                $('#add_column_li').hide();
             });
 
         </script>

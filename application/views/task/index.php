@@ -29,7 +29,7 @@
                         $undo_class = ' disabled_undo';
                     }
                     ?>
-                    <a class="undo-btn custom_cursor<?php echo $undo_class; ?>" data-listid="<?php echo $list_id; ?>"><span id="undo_icon" class="icon-undo2"> </span> Undo</a>
+                    <a class="undo-btn custom_cursor<?php echo $undo_class; ?>" data-listid="<?php echo $list_id; ?>"><span id="undo_icon" class="icon-undo2"> </span> Back up</a>
                     <div class="cmnt-btn-div">
                         <a class="whoisnext-btn-cmnt custom_cursor"><span id="nexup_icon_cmnt" class="icon-redo2"> </span> Nexup</a>
                         <span class="add-data-div hide_box" id="nexup_cmnt_span">
@@ -152,18 +152,15 @@
     }
     ?>
     <div class="add-data-body<?php echo $collapsable_div; ?>">
-        <?php
-        $multi_column = '';
-        if($type_id != 2){
-            $multi_column = ' multi-column-lists';
-        }
-        ?>
-        <div id="addTaskDiv" class="item-add-div<?php echo $multi_column; ?>">
+        <div id="addTaskDiv" class="item-add-div multi-column-lists">
             <ul class="add-data-body-ul" id="TaskAdd">
                 <li id="add_task_li">
 
                     <div class="add-data-div<?php echo $hide_add_item_cls; ?>"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" placeholder="Item" /></div>
                     <div class="add_task_cls" style="display: none;"></div>
+                </li>
+                <li id="add_column_li" style="display: none;">
+                    <a class="add_column_url custom_cursor" data-toggle="modal" data-target="#col_list"><span class="icon-add"></span></a>
                 </li>
             </ul>
             <?php
@@ -225,7 +222,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="sharemodal-head">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cancel"></span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
                 <h2>Share <span><?php echo $list_name; ?></span> list:</h2>
             </div>
 
@@ -289,7 +286,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="configmodal-head">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cancel"></span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
                 <h2>Configuration</h2>
             </div>
             <div class="configmodal-body">
@@ -351,12 +348,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="logmodal-head">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cancel"></span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
                 <h2>Log</h2>
             </div>
             <div class="logmodal-body">
                 <div id="log_div" class="log_div">
-                    <ul class="dropdown-menu2" id="log_dd2" aria-labelledby="dropdownMenuLog2">
+                    <!--<ul class="dropdown-menu2" id="log_dd2" aria-labelledby="dropdownMenuLog2">-->
+                    <table class="table table-striped table-responsive">
                         <?php
                         foreach ($log_list as $key_log => $log):
                             $hourdiff = round((strtotime(date('Y-m-d H:i:s')) - strtotime($log['created'])) / 3600, 1);
@@ -409,7 +407,8 @@
                                         }
                                     }
                                     ?>
-                                    <li class='log_options'><?php echo $cmt; ?></li>
+                                    <tr><td><?php echo $cmt; ?></td></tr>
+                                    <!--<li class='log_options'><?php echo $cmt; ?></li>-->
                                     <?php
                                 }
                             } else {
@@ -439,16 +438,40 @@
                                         }
                                     }
                                     ?>
-                                    <li class='log_options'><?php echo $cmt; ?></li>          
+                                    <tr><td><?php echo $cmt; ?></td></tr>
+                                    <!--<li class='log_options'><?php echo $cmt; ?></li>-->          
                                     <?php
                                 }
                             }
                         endforeach;
                         ?>
-                    </ul>
+                    </table>
+                    <!--</ul>-->
                 </div>
                 <div class="button-outer" id="config_btn_div">
                     <button type="submit" name="close_config" id="close_config" class="close_config" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade col-modal" id="col_list" tabindex="-3" role="dialog" aria-labelledby="colModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="colmodal-head">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
+                <h2>Column</h2>
+            </div>
+            <div class="colmodal-body">
+                <div id="col_div" class="col_div">
+                    <span class="add_coll_span" id="add_coll_span">
+                        <input type="text" id="nexup_comment" class="nexup_comment" placeholder="Comment...">
+                    </span>
+                </div>
+                <div class="button-outer" id="config_btn_div">
+                    <button type="submit" name="close_col" id="close_col" class="close_col" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

@@ -625,23 +625,37 @@ class Task extends CI_Controller {
 
     public function order_change() {
         if ($this->input->post()) {
+            $today_date = date('Y-m-d H:i:s');
             $order_id = $this->input->post('OrderId');
-            $task_id = $this->input->post('Taskid');
+            $task_id = json_decode($this->input->post('Taskid'));
             $list_id = $this->input->post('ListId');
             $lists = $this->TasksModel->get_tasks($list_id);
             $update_cnt = 0;
-            foreach ($lists as $list):
-                if ($list['TaskId'] == $task_id) {
-                    $new_order = $order_id;
-                } else {
-                    if ($list['order'] >= $order_id) {
-                        $new_order = $list['order'] + 1;
-                    }
-                }
-                $update_order['order'] = $new_order;
-                $order_update = $this->TasksModel->update_task_data($list_id, $list['TaskId'], $update_order);
+            $current_order = $this->TasksModel->get_current_item_order($list_id);
+            
+            $exist_order = implode(',', array_column($current_order,'task_inflo_id'));
+            $new_order = implode(',', $task_id);
+            
+            foreach ($task_id as $tid => $task):
+                $update_order['order'] = $tid + 1;
+                $order_update = $this->TasksModel->update_task_data($list_id, $task, $update_order);
                 $update_cnt++;
             endforeach;
+            
+            $save_history['list_inflo_id'] = $list_id;
+            if (isset($_SESSION['logged_in'])) {
+                $save_history['user_id'] = $_SESSION['id'];
+            }
+            $save_history['old_order'] = $exist_order;
+            $save_history['new_order'] = $new_order;
+            $save_history['nexup_type'] = 2;
+            $save_history['created'] = $today_date;
+            $save_history['modified'] = $today_date;
+            if ($this->input->post('user_ip')) {
+                $save_history['user_ip'] = $this->input->post('user_ip');
+            }
+            $store_history = $this->TasksModel->save_history($save_history);
+            
             if ($update_cnt > 0) {
                 echo 'success';
             } else {
@@ -781,6 +795,7 @@ class Task extends CI_Controller {
             if ($this->input->post('comment')) {
                 $save_history['comment'] = $this->input->post('comment');
             }
+            $save_history['nexup_type'] = 1;
             $save_history['created'] = $today_date;
             $save_history['modified'] = $today_date;
             if ($this->input->post('user_ip')) {
@@ -873,7 +888,7 @@ class Task extends CI_Controller {
             $new_history['list_inflo_id'] = $this->input->post('list_id');
             $new_history['user_id'] = 0;
             if(isset($_SESSION['logged_in'])){
-                $new_history['user_id'] = $_SESSION['user_id'];
+                $new_history['user_id'] = $_SESSION['id'];
             }
             $new_history['old_order'] = $current_order;
             $new_history['new_order'] = $log_order;
