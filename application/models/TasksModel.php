@@ -148,7 +148,11 @@ class TasksModel extends CI_Model {
         $this->db->where($condition);
         return $this->db->update('cycle_history', $data);
      }
-     
+
+     /*
+     * Get current order of items
+     * @author SG
+     */
      public function get_current_item_order($list_id){
          $condition = array('list_inflo_id' => $list_id,);
         $rst = $this->db->select('task_inflo_id');
@@ -158,6 +162,28 @@ class TasksModel extends CI_Model {
         return $query->result_array();
      }
     
+     
+    /*
+     * Add new column in list
+     * @author SG
+     */
+    public function add_new_colum($data){
+        $this->db->insert('list_columns', $data);
+        return $this->db->insert_id();
+    }
+    
+    /*
+     * Find highest order of column
+     * @author SG
+     */
+    public function get_max_column_order($list_id){
+        $condition = array('list_inflo_id' => $list_id);
+        $this->db->select_max('order');
+        $this->db->where($condition);
+        $query = $this->db->get('list_columns');
+        $res = $query->row_array();
+        return $res['order'];
+    }
     
 
 }

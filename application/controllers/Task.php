@@ -907,5 +907,27 @@ class Task extends CI_Controller {
             echo $log_order; exit;
         }
     }
+    
+    /*
+     * function to add column for a list
+     * @author SG
+     */
+    public function add_column(){
+        if($this->input->post()){
+            $today = date('Y-m-d H:i:s');
+            $new_col['list_inflo_id'] = $this->input->post('list_id');
+            $new_col['column_name'] = $this->input->post('col_name');
+            $new_col['order'] = $this->input->post('order');
+            $new_col['created'] = $today;
+            $new_col['modified'] = $today;
+            $add_col = $this->TasksModel->add_new_colum($new_col);
+            if($add_col > 0){
+                echo $add_col;
+            }else{
+                echo 'fail';
+            }
+            exit;
+        }
+    }
 
 }

@@ -467,11 +467,12 @@
             <div class="colmodal-body">
                 <div id="col_div" class="col_div">
                     <span class="add_coll_span" id="add_coll_span">
-                        <input type="text" id="nexup_comment" class="nexup_comment" placeholder="Comment...">
+                        <input type="text" id="nexup_column" class="nexup_column" placeholder="Column Name">
                     </span>
                 </div>
                 <div class="button-outer" id="config_btn_div">
-                    <button type="submit" name="close_col" id="close_col" class="close_col" data-dismiss="modal">Close</button>
+                    <button type="submit" name="save_col" id="save_col" class="save_col" data-listid="<?php echo $list_id; ?>">Save</button>
+                    <button type="submit" name="close_col" id="close_col" class="close_col close_config" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

@@ -1828,6 +1828,33 @@
             $(document).on('mouseout', '#TaskAdd', function () {
                 $('#add_column_li').hide();
             });
+            
+            $(document).on('click', '#save_col', function (){
+                var col_name = $('#nexup_column').val();
+                var list_id = $(this).attr('data-listid');
+                $.ajax({
+                    url:'<?php echo base_url(); ?>task/add_column',
+                    type: 'POST',
+                    data:{
+                        'col_name': col_name,
+                        'list_id': list_id,
+                        'order': 1
+                    },
+                    success: function(res){
+                        if(res != 'fail'){
+                            $('.col-modal').modal('toggle');
+                            $('#nexup_column').val('');
+                            var head = '<ul class="add-data-body-ul" id="task_header_' + res + '">';
+                            head += '<li id="add_task_li">';
+                            head += '<div class="heading"><h2></h2>' + col_name + '</div>';
+                            head += '</li>';
+                            head += '</ul>';
+//                            $('#TaskListDiv').before(head);
+                        }
+                    }
+                });
+                return false;
+            });
 
         </script>
 
