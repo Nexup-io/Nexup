@@ -216,45 +216,6 @@
         </footer>
 
 
-        <!--        <div class="modal fade login-modal" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="sharemodal-head">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cancel"></span></button>
-                                <h2>Nexup <span>Login:</span></h2>
-                            </div>
-                            <div class="sharemodal-body">
-                                <form id="LoginForm" method="POST" action="<?php echo base_url() . 'login'; ?>">
-                                    <div class="input-outer">
-                                        <label>Email</label>
-                                        <input type="text" name="user_name" id="user_name" placeholder="johndoe@yourmail.com" />
-                                    </div>
-                                    <div class="input-outer">
-                                        <label>Password</label>
-                                        <input type="password" name="password" id="password" placeholder="Password" />
-                                    </div>
-        
-                                    <div class="button-outer">
-                                        <button type="submit">Login</button>
-                                    </div>
-                                    <div class="social-login">
-                                        <ul>
-                                            <li><a class="inflologinlink btn btn-inflo"><img class="inflo-icon" src="<?php echo base_url() . 'assets/img/inflo-alpha.png'; ?>" alt=""> Login with inflo</a></li>
-                                            <li><a class="btn btn-primary btn-fb" href="<?php echo base_url() . 'login/facebook'; ?>"><i class="fa fa-facebook-square" aria-hidden="true"></i> Login with Facebook</a></li>
-                                            <li><a class="btn btn-info btn-tw" href=""><i class="fa fa-twitter-square" aria-hidden="true"></i> Login with Twitter</a></li>
-                                            <li><a class="btn btn-danger btn-gplus" href=""><i class="fa fa-google-plus-square" aria-hidden="true"></i> Login with Google Plus</a></li>
-                                            <input type="hidden" id="hndautoid" />
-                                            <input type="hidden" id="hdnuserid"/>
-                                            <input type="hidden" id="hdnaccesstoken"/>
-                                        </ul>
-                                    </div>
-                                </form>
-                            </div>	
-                        </div>
-                    </div>
-                </div>-->
-
-
         <script type="text/javascript" src="<?php echo base_url() . 'assets/js/jquery.min.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo base_url() . 'assets/js/bootstrap.min.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo base_url() . 'assets/js/moment-with-locales.js'; ?>"></script>

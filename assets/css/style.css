@@ -97,7 +97,7 @@ input[type=checkbox]:checked + label:before {content: "\2713";font-size: 15px; c
 .plus-category a{border:1px solid #f5f3f3;background:#fff;text-align:center;line-height:148px;text-decoration:none;width:150px;height:150px;display:block;font-size:40px;color:#01b9e6;}
 .plus-category a:hover{border:1px solid #01b9e6;}
 .add-data-body-ul{list-style:none;margin:0;padding:0;white-space: nowrap;}
-.add-data-body-ul li{width:100%;padding:0 0 20px;display:block;}
+.add-data-body-ul li{width:90%;padding:0 0 20px;display:block;}
 .add-data-div, .add_coll_span{border:1px solid transparent;padding:16px 20px;line-height:30px;font-size:18px;font-weight:300;color:#4c4c4c;font-family:'Roboto';}
 .add-data-div.active{background:url(../img/check-icon.png) no-repeat 98% 50%;padding:16px 50px 16px 20px;}
 #footer{display:block;border-top:1px solid #f5f3f3;padding:12px 0;text-align:center;}

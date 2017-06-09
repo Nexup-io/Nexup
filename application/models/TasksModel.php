@@ -185,5 +185,18 @@ class TasksModel extends CI_Model {
         return $res['order'];
     }
     
+    /*
+     * Get column wise tasks
+     * @author SG
+     */
+    public function get_tasks_by_columns_order($list_id) {
+        $condition = array('list_data.list_inflo_id' => $list_id, 'list_data.is_deleted' => 0);
+        $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted, list_data.order as order, column_id, list_columns.column_name as column_name');
+        $this->db->join('list_columns', 'list_columns.id = list_data.column_id', 'left');
+        $this->db->where($condition);
+        $this->db->order_by('list_data.order', 'asc');
+        $query = $this->db->get('list_data');
+        return $query->result_array();
+    }
 
 }

@@ -44,6 +44,23 @@ class Task extends CI_Controller {
         if ($slug != '') {
 
             $list = $this->ListsModel->find_list_details_by_slug($slug);
+            
+            /*$tsks = $this->TasksModel->get_tasks_by_columns_order($list['list_id']);
+            
+            $task_all = array();
+            
+            foreach ($tsks as $tsk):
+                if($tsk['column_id'] > 0){
+                    $task_all[$tsk['column_id']]['column_name'] = $tsk['column_name'];
+                    $task_all[$tsk['column_id']][$tsk['TaskId']]['TaskName'] = $tsk['TaskName'];
+                    $task_all[$tsk['column_id']][$tsk['TaskId']]['TaskId'] = $tsk['TaskId'];
+                    $task_all[$tsk['column_id']][$tsk['TaskId']]['IsCompleted'] = $tsk['IsCompleted'];
+                    $task_all[$tsk['column_id']][$tsk['TaskId']]['order'] = $tsk['order'];
+                }
+            endforeach;
+            
+            
+            p($task_all); exit;*/
 
             $tasks = $this->TasksModel->get_tasks($list['list_id']);
 
