@@ -934,7 +934,8 @@ class Task extends CI_Controller {
             $today = date('Y-m-d H:i:s');
             $new_col['list_inflo_id'] = $this->input->post('list_id');
             $new_col['column_name'] = $this->input->post('col_name');
-            $new_col['order'] = $this->input->post('order');
+            $col_order = $this->TasksModel->FindColumnMaxOrder($this->input->post('list_id'));
+            $new_col['order'] = $col_order + 1;
             $new_col['created'] = $today;
             $new_col['modified'] = $today;
             $add_col = $this->TasksModel->add_new_colum($new_col);

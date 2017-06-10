@@ -1799,18 +1799,21 @@
                     data:{
                         'col_name': col_name,
                         'list_id': list_id,
-                        'order': 1
+//                        'order': 1
                     },
                     success: function(res){
                         if(res != 'fail'){
                             $('.col-modal').modal('toggle');
                             $('#nexup_column').val('');
-                            var head = '<ul class="add-data-body-ul" id="task_header_' + res + '">';
+                            var head = '<ul class="add-data-head-ul" id="task_header_' + res + '">';
                             head += '<li id="add_task_li">';
-                            head += '<div class="heading"><h2></h2>' + col_name + '</div>';
+                            head += '<div class="add-data-title">';
+                            head += col_name;
+                            head += '<div class="add-data-title-r"><a href="" class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a><ul class="dropdown-menu" aria-labelledby="dropdownMenu1"><li><a href="#">Remove</a></li></ul></div>';
+                            head += '</div>';
                             head += '</li>';
                             head += '</ul>';
-//                            $('#TaskListDiv').before(head);
+                            $('#TaskListDiv').before(head);
                         }
                     }
                 });

@@ -141,6 +141,9 @@
             }
             ?>
         </span>
+        <div class="add-data-head-r">
+                <a class="add_column_url custom_cursor icon-add" data-toggle="modal" data-target="#col_list"></a>
+        </div>
     </div>
 
     <?php
@@ -159,9 +162,7 @@
                     <div class="add-data-div<?php echo $hide_add_item_cls; ?>"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" placeholder="Item" /></div>
                     <div class="add_task_cls" style="display: none;"></div>
                 </li>
-                <li id="add_column_li" style="display: none;">
-                    <a class="add_column_url custom_cursor" data-toggle="modal" data-target="#col_list"><span class="icon-add"></span></a>
-                </li>
+                
             </ul>
             <?php
             $sort_class = '';

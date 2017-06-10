@@ -198,5 +198,18 @@ class TasksModel extends CI_Model {
         $query = $this->db->get('list_data');
         return $query->result_array();
     }
+    
+    /*
+     * Get max ordered column for a list
+     * @author SG
+     */
+    public function FindColumnMaxOrder($list_id){
+        $condition = array('list_inflo_id' => $list_id);
+        $this->db->select('IF(MAX(`order`) IS NULL,0,MAX(`order`)) AS `order`');
+        $this->db->where($condition);
+        $query = $this->db->get('list_columns');
+        $res = $query->row_array();
+        return $res['order'];
+    }
 
 }
