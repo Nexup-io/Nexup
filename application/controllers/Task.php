@@ -40,6 +40,7 @@ class Task extends CI_Controller {
             $slug = $_SESSION['last_slug'];
         }
         $data['list_owner_id'] = 0;
+        $data['multi_col'] = 0;
 
         if ($slug != '') {
 
@@ -63,8 +64,22 @@ class Task extends CI_Controller {
             p($task_all); exit;*/
 
             $tasks = $this->TasksModel->get_tasks($list['list_id']);
+            $columns = $this->TasksModel->getColumns($list['list_id']);
+            if(!empty($columns)){
+                foreach ($columns as $c_id => $col):
+                    $all_tasks[$c_id]['column_id'] = $col['id'];
+                    $all_tasks[$c_id]['column_name'] = $col['column_name'];
+                    $all_tasks[$c_id]['tasks'] = array();
+                    foreach ($tasks as $task):
+                        if($task['column_id'] == $col['id']){
+                            array_push($all_tasks[$c_id]['tasks'], $task);
+                        }
+                    endforeach;
+                endforeach;
+            }
+//            $tasks = $this->TasksModel->get_tasks_by_columns_order($list['list_id']);
 
-//            p($tasks); exit;
+//            p($all_tasks); exit;
 
             $data['list_name'] = $list['list_name'];
             $data['list_id'] = $list['list_id'];
@@ -85,7 +100,14 @@ class Task extends CI_Controller {
             $data['config']['allow_undo'] = $list['allow_undo'];
             $data['list_owner_id'] = $list['list_owner_id'];
             $data['is_locked'] = $list['is_locked'];
-            $data['tasks'] = $tasks;
+            
+            if(!empty($columns)){
+                $data['tasks'] = $all_tasks;
+                $data['multi_col'] = 1;
+            }else{
+                $data['tasks'] = $tasks;
+            }
+            
 
             if (!empty($data)) {
 
@@ -940,7 +962,39 @@ class Task extends CI_Controller {
             $new_col['modified'] = $today;
             $add_col = $this->TasksModel->add_new_colum($new_col);
             if($add_col > 0){
-                echo $add_col;
+                if($col_order == 0){
+                    $col_order_add = $this->TasksModel->UpdateColumnOrder($this->input->post('list_id'), $add_col);
+                    $col_res_id = $col_order;
+                    $resp_str = '<li class="heading_col heading_items_col">';
+                    $resp_str .= '<div class="add-data-title">' . $this->input->post('col_name');
+                    $resp_str .= '<div class="add-data-title-r">';
+                    $resp_str .= '<a class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>';
+                    $resp_str .= '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
+                    $resp_str .= '<li><a class="remove_col" data-colid="' . $add_col . '">Remove</a></li>';
+                    $resp_str .= '</ul>';
+                    $resp_str .= '</div>';
+                    $resp_str .= '</div>';
+                    $resp_str .= '</li>';
+                }else{
+                    $col_res_id = $col_order + 1;
+                    $resp_str = '<ul class="add-data-body-ul tasks_lists_display ui-sortable" id="TaskList' . $col_res_id . '">';
+                    $resp_str .= '<li class="heading_col add_item_input">';
+                    $resp_str .= '<div class=" add-data-input"><input type="text" name="task_name" id="task_name" data-listid="' . $this->input->post('list_id') . '" data-colid="' . $add_col . '" placeholder="Item"></div>';
+                    $resp_str .= '</li>';
+                    $resp_str .= '<li class="heading_col heading_items_col">';
+                    $resp_str .= '<div class="add-data-title">' . $this->input->post('col_name');
+                    $resp_str .= '<div class="add-data-title-r">';
+                    $resp_str .= '<a class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>';
+                    $resp_str .= '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
+                    $resp_str .= '<li><a class="remove_col" data-colid="' . $add_col . '">Remove</a></li>';
+                    $resp_str .= '</ul>';
+                    $resp_str .= '</div>';
+                    $resp_str .= '</div>';
+                    $resp_str .= '</li>';
+                    $resp_str .= '</ul>';
+                }
+                
+                echo $resp_str;
             }else{
                 echo 'fail';
             }

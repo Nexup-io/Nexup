@@ -15,6 +15,7 @@
         <link href="<?php echo base_url() . 'assets/css/jquery-ui.min.css'; ?>" rel="stylesheet" />
         <link href="<?php echo base_url() . 'assets/css/token-input.css'; ?>" rel="stylesheet" />
         <link href="<?php echo base_url() . 'assets/css/token-input-facebook.css'; ?>" rel="stylesheet" />
+        <link href="<?php echo base_url() . 'assets/css/jquery.mCustomScrollbar.css'; ?>" rel="stylesheet" />
         <link href="<?php echo base_url() . 'assets/css/style.css'; ?>" rel="stylesheet" />
         <link href="<?php echo base_url() . 'assets/css/responsive.css'; ?>" rel="stylesheet" />
     </head>
@@ -229,6 +230,7 @@
         <script type="text/javascript" src="<?php echo base_url() . 'assets/js/InfloAPIScript.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo base_url() . 'assets/js/jquery.tokeninput.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo base_url() . 'assets/js/clipboard.min.js'; ?>"></script>
+        <script type="text/javascript" src="<?php echo base_url() . 'assets/js/jquery.mCustomScrollbar.js'; ?>"></script>
 
 
         <script>
@@ -244,7 +246,14 @@
                         collapsible: true
                     });
                 }
+//                $("#TaskListDiv").mCustomScrollbar({
+//                    axis:"x",
+//                    theme:"light-thick",
+//                    scrollbarPosition:"outside",
+//                    autoExpandScrollbar:true
+//                });
             });
+            
             $(document).on('click', 'ul.nav.nav-tabs  a', function (e) {
                 e.preventDefault();
                 $(this).tab('show');
@@ -1791,6 +1800,7 @@
             });
             
             $(document).on('click', '#save_col', function (){
+//                alert($('.heading_items_col').length); return false;
                 var col_name = $('#nexup_column').val();
                 var list_id = $(this).attr('data-listid');
                 $.ajax({
@@ -1802,22 +1812,58 @@
 //                        'order': 1
                     },
                     success: function(res){
+                        
                         if(res != 'fail'){
                             $('.col-modal').modal('toggle');
                             $('#nexup_column').val('');
-                            var head = '<ul class="add-data-head-ul" id="task_header_' + res + '">';
-                            head += '<li id="add_task_li">';
-                            head += '<div class="add-data-title">';
-                            head += col_name;
-                            head += '<div class="add-data-title-r"><a href="" class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a><ul class="dropdown-menu" aria-labelledby="dropdownMenu1"><li><a href="#">Remove</a></li></ul></div>';
-                            head += '</div>';
-                            head += '</li>';
-                            head += '</ul>';
-                            $('#TaskListDiv').before(head);
+                            
+                            if($('.heading_items_col').length > 0){
+                                $('#TaskListDiv').append(res);
+                            }else{
+                                $('.heading_items_col').after(res);
+                            }
+                            if($('.heading_items_col').length == 2){
+                                $('#TaskListDiv').removeClass('column-2');
+                                $('#TaskListDiv').removeClass('column-3');
+                                $('#TaskListDiv').removeClass('column-4');
+                                $('#TaskListDiv').addClass('column-2');
+                            }
+                            if($('.heading_items_col').length == 3){
+                                $('#TaskListDiv').removeClass('column-2');
+                                $('#TaskListDiv').removeClass('column-3');
+                                $('#TaskListDiv').removeClass('column-4');
+                                $('#TaskListDiv').addClass('column-3');
+                            }
+                            if($('.heading_items_col').length > 3){
+                                $('#TaskListDiv').removeClass('column-2');
+                                $('#TaskListDiv').removeClass('column-3');
+                                $('#TaskListDiv').removeClass('column-4');
+                                $('#TaskListDiv').addClass('column-4');
+                            }
+                            
+                            
+//                            var head = '<ul class="add-data-head-ul" id="task_header_' + res + '">';
+//                            head += '<li id="add_task_li">';
+//                            head += '<div class="add-data-title">';
+//                            head += col_name;
+//                            head += '<div class="add-data-title-r"><a href="" class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a><ul class="dropdown-menu" aria-labelledby="dropdownMenu1"><li><a href="#">Remove</a></li></ul></div>';
+//                            head += '</div>';
+//                            head += '</li>';
+//                            head += '</ul>';
+//                            $('#TaskListDiv').before(head);
                         }
                     }
                 });
                 return false;
+            });
+            
+//            $( "#col_list" ).on('shown', function(){
+//                $('#nexup_column').focus();
+//            });
+            
+            $(document).on('click', '.add-data-head-r a.icon-add', function (){
+                $('#col_list').modal('toggle');
+                $('.add_coll_span #nexup_column').focus();
             });
 
         </script>

@@ -38,7 +38,7 @@ class TasksModel extends CI_Model {
      */
     public function get_tasks($list_id) {
         $condition = array('list_data.list_inflo_id' => $list_id, 'list_data.is_deleted' => 0);
-        $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted, order');
+        $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted, order, column_id');
         $this->db->where($condition);
         $this->db->order_by('list_data.order', 'asc');
         $query = $this->db->get('list_data');
@@ -211,5 +211,30 @@ class TasksModel extends CI_Model {
         $res = $query->row_array();
         return $res['order'];
     }
+    
+    /*
+     * Update column order for list when there is single column list and user add new column
+     * @author SG
+     */
+    public function UpdateColumnOrder($list_id, $col_id){
+        $condition = array('list_inflo_id' => $list_id);
+        $this->db->where($condition);
+        $data['column_id'] = $col_id;
+        return $this->db->update('list_data', $data);
+    }
+    
+    
+    /*
+     * Get columns for a list
+     * @author SG
+     */
+    public function getColumns($list_id){
+        $condition = array('list_inflo_id' => $list_id);
+        $this->db->select('id, column_name, order');
+        $this->db->where($condition);
+        $query = $this->db->get('list_columns');
+        return $query->result_array();
+    }
+    
 
 }

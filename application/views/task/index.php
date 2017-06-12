@@ -74,7 +74,6 @@
         }
         ?>
         <h2 id="listname_<?php echo $list_id; ?>" class="listname_<?php echo $list_id; ?> edit_list_task" style="<?php echo $hide_list; ?>" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" id="edit_list_task_page"><?php echo $list_name; ?></h2>
-        <!--<a class="icon-edit custom_cursor edit_list_task" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" id="edit_list_task_page" style="<?php echo $hide_list; ?>"></a>-->
         <a data-toggle="modal" data-target="#share-contact" id="share_list" class="icon-share custom_cursor" style="<?php echo $hide_list; ?>"> </a>
         <div class="plus-category">
             <?php
@@ -142,7 +141,7 @@
             ?>
         </span>
         <div class="add-data-head-r">
-                <a class="add_column_url custom_cursor icon-add" data-toggle="modal" data-target="#col_list"></a>
+            <a class="add_column_url custom_cursor icon-add"></a>
         </div>
     </div>
 
@@ -156,14 +155,6 @@
     ?>
     <div class="add-data-body<?php echo $collapsable_div; ?>">
         <div id="addTaskDiv" class="item-add-div multi-column-lists">
-            <ul class="add-data-body-ul" id="TaskAdd">
-                <li id="add_task_li">
-
-                    <div class="add-data-div<?php echo $hide_add_item_cls; ?>"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" placeholder="Item" /></div>
-                    <div class="add_task_cls" style="display: none;"></div>
-                </li>
-                
-            </ul>
             <?php
             $sort_class = '';
             $move_btn_cls = '';
@@ -173,45 +164,108 @@
             if (empty($tasks) || $config['allow_move'] != 'True') {
                 $move_btn_cls = ' hide_move_btn';
             }
+            $task_size = count($tasks);
+            $task_class = '';
+            if($task_size == 2){
+                $task_class = ' column-2';
+            }elseif($task_size == 3){
+                $task_class = ' column-3';
+            }elseif($task_size > 3){
+                $task_class = ' column-4';
+            }
             ?>
-            <!--<button type="button" class="btn btn-default enable-move<?php echo $move_btn_cls; ?>">Enable Rearrange Items</button>-->
 
-            <div id="TaskListDiv">
+            <div id="TaskListDiv" class="column-css<?php echo $task_class; ?>">
                 <h3 id="TaskListHead"></h3>
-                <ul class="add-data-body-ul <?php echo $sort_class; ?>" id="TaskList">
-                    <?php
-                    if (!empty($tasks)) {
-                        foreach ($tasks as $task):
-                            ?>
-                            <li id="task_<?php echo $task['TaskId']; ?>" class="task_li" data-id="<?php echo $task['TaskId']; ?>">
+                <?php
+                if ($multi_col == 0) {
+                    ?>
+                    <ul class="add-data-body-ul <?php echo $sort_class; ?>" id="TaskList">
+                        <li class="heading_col add_item_input"><div class="<?php echo $hide_add_item_cls; ?> add-data-input"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" data-colid="0" placeholder="Item" /></div></li>
+                        <?php
+                        if (!empty($tasks)) {
+                            foreach ($tasks as $task):
+                                ?>
+                                <li id="task_<?php echo $task['TaskId']; ?>" class="task_li" data-id="<?php echo $task['TaskId']; ?>">
 
-                                <div class="add-data-div edit_task <?php
-                                if ($task['IsCompleted']) {
-                                    echo 'completed_task';
-                                }
-                                ?>" data-id="<?php echo $task['TaskId'] ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
+                                    <div class="add-data-div edit_task <?php
+                                    if ($task['IsCompleted']) {
+                                        echo 'completed_task';
+                                    }
+                                    ?>" data-id="<?php echo $task['TaskId'] ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
+                                        <span class="icon-more"></span>
+                                        <span id="span_task_<?php echo $task['TaskId']; ?>" class="task_name_span"><?php echo $task['TaskName']; ?></span>
+                                        <div class="opertaions pull-right">
+                                            <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $task['TaskId']; ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                            <?php
+                                            if ($type_id == 5) {
+                                                ?>
+                                                <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $task['TaskId']; ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                                <?php
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+
+                                </li>
+                                <?php
+                            endforeach;
+                            ?>
+                            <?php
+                        }
+                        ?>
+                    </ul>
+                    <?php
+                } else {
+                    foreach ($tasks as $ids => $task):
+                        if($ids <= 0){
+                            $task_ul_id = 'TaskList';
+                        }else{
+                            $task_ul_id = 'TaskList' . $ids;
+                        }
+                        ?>
+                        <ul class="add-data-body-ul <?php echo $sort_class; ?>" id="<?php echo $task_ul_id; ?>">
+                            <li class="heading_col add_item_input">
+                                <div class="<?php echo $hide_add_item_cls; ?> add-data-input"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" data-colid="<?php echo $task['column_id']; ?>" placeholder="Item" /></div>
+                                <!--<div class="add-data-input"><input type="text" name="" /></div>-->
+                            </li>
+                            <li class="heading_col heading_items_col">
+                                <div class="add-data-title"><?php echo $task['column_name'] ?>
+                                    <div class="add-data-title-r">
+                                        <a href="" class="icon-more-h" id="dropdownMenu<?php echo $ids; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu<?php echo $ids; ?>">
+                                            <li><a class="remove_col" data-colid="<?php echo $task['column_id']; ?>">Remove</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <?php
+                                foreach ($task['tasks'] as $t):
+                            ?>
+                            <li id="task_<?php echo $t['TaskId']; ?>" class="task_li" data-id="<?php echo $t['TaskId']; ?>">
+                                <div class="add-data-div edit_task <?php if ($t['IsCompleted']) { echo 'completed_task'; } ?>" data-id="<?php echo $t['TaskId'] ?>" data-task="<?php echo $t['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
                                     <span class="icon-more"></span>
-                                    <span id="span_task_<?php echo $task['TaskId']; ?>" class="task_name_span"><?php echo $task['TaskName']; ?></span>
+                                    <span id="span_task_<?php echo $t['TaskId']; ?>" class="task_name_span"><?php echo $t['TaskName']; ?></span>
                                     <div class="opertaions pull-right">
-                                        <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $task['TaskId']; ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                        <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $t['TaskId']; ?>" data-task="<?php echo $t['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
                                         <?php
                                         if ($type_id == 5) {
                                             ?>
-                                            <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $task['TaskId']; ?>" data-task="<?php echo $task['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                            <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $t['TaskId']; ?>" data-task="<?php echo $t['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
                                             <?php
                                         }
                                         ?>
                                     </div>
                                 </div>
-
                             </li>
                             <?php
-                        endforeach;
-                        ?>
+                                endforeach;
+                            ?>
+                        </ul>
                         <?php
-                    }
-                    ?>
-                </ul>
+                    endforeach;
+                }
+                ?>
             </div>
         </div>
 
