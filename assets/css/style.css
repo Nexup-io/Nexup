@@ -358,7 +358,21 @@ ul#log_dd2{overflow: auto;}
 .column-css:after{content:'';display:block;clear:both;}
 .column-css{margin:0 -15px;}
 .add-data-body-ul{float:left;padding:0 15px;width:100%;}
-.column-2 .add-data-body-ul{width: 50%;}
-.column-3 .add-data-body-ul{width:33.33%;}
+.column-2 .add-data-body-ul{width:50%;}
+.column-3 .add-data-body-ul, .column-4 .add-data-body-ul{width:400px;}
+.multi-column-lists{width:100%;display:block;}
+#TaskListHead{margin:0;}
 
-.column-4 .add-data-body-ul{width:33.33%;}
+#addTaskDiv .mCS-3d.mCSB_scrollTools_horizontal .mCSB_draggerRail, 
+#addTaskDiv .mCS-3d-dark.mCSB_scrollTools_horizontal .mCSB_draggerRail {box-shadow:none;}
+#addTaskDiv .mCS-3d.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar, 
+#addTaskDiv .mCS-3d.mCSB_scrollTools .mCSB_dragger:hover .mCSB_dragger_bar, 
+#addTaskDiv .mCS-3d.mCSB_scrollTools .mCSB_dragger:active .mCSB_dragger_bar, 
+#addTaskDiv .mCS-3d.mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar, 
+#addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar, 
+#addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger:hover .mCSB_dragger_bar, 
+#addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger:active .mCSB_dragger_bar, 
+#addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar { background-color:#01b9e6;}
+.task_multi_col_div{min-width: 1600px; width: auto;}
+.hidden_add_column_btn{display: none;}
+

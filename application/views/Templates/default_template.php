@@ -234,6 +234,7 @@
 
 
         <script>
+
             $(document).ready(function () {
                 $('[data-toggle="tooltip"]').tooltip();
                 if ($('.icon-settings').attr('data-locked') == 1) {
@@ -246,14 +247,21 @@
                         collapsible: true
                     });
                 }
-//                $("#TaskListDiv").mCustomScrollbar({
-//                    axis:"x",
-//                    theme:"light-thick",
-//                    scrollbarPosition:"outside",
-//                    autoExpandScrollbar:true
-//                });
+                if ($('.column-4').length > 0) {
+                    var list_count = $('ul.tasks_lists_display').length;
+                    var div_width = (list_count * 400);
+                    $('.column-4').width(div_width);
+                }
+                if($('#TaskListDiv').hasClass('column-4')){
+                    $("#addTaskDiv").mCustomScrollbar({
+                        axis: "x",
+                        scrollButtons: {enable: true},
+                        theme: "3d",
+                        scrollbarPosition: "outside"
+                    });
+                }
             });
-            
+
             $(document).on('click', 'ul.nav.nav-tabs  a', function (e) {
                 e.preventDefault();
                 $(this).tab('show');
@@ -335,17 +343,16 @@
             });
 
             //Re-order tasks
-            $(".tasks_lists_display").sortable({
+            $("#TaskList").sortable({
                 handle: '.icon-more',
                 update: function (event, ui) {
-                
-                var tasks_ids = [];
-                $('.tasks_lists_display li').each(function(e){
+
+                    var tasks_ids = [];
+                    $('.tasks_lists_display li').each(function (e) {
                         var ids = $(this).attr('data-id');
-                        console.log(ids);
                         tasks_ids.push(ids);
-                });
-                
+                    });
+
                     var task_id = $(ui.item).attr('data-id');
                     var list_id = $(ui.item).children().attr('data-listid');
                     var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
@@ -493,7 +500,7 @@
 //                }
             } else {
 //                $('.enable-move').hide();
-                $(document).on('mouseover', '.task_li', function () {
+                $(document).on('mouseover', '#TaskList .task_li', function () {
                     var did = $(this).attr('data-id');
                     $('#task_' + did + ' .icon-more').css({'visibility': 'visible'});
                 });
@@ -653,6 +660,7 @@
                                 $('.add_list_cls').text('');
                                 $('.add_list_cls').hide();
                                 $('#list_name').removeClass('list-error');
+                                $('.add-data-head-r').removeClass('hidden_add_column_btn');
                             }
                         }
                     });
@@ -978,7 +986,7 @@
 //                $('#task_name').focus();
 //            });
             //Add task for a list
-            $(document).on('keydown', '#task_name', function (evt) {
+            $(document).on('keydown', '.task_name', function (evt) {
                 var key_code = evt.keyCode;
                 if (key_code == 13) {
                     $(this).prop('disabled', true);
@@ -986,7 +994,8 @@
                         alert('This list is locked. You can not add any item in it!');
                         return false;
                     }
-                    var list_id = $('#task_name').attr('data-listid');
+                    var list_id = $(this).attr('data-listid');
+                    var col_id = $(this).attr('data-colid');
                     var list_name = '';
                     if (list_id == 0) {
                         if ($('#edit_list_name').length > 0) {
@@ -1001,10 +1010,12 @@
                     $.ajax({
                         url: "<?php echo base_url() . 'item/add'; ?>",
                         type: 'POST',
+                        context: this,
                         data: {
                             'list_id': list_id,
                             'task_name': $(this).val(),
-                            'list_name': list_name
+                            'list_name': list_name,
+                            'col_id': col_id
                         },
                         success: function (res) {
                             if (res == 'existing') {
@@ -1024,7 +1035,7 @@
                                 $('#add_task_li').removeClass('list-error');
                                 $('#add_task_li').addClass('list-error');
                             } else {
-                                $('#task_name').prop('disabled', false);
+                                $(this).prop('disabled', false);
                                 var resp = JSON.parse(res);
                                 $('#add_task_li #task_name').attr('data-listid', resp[0]);
                                 $('.add-data-head #edit_list_name').attr('data-id', resp[0]);
@@ -1090,11 +1101,11 @@
                                     $("#TaskList").disableSelection();
 
                                 }
-                                $('#task_name').val('');
+                                $('.task_name').val('');
                                 $('.add_task_cls').text('');
                                 $('.add_task_cls').hide();
                                 $('#add_task_li').removeClass('list-error');
-                                $('#TaskList').append(resp[1]);
+                                $(this).parent().parent().parent().append(resp[1]);
                                 if ($('#TaskList li').length <= 1) {
                                     $('.whoisnext-div .whoisnext-btn').removeClass('whosnext_img_bg');
 //                                    $('.whoisnext-div .whoisnext-btn').removeClass('whoisnext-btn_light_bg');
@@ -1103,6 +1114,7 @@
                                     $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
                                 }
                                 $('.whoisnext-div .button-outer').removeClass('whosnext_img_bg');
+                                $('.add-data-head-r').removeClass('hidden_add_column_btn');
                             }
                             $('.icon-lock2').removeClass('lock_hide');
                             $('.icon-lock-open2').removeClass('lock_hide');
@@ -1456,11 +1468,13 @@
                         return false;
                     }
                     var last_task_id = $('#TaskList li:first-child').attr('data-id');
-                    var list_id = <?php if (isset($list_id)) {
+                    var list_id = <?php
+            if (isset($list_id)) {
                 echo $list_id;
             } else {
                 echo 0;
-            } ?>;
+            }
+            ?>;
                     var comment = $('#nexup_comment').val();
                     var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
                     $.ajax({
@@ -1521,11 +1535,13 @@
 //                        return false;
 //                    }
 //                    var last_task_id = $('#TaskList li:first-child').attr('data-id');
-//                    var list_id = <?php if (isset($list_id)) {
+//                    var list_id = <?php
+            if (isset($list_id)) {
                 echo $list_id;
             } else {
                 echo 0;
-            } ?>//;
+            }
+            ?>//;
 //                    var comment = $('#nexup_comment').val();
 //                    var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
 //                    $.ajax({
@@ -1798,50 +1814,62 @@
             $(document).on('mouseout', '#TaskAdd', function () {
                 $('#add_column_li').hide();
             });
-            
-            $(document).on('click', '#save_col', function (){
+
+            $(document).on('click', '#save_col', function () {
 //                alert($('.heading_items_col').length); return false;
                 var col_name = $('#nexup_column').val();
                 var list_id = $(this).attr('data-listid');
                 $.ajax({
-                    url:'<?php echo base_url(); ?>task/add_column',
+                    url: '<?php echo base_url(); ?>task/add_column',
                     type: 'POST',
-                    data:{
+                    data: {
                         'col_name': col_name,
                         'list_id': list_id,
 //                        'order': 1
                     },
-                    success: function(res){
-                        
-                        if(res != 'fail'){
+                    success: function (res) {
+
+                        if (res != 'fail') {
                             $('.col-modal').modal('toggle');
                             $('#nexup_column').val('');
-                            
-                            if($('.heading_items_col').length > 0){
+
+                            if ($('.heading_items_col').length > 0) {
                                 $('#TaskListDiv').append(res);
-                            }else{
+                            } else {
                                 $('.heading_items_col').after(res);
                             }
-                            if($('.heading_items_col').length == 2){
+                            if ($('.heading_items_col').length == 2) {
                                 $('#TaskListDiv').removeClass('column-2');
                                 $('#TaskListDiv').removeClass('column-3');
                                 $('#TaskListDiv').removeClass('column-4');
                                 $('#TaskListDiv').addClass('column-2');
                             }
-                            if($('.heading_items_col').length == 3){
+                            if ($('.heading_items_col').length == 3) {
                                 $('#TaskListDiv').removeClass('column-2');
                                 $('#TaskListDiv').removeClass('column-3');
                                 $('#TaskListDiv').removeClass('column-4');
                                 $('#TaskListDiv').addClass('column-3');
                             }
-                            if($('.heading_items_col').length > 3){
+                            if ($('.heading_items_col').length > 3) {
                                 $('#TaskListDiv').removeClass('column-2');
                                 $('#TaskListDiv').removeClass('column-3');
                                 $('#TaskListDiv').removeClass('column-4');
                                 $('#TaskListDiv').addClass('column-4');
+                                var current_width = $('#TaskListDiv').width();
+                                var new_width = $('ul.tasks_lists_display').length * 400;
+                                $('#TaskListDiv').width(new_width);
+                                if($('#TaskListDiv').hasClass('column-4')){
+                                    $('#addTaskDiv').mCustomScrollbar("destroy");
+                                    $("#addTaskDiv").mCustomScrollbar({
+                                        axis: "x",
+                                        scrollButtons: {enable: true},
+                                        theme: "3d",
+                                        scrollbarPosition: "outside"
+                                    });
+                                }
                             }
-                            
-                            
+
+
 //                            var head = '<ul class="add-data-head-ul" id="task_header_' + res + '">';
 //                            head += '<li id="add_task_li">';
 //                            head += '<div class="add-data-title">';
@@ -1857,14 +1885,25 @@
                 return false;
             });
             
-//            $( "#col_list" ).on('shown', function(){
-//                $('#nexup_column').focus();
+//            $("#TaskListDiv").resize(function(e){
+//            if($('#TaskListDiv').hasClass('column-4')){
+//                $("#addTaskDiv").mCustomScrollbar({
+//                    axis: "x",
+//                    scrollButtons: {enable: true},
+//                    theme: "3d",
+//                    scrollbarPosition: "outside"
+//                });
+//            }
 //            });
-            
-            $(document).on('click', '.add-data-head-r a.icon-add', function (){
+
+            $(document).on('click', '.add-data-head-r a.icon-add', function () {
                 $('#col_list').modal('toggle');
-                $('.add_coll_span #nexup_column').focus();
             });
+
+            $(document).on('shown.bs.modal', '#col_list', function () {
+                $('#nexup_column').focus();
+            })
+
 
         </script>
 

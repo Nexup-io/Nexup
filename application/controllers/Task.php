@@ -375,7 +375,7 @@ class Task extends CI_Controller {
             } else {
                 $data['Listid'] = trim($this->input->post('list_id'));
             }
-            $last_order = $this->TasksModel->get_last_order_of_item($data['Listid']);
+            $last_order = $this->TasksModel->get_last_order_of_item($data['Listid'], $this->input->post('col_id'));
 
             if (isset($_SESSION['logged_in'])) {
                 $add_task['user_id'] = $_SESSION['id'];
@@ -383,6 +383,7 @@ class Task extends CI_Controller {
                 $add_task['user_id'] = 0;
             }
             $add_task['list_inflo_id'] = $data['Listid'];
+            $add_task['column_id'] = $this->input->post('col_id');
             $add_task['order'] = $last_order + 1;
             $add_task['value'] = trim($this->input->post('task_name'));
             $add_task['created'] = $date_add;
@@ -426,7 +427,6 @@ class Task extends CI_Controller {
                 $ret_str .= '<span id="span_task_' . $response['data']->TaskId . '" class="task_name_span">' . $response['data']->TaskName . '</span>';
                 $ret_str .= '<div class="opertaions pull-right" style="display:none;">';
                 $ret_str .= '<a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="' . $response['data']->TaskId . '" data-task="' . $response['data']->TaskName . '" data-listid="' . $this->input->post('list_id') . '"></a>';
-//                $ret .= '<a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="' . $response['data']->TaskId . '" data-task="' . $response['data']->TaskName . '" data-listid="' . $this->input->post('list_id') . '"></a>';
                 $ret_str .= '</div>';
                 $ret_str .= '</div>';
                 $ret_str .= '</li>';

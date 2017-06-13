@@ -66,7 +66,9 @@
     <div class="add-data-head">
         <?php
         $hide_list = '';
+        $show_add_column = '';
         if ($list_id == 0) {
+            $show_add_column = ' hidden_add_column_btn';
             ?>
             <input name="edit_list_name" id="edit_list_name" class="edit-list-class" data-id="<?php echo $list_id; ?>" value="<?php echo $list_name; ?>" placeholder="List" type="text">
             <?php
@@ -140,7 +142,7 @@
             }
             ?>
         </span>
-        <div class="add-data-head-r">
+        <div class="add-data-head-r<?php echo $show_add_column; ?>">
             <a class="add_column_url custom_cursor icon-add"></a>
         </div>
     </div>
@@ -164,24 +166,31 @@
             if (empty($tasks) || $config['allow_move'] != 'True') {
                 $move_btn_cls = ' hide_move_btn';
             }
-            $task_size = count($tasks);
             $task_class = '';
-            if($task_size == 2){
-                $task_class = ' column-2';
-            }elseif($task_size == 3){
-                $task_class = ' column-3';
-            }elseif($task_size > 3){
-                $task_class = ' column-4';
+            $task_list_div_class = '';
+            if(!empty($tasks)){
+                $task_size = count($tasks);
+                if($multi_col == 1){
+                    if($task_size == 2){
+                        $task_class = ' column-2';
+                    }elseif($task_size == 3){
+                        $task_class = ' column-3';
+                    }elseif($task_size > 3){
+                        $task_class = ' column-4';
+                    }
+                    $task_list_div_class= ' task_multi_col_div';
+                }
+                
             }
             ?>
-
-            <div id="TaskListDiv" class="column-css<?php echo $task_class; ?>">
+            
+            <div id="TaskListDiv" class="column-css<?php echo $task_class . $task_list_div_class; ?>">
                 <h3 id="TaskListHead"></h3>
                 <?php
                 if ($multi_col == 0) {
                     ?>
                     <ul class="add-data-body-ul <?php echo $sort_class; ?>" id="TaskList">
-                        <li class="heading_col add_item_input"><div class="<?php echo $hide_add_item_cls; ?> add-data-input"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" data-colid="0" placeholder="Item" /></div></li>
+                        <li class="heading_col add_item_input"><div class="<?php echo $hide_add_item_cls; ?> add-data-input"><input type="text" name="task_name" id="task_name" class="task_name" data-listid="<?php echo $list_id; ?>" data-colid="0" placeholder="Item" /></div></li>
                         <?php
                         if (!empty($tasks)) {
                             foreach ($tasks as $task):
@@ -226,7 +235,7 @@
                         ?>
                         <ul class="add-data-body-ul <?php echo $sort_class; ?>" id="<?php echo $task_ul_id; ?>">
                             <li class="heading_col add_item_input">
-                                <div class="<?php echo $hide_add_item_cls; ?> add-data-input"><input type="text" name="task_name" id="task_name" data-listid="<?php echo $list_id; ?>" data-colid="<?php echo $task['column_id']; ?>" placeholder="Item" /></div>
+                                <div class="<?php echo $hide_add_item_cls; ?> add-data-input"><input type="text" name="task_name" id="task_name" class="task_name" data-listid="<?php echo $list_id; ?>" data-colid="<?php echo $task['column_id']; ?>" placeholder="Item" /></div>
                                 <!--<div class="add-data-input"><input type="text" name="" /></div>-->
                             </li>
                             <li class="heading_col heading_items_col">
