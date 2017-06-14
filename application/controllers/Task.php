@@ -300,7 +300,6 @@ class Task extends CI_Controller {
                     exit;
                 }
 
-
                 $send_data = json_encode($send_data);
 
                 $ch1 = curl_init();
@@ -966,7 +965,7 @@ class Task extends CI_Controller {
                     $col_order_add = $this->TasksModel->UpdateColumnOrder($this->input->post('list_id'), $add_col);
                     $col_res_id = $col_order;
                     $resp_str = '<li class="heading_col heading_items_col">';
-                    $resp_str .= '<div class="add-data-title">' . $this->input->post('col_name');
+                    $resp_str .= '<div class="add-data-title" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '"><span class="column_name_class">' . $this->input->post('col_name') . '</span>';
                     $resp_str .= '<div class="add-data-title-r">';
                     $resp_str .= '<a class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>';
                     $resp_str .= '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
@@ -1001,5 +1000,50 @@ class Task extends CI_Controller {
             exit;
         }
     }
+    
+    /*
+     * Get column name from column id
+     * @author SG
+     */
+    public function get_column_name(){
+        if($this->input->post()){
+            $list_id = 0;
+            if(isset($_POST['list_id'])){
+                $list_id = $this->input->post('list_id');
+            }
+            $col_id = 0;
+            if(isset($_POST['column_id'])){
+                $col_id = $this->input->post('column_id');
+            }
+            $column_name = $this->TasksModel->getColumnNameById($list_id, $col_id);
+            echo $column_name;
+        }
+        exit;
+    }
+    
+    
+    /*
+     * Update the name of columns
+     * @author SG
+     */
+    public function update_column_name(){
+        if($this->input->post()){
+            $col_name = $this->input->post('column_name');
+            $col_id = $this->input->post('column_id');
+            $list_id = $this->input->post('list_id');
+            if($col_name == ''){
+                echo 'empty';
+                exit;
+            }
+            $update_data['column_name'] = $col_name;
+            $update = $this->TasksModel->updateColumnName($list_id, $col_id, $update_data);
+            if($update == 1){
+                echo 'success';
+            }else{
+                echo 'fail';
+            }
+        }
+    }
+    
 
 }

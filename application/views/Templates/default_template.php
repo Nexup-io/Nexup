@@ -367,8 +367,8 @@
                         },
                         success: function (res) {
                             if (res == 'success') {
-                                $('span#next_task_name').text($('#TaskList li:first-child').text());
-                                $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
+                                $('span#next_task_name').text($('#TaskList li:nth-child(2)').text());
+                                $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:nth-child(2)').text());
                                 $.ajax({
                                     url: '<?php echo base_url() . 'item_order' ?>',
                                     type: 'POST',
@@ -812,7 +812,9 @@
                                         $('#history_dd').prepend(ddl_history_option);
                                         $('#history_dd').val('<?php echo base_url() . 'item/' ?>' + resp[1]);
                                     }
-                                    $('#save_config').attr('ddata-listid', resp[0])
+                                    $('#save_config').attr('ddata-listid', resp[0]);
+                                    $('#save_col').attr('data-listid', resp[0]);
+                                    $('.add-data-head-r').removeClass('hidden_add_column_btn');
                                     $('.edit_list_task').attr('data-id', resp[0])
                                     $('.edit_list_task').attr('data-slug', resp[1]);
                                 } else if (operation == 'edit') {
@@ -1037,7 +1039,8 @@
                             } else {
                                 $(this).prop('disabled', false);
                                 var resp = JSON.parse(res);
-                                $('#add_task_li #task_name').attr('data-listid', resp[0]);
+                                $('#TaskList #task_name').attr('data-listid', resp[0]);
+                                $('#save_col').attr('data-listid', resp[0]);
                                 $('.add-data-head #edit_list_name').attr('data-id', resp[0]);
                                 $('.add-data-head .edit_list_task').attr('data-id', resp[0]);
                                 $('#update_listType').attr('data-id', resp[0]);
@@ -1153,6 +1156,13 @@
                     $('.add-data-div').removeClass('list-error');
                     $('.opertaions').removeClass('hide_operations');
                     $('.task_name_span').show();
+                }
+                
+                if ($(e.target).attr('class') == 'column_name_class' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'edit_column_box' || $(e.target).attr('class') == 'remove_col') {
+                    e.preventDefault();
+                }else{
+                    $('#edit_column_box').remove();
+                    $('.column_name_class').show();
                 }
 
             });
@@ -1467,7 +1477,7 @@
                     if ($('#TaskList li').length < 2) {
                         return false;
                     }
-                    var last_task_id = $('#TaskList li:first-child').attr('data-id');
+                    var last_task_id = $('#TaskList li:nth-child(2)').attr('data-id');
                     var list_id = <?php
             if (isset($list_id)) {
                 echo $list_id;
@@ -1477,6 +1487,7 @@
             ?>;
                     var comment = $('#nexup_comment').val();
                     var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                    
                     $.ajax({
                         url: '<?php echo base_url() . 'next_item'; ?>',
                         type: 'POST',
@@ -1489,8 +1500,8 @@
                         success: function (res) {
                             if (res == 'success') {
                                 $('#nexup_comment').val('');
-                                $('#TaskList li:first-child').appendTo('#TaskList');
-                                $('#next_task_name').html($('#TaskList li:first-child').text());
+                                $('#TaskList li:nth-child(2)').appendTo('#TaskList');
+                                $('#next_task_name').html($('#TaskList li:nth-child(2)').text());
                                 $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
                                 $.ajax({
                                     url: '<?php echo base_url() . 'next_task'; ?>',
@@ -1798,7 +1809,7 @@
                             for (i = 0; i < arr_size; i++) {
                                 $('#task_' + res_arr[i]).appendTo('#TaskList');
                             }
-                            $('span#next_task_name').text($('#TaskList li:first-child').text());
+                            $('span#next_task_name').text($('#TaskList li:nth-child(2)').text());
                         }
                     }
                 });
@@ -1836,7 +1847,7 @@
                             if ($('.heading_items_col').length > 0) {
                                 $('#TaskListDiv').append(res);
                             } else {
-                                $('.heading_items_col').after(res);
+                                $('.heading_col').after(res);
                             }
                             if ($('.heading_items_col').length == 2) {
                                 $('#TaskListDiv').removeClass('column-2');
@@ -1869,40 +1880,99 @@
                                 }
                             }
 
-
-//                            var head = '<ul class="add-data-head-ul" id="task_header_' + res + '">';
-//                            head += '<li id="add_task_li">';
-//                            head += '<div class="add-data-title">';
-//                            head += col_name;
-//                            head += '<div class="add-data-title-r"><a href="" class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a><ul class="dropdown-menu" aria-labelledby="dropdownMenu1"><li><a href="#">Remove</a></li></ul></div>';
-//                            head += '</div>';
-//                            head += '</li>';
-//                            head += '</ul>';
-//                            $('#TaskListDiv').before(head);
                         }
                     }
                 });
                 return false;
             });
             
-//            $("#TaskListDiv").resize(function(e){
-//            if($('#TaskListDiv').hasClass('column-4')){
-//                $("#addTaskDiv").mCustomScrollbar({
-//                    axis: "x",
-//                    scrollButtons: {enable: true},
-//                    theme: "3d",
-//                    scrollbarPosition: "outside"
-//                });
-//            }
-//            });
-
             $(document).on('click', '.add-data-head-r a.icon-add', function () {
                 $('#col_list').modal('toggle');
             });
 
             $(document).on('shown.bs.modal', '#col_list', function () {
                 $('#nexup_column').focus();
-            })
+            });
+            
+            
+            $(document).on('keydown', '#nexup_column', function (evt) {
+                var key_code = evt.keyCode;
+                if (key_code == 13) {
+                    $('#save_col').trigger('click');
+                }
+            });
+            
+            $(document).on('click', '.heading_items_col .add-data-title', function (){
+                var col_id = $(this).attr('data-colid');
+                var list_id = $(this).attr('data-listid');
+                $.ajax({
+                    url: '<?php echo base_url(); ?>task/get_column_name',
+                    type: 'POST',
+                    context: this,
+                    data:{
+                        'column_id': col_id,
+                        'list_id': list_id
+                    },
+                    success: function (res, e){
+                        $(this).children('.column_name_class').hide();
+                        var text_box = '<input type="text" id="edit_column_box" class="edit_column_box" value="' + res + '" data-listid="' + list_id + '" data-colid="' + col_id +'">';
+                        if($(this).children('#edit_column_box').length > 0){
+                            e.preventDefault();
+                        }else{
+                            $(this).children('.column_name_class').after(text_box);
+                            $('#edit_column_box').select();
+                        }
+                    }
+                });
+            });
+            
+            $(document).on('keydown', '#edit_column_box', function (evt) {
+            var key_code = evt.keyCode;
+                if(key_code == 27){
+                    $(this).remove();
+                    $('.column_name_class').show();
+                }else if(key_code == 13){
+                    var column_id = $(this).attr('data-colid');
+                    var list_id = $(this).attr('data-listid');
+                    var column_name = $(this).val();
+                    $.ajax({
+                        url: '<?php echo base_url(); ?>item/update_column_name',
+                        type: 'POST',
+                        context: this,
+                        data: {
+                            'column_name': column_name,
+                            'column_id': column_id,
+                            'list_id': list_id
+                        },
+                        success: function (res){
+                            if(res == 'success'){
+                                $(this).remove();
+                                $('.column_name_class').html(column_name);
+                                $('.column_name_class').show();
+                            }else{
+                                alert('Something went wrong. Please try again!');
+                            }
+                        }
+                    });
+                }
+            });
+            
+//            $(document).on('click', '.remove_col', function (){
+//                var col_id = $(this).attr('data-colid');
+//                $.ajax:({
+//                    url: '<?php echo base_url(); ?>task/remove_column',
+//                    type: 'POST',
+//                    data: {
+//                        'column_id': col_id
+//                    },
+//                    success: function (res){
+//                        if(res == success){
+//                            
+//                        }
+//                    }
+//                });
+//                alert(col_id);
+//            });
 
 
         </script>

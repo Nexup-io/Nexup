@@ -236,5 +236,28 @@ class TasksModel extends CI_Model {
         return $query->result_array();
     }
     
+    /*
+     * Get column name from id
+     * @author SG
+     */
+    public function getColumnNameById($list_id, $col_id){
+        $condition = array('list_inflo_id' => $list_id, 'id' => $col_id);
+        $this->db->select('column_name');
+        $this->db->where($condition);
+        $query = $this->db->get('list_columns');
+        $data = $query->row_array();
+        return $data['column_name'];
+    }
+    
+    /*
+     * Update the column name
+     * @author: SG
+     */
+    public function updateColumnName($list_id, $col_id, $update_data){
+        $condition = array('id' => $col_id, 'list_inflo_id' => $list_id);
+        $this->db->where($condition);
+        return $this->db->update('list_columns', $update_data);
+    }
+    
 
 }

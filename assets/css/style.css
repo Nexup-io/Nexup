@@ -346,7 +346,7 @@ ul#log_dd2{overflow: auto;}
 .add-data-head-r{border:1px solid #e0e0e0; background:#fff; text-align:center; line-height:48px; text-decoration:none; width:50px;height:50px; display:block; font-size:30px; color:#01b9e6;float:right;}
 .add-data-head .add-data-head-r a{margin:0;vertical-align:top;line-height: 48px;}
 .add-data-input input{ border:1px solid #e0e0e0;padding:16px 20px;line-height:30px;font-size:18px;font-weight:300;color:#4c4c4c;font-family:'Roboto';width:100%;}
-.add-data-title{ border:1px solid #e0e0e0;padding:16px 20px;line-height:30px;font-size:18px;font-weight:300;color:#4c4c4c;font-family:'Roboto';width:100%;background:#f0f0f0;}
+.add-data-title{ border:1px solid #e0e0e0;padding:16px 20px;line-height:30px;font-size:18px;font-weight:300;color:#4c4c4c;font-family:'Roboto';width:100%;background:#f0f0f0;display:inline-block;vertical-align:middle;width:100%;}
 .add-data-title-r{float:right;}
 .add-data-title-r a{font-size:28px;color:#666;line-height:34px;vertical-align:middle;text-decoration:none;}
 .add-data-title-r{position:relative;}
@@ -375,4 +375,6 @@ ul#log_dd2{overflow: auto;}
 #addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar { background-color:#01b9e6;}
 .task_multi_col_div{min-width: 1600px; width: auto;}
 .hidden_add_column_btn{display: none;}
-
+#TaskListDiv{min-height: 500px;}
+.column_name_class{float:left;line-height:34px;}
+#edit_column_box{width: 88%;background: #f0f0f0;border: transparent;}

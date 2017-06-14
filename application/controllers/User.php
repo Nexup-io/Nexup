@@ -6,7 +6,7 @@ class User extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model(array('UsersModel'));
+        $this->load->model(array('UsersModel', 'ListsModel'));
     }
 
     /**
@@ -436,6 +436,11 @@ class User extends CI_Controller {
                 $user_data['logged_in'] = 1;
                 $this->session->set_userdata($user_data);
                 if ($this->session->userdata('list_id') != null) {
+                    
+                    foreach ($this->session->userdata('list_id') as $lst):
+                        $update_info['user_id'] = $this->session->userdata('id');
+                        $this->ListsModel->update_list_data($lst, $update_info);
+                    endforeach;
                     $list_save_data['Apikey'] = API_KEY;
                     $list_save_data['ListId'] = $this->session->userdata('list_id');
                     if ($this->session->userdata('task_id') != null) {

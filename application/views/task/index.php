@@ -239,7 +239,7 @@
                                 <!--<div class="add-data-input"><input type="text" name="" /></div>-->
                             </li>
                             <li class="heading_col heading_items_col">
-                                <div class="add-data-title"><?php echo $task['column_name'] ?>
+                                <div class="add-data-title" data-colid="<?php echo $task['column_id']; ?>" data-listid="<?php echo $list_id; ?>"><span class="column_name_class"><?php echo $task['column_name'] ?></span>
                                     <div class="add-data-title-r">
                                         <a href="" class="icon-more-h" id="dropdownMenu<?php echo $ids; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu<?php echo $ids; ?>">
