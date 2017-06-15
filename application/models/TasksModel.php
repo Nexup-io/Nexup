@@ -232,6 +232,7 @@ class TasksModel extends CI_Model {
         $condition = array('list_inflo_id' => $list_id);
         $this->db->select('id, column_name, order');
         $this->db->where($condition);
+        $this->db->order_by('order', 'asc');
         $query = $this->db->get('list_columns');
         return $query->result_array();
     }
@@ -257,6 +258,18 @@ class TasksModel extends CI_Model {
         $condition = array('id' => $col_id, 'list_inflo_id' => $list_id);
         $this->db->where($condition);
         return $this->db->update('list_columns', $update_data);
+    }
+    
+    
+    /*
+     * Update column order for multi column list
+     * @author SG
+     */
+
+    public function update_column_data($list_id, $col_id, $col_data) {
+        $condition = array('list_inflo_id' => $list_id, 'id' => $col_id);
+        $this->db->where($condition);
+        return $this->db->update('list_columns', $col_data);
     }
     
 

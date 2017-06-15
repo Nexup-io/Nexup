@@ -965,7 +965,7 @@ class Task extends CI_Controller {
                     $col_order_add = $this->TasksModel->UpdateColumnOrder($this->input->post('list_id'), $add_col);
                     $col_res_id = $col_order;
                     $resp_str = '<li class="heading_col heading_items_col">';
-                    $resp_str .= '<div class="add-data-title" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '"><span class="column_name_class">' . $this->input->post('col_name') . '</span>';
+                    $resp_str .= '<div class="add-data-title" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '"><span class="column_name_class" id="col_name_' . $add_col . '">' . $this->input->post('col_name') . '</span>';
                     $resp_str .= '<div class="add-data-title-r">';
                     $resp_str .= '<a class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>';
                     $resp_str .= '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
@@ -1042,6 +1042,23 @@ class Task extends CI_Controller {
             }else{
                 echo 'fail';
             }
+        }
+    }
+    
+    
+    /*
+     * Change order of coluns
+     * @author SG
+     */
+    public function change_column_order(){
+        if($this->input->post()){
+            $column_ids = json_decode($this->input->post('column_ids'));
+            $list_id = $this->input->post('list_id');
+            foreach ($column_ids as $c_id => $c_data):
+                $new_order['order'] = $c_id + 1;
+                $updated = $this->TasksModel->update_column_data($list_id, $c_data, $new_order);
+            endforeach;
+            echo 'success'; exit;
         }
     }
     

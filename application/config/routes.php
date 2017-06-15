@@ -64,6 +64,7 @@ $route['save_config'] = 'Listing/save_config';
 $route['activate/(:any)'] = 'user/activate';
 $route['404_override'] = '';
 $route['order_change'] = 'task/order_change';
+$route['change_column_order'] = 'task/change_column_order';
 $route['listing/push'] = 'listing/edit';
 $route['item_order'] = 'task/order';
 $route['item/add'] = 'task/add';

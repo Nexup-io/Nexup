@@ -252,7 +252,7 @@
                     var div_width = (list_count * 400);
                     $('.column-4').width(div_width);
                 }
-                if($('#TaskListDiv').hasClass('column-4')){
+                if ($('#TaskListDiv').hasClass('column-4')) {
                     $("#addTaskDiv").mCustomScrollbar({
                         axis: "x",
                         scrollButtons: {enable: true},
@@ -345,6 +345,7 @@
             //Re-order tasks
             $("#TaskList").sortable({
                 handle: '.icon-more',
+                cancel: '.heading_col',
                 update: function (event, ui) {
 
                     var tasks_ids = [];
@@ -500,7 +501,7 @@
 //                }
             } else {
 //                $('.enable-move').hide();
-                $(document).on('mouseover', '#TaskList .task_li', function () {
+                $(document).on('mouseover', '.ui-sortable .task_li', function () {
                     var did = $(this).attr('data-id');
                     $('#task_' + did + ' .icon-more').css({'visibility': 'visible'});
                 });
@@ -510,7 +511,92 @@
                     var did = $(this).attr('data-id');
                     $('#task_' + did + ' .icon-more').css({'visibility': 'hidden'});
                 });
+
+
+                $(document).on('mouseover', '.heading_items_col', function () {
+                    $(this).children().children('span.icon-more.move_col').css({'visibility': 'visible'});
+                });
+
+                $(document).on('mouseout', '.heading_items_col', function () {
+                    $(this).children().children('span.icon-more.move_col').css({'visibility': 'hidden'});
+                });
+
+
             }
+
+
+            $('#TaskListDiv').sortable({
+                handle: '.move_col',
+                update: function (event, ui) {
+                    var col_ids = [];
+                    var list_id = 0;
+                    $('.heading_items_col .add-data-title').each(function () {
+                        var ids = $(this).attr('data-colid');
+                        col_ids.push(ids);
+                        list_id = $(this).attr('data-listid');
+
+                    });
+                    $.ajax({
+                        url: '<?php echo base_url() . 'change_column_order' ?>',
+                        type: 'POST',
+                        data: {
+                            column_ids: JSON.stringify(col_ids),
+                            list_id: list_id
+                        },
+                        success: function (res) {
+                            if (res == 'success') {
+                                var current_id = $('.tasks_lists_display.ui-sortable').attr('id');
+                                $('#' + current_id).sortable('destroy');
+                                var first_id = $('#TaskListDiv ul:nth-child(2)').attr('id');
+//                                console.log(first_id); return false;
+                                    $("#" + first_id).sortable({
+                                        handle: '.icon-more',
+                                        cancel: '.heading_col',
+                                        update: function (event, ui) {
+
+                                            var tasks_ids = [];
+                                            $('.tasks_lists_display li').each(function (e) {
+                                                var ids = $(this).attr('data-id');
+                                                tasks_ids.push(ids);
+                                            });
+
+                                            var task_id = $(ui.item).attr('data-id');
+                                            var list_id = $(ui.item).children().attr('data-listid');
+                                            var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                                            $.ajax({
+                                                url: '<?php echo base_url() . 'order_change' ?>',
+                                                type: 'POST',
+                                                data: {
+                                                    OrderId: ui.item.index() + 1,
+                                                    Taskid: JSON.stringify(tasks_ids),
+                                                    ListId: list_id,
+                                                    user_ip: user_ip
+                                                },
+                                                success: function (res) {
+                                                    if (res == 'success') {
+                                                        $('span#next_task_name').text($('#TaskList li:nth-child(2)').text());
+                                                        $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:nth-child(2)').text());
+                                                        $.ajax({
+                                                            url: '<?php echo base_url() . 'item_order' ?>',
+                                                            type: 'POST',
+                                                            data: {
+                                                                OrderId: ui.item.index() + 1,
+                                                                Taskid: task_id
+                                                            },
+                                                            success: function (res) {
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                            }
+                        }
+                    });
+
+                }
+            });
 
 
 //            if (window.screen.width > 767) {
@@ -1139,7 +1225,7 @@
 
             //Hide options from list/tasks when mouse clicked anywhere on page
 
-            $('body').on('click', function (e) {
+            $(document).on('click', 'body', function (e) {
                 if ($(e.target).attr('id') == 'edit_task_name' || $(e.target).attr('id') == 'edit_list_name') {
                     e.preventDefault();
                 } else {
@@ -1157,10 +1243,11 @@
                     $('.opertaions').removeClass('hide_operations');
                     $('.task_name_span').show();
                 }
-                
-                if ($(e.target).attr('class') == 'column_name_class' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'edit_column_box' || $(e.target).attr('class') == 'remove_col') {
-                    e.preventDefault();
-                }else{
+
+                if ($(e.target).attr('class') == 'column_name_class' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'edit_column_box' || $(e.target).attr('class') == 'remove_col' || $(e.target).attr('class') == 'move_col') {
+                    e.stopPropagation();
+
+                } else {
                     $('#edit_column_box').remove();
                     $('.column_name_class').show();
                 }
@@ -1487,7 +1574,7 @@
             ?>;
                     var comment = $('#nexup_comment').val();
                     var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
-                    
+
                     $.ajax({
                         url: '<?php echo base_url() . 'next_item'; ?>',
                         type: 'POST',
@@ -1869,7 +1956,7 @@
                                 var current_width = $('#TaskListDiv').width();
                                 var new_width = $('ul.tasks_lists_display').length * 400;
                                 $('#TaskListDiv').width(new_width);
-                                if($('#TaskListDiv').hasClass('column-4')){
+                                if ($('#TaskListDiv').hasClass('column-4')) {
                                     $('#addTaskDiv').mCustomScrollbar("destroy");
                                     $("#addTaskDiv").mCustomScrollbar({
                                         axis: "x",
@@ -1885,7 +1972,7 @@
                 });
                 return false;
             });
-            
+
             $(document).on('click', '.add-data-head-r a.icon-add', function () {
                 $('#col_list').modal('toggle');
             });
@@ -1893,45 +1980,47 @@
             $(document).on('shown.bs.modal', '#col_list', function () {
                 $('#nexup_column').focus();
             });
-            
-            
+
+
             $(document).on('keydown', '#nexup_column', function (evt) {
                 var key_code = evt.keyCode;
                 if (key_code == 13) {
                     $('#save_col').trigger('click');
                 }
             });
-            
-            $(document).on('click', '.heading_items_col .add-data-title', function (){
+
+            $(document).on('click', '.heading_items_col .add-data-title', function (e) {
+                if ($(this).children('#edit_column_box').length > 0) {
+                    return false;
+                }
+
                 var col_id = $(this).attr('data-colid');
                 var list_id = $(this).attr('data-listid');
                 $.ajax({
                     url: '<?php echo base_url(); ?>task/get_column_name',
                     type: 'POST',
                     context: this,
-                    data:{
+                    data: {
                         'column_id': col_id,
                         'list_id': list_id
                     },
-                    success: function (res, e){
+                    success: function (res) {
+                        $('#edit_column_box').remove();
+                        $('.column_name_class').show();
                         $(this).children('.column_name_class').hide();
-                        var text_box = '<input type="text" id="edit_column_box" class="edit_column_box" value="' + res + '" data-listid="' + list_id + '" data-colid="' + col_id +'">';
-                        if($(this).children('#edit_column_box').length > 0){
-                            e.preventDefault();
-                        }else{
-                            $(this).children('.column_name_class').after(text_box);
-                            $('#edit_column_box').select();
-                        }
+                        var text_box = '<input type="text" id="edit_column_box" class="edit_column_box" value="' + res + '" data-listid="' + list_id + '" data-colid="' + col_id + '">';
+                        $(this).children('.column_name_class').after(text_box);
+                        $('#edit_column_box').select();
                     }
                 });
             });
-            
+
             $(document).on('keydown', '#edit_column_box', function (evt) {
-            var key_code = evt.keyCode;
-                if(key_code == 27){
+                var key_code = evt.keyCode;
+                if (key_code == 27) {
                     $(this).remove();
                     $('.column_name_class').show();
-                }else if(key_code == 13){
+                } else if (key_code == 13) {
                     var column_id = $(this).attr('data-colid');
                     var list_id = $(this).attr('data-listid');
                     var column_name = $(this).val();
@@ -1944,35 +2033,39 @@
                             'column_id': column_id,
                             'list_id': list_id
                         },
-                        success: function (res){
-                            if(res == 'success'){
+                        success: function (res) {
+                            if (res == 'success') {
                                 $(this).remove();
-                                $('.column_name_class').html(column_name);
+                                $('#col_name_' + column_id).html(column_name);
+//                                $('.column_name_class').html(column_name);
                                 $('.column_name_class').show();
-                            }else{
+                            } else {
                                 alert('Something went wrong. Please try again!');
                             }
                         }
                     });
                 }
             });
-            
-//            $(document).on('click', '.remove_col', function (){
-//                var col_id = $(this).attr('data-colid');
-//                $.ajax:({
-//                    url: '<?php echo base_url(); ?>task/remove_column',
-//                    type: 'POST',
-//                    data: {
-//                        'column_id': col_id
-//                    },
-//                    success: function (res){
-//                        if(res == success){
-//                            
+
+//            $(".tasks_lists_display").sortable({
+//                handle: '.icon-more',
+//                update: function (event, ui) {
+//                    var task_id = $(ui.item).attr('data-id');
+//                    $.ajax({
+//                        url: '<?php echo base_url() . 'item_order' ?>',
+//                        type: 'POST',
+//                        data: {
+//                            OrderId: ui.item.index() + 1,
+//                            Taskid: task_id
+//                        },
+//                        success: function (res) {
+//
 //                        }
-//                    }
-//                });
-//                alert(col_id);
+//                    });
+//
+//                }
 //            });
+
 
 
         </script>
