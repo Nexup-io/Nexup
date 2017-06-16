@@ -165,9 +165,14 @@ class Listing extends CI_Controller {
                     }
                 }
 
+                $_SESSION['last_slug'] = $response['data']->ListSlug;
+                $data['Listid'] = $response['data']->ListId;
                 $update_list_local['slug'] = $response['data']->ListSlug;
                 $update_list_local['url'] = '/' . $response['data']->ListSlug;
                 $update_list_local['list_inflo_id'] = $response['data']->ListId;
+                
+//                p($addList); exit;
+                
                 $updt = $this->ListsModel->update_list_data($addList, $update_list_local);
 
                 $_SESSION['last_slug'] = $response['data']->ListSlug;

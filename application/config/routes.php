@@ -74,6 +74,7 @@ $route['item/get_task_data'] = 'task/get_task_data';
 $route['item/complete'] = 'task/complete';
 $route['item/delete'] = 'task/delete';
 $route['item/remove'] = 'task/remove';
+$route['delete_column'] = 'task/delete_column';
 $route['get_next_task'] = 'task/get_next_task';
 $route['next_task'] = 'task/next_task';
 $route['next_item'] = 'task/next_item';

@@ -240,12 +240,12 @@
                             </li>
                             <li class="heading_col heading_items_col">
                                 <div class="add-data-title" data-colid="<?php echo $task['column_id']; ?>" data-listid="<?php echo $list_id; ?>">
-                                    <span class="icon-more move_col" style="visibility: hidden;"></span>
+                                    <!--<span class="icon-more move_col" style="visibility: hidden;"></span>-->
                                     <span class="column_name_class" id="col_name_<?php echo $task['column_id']; ?>"><?php echo $task['column_name'] ?></span>
                                     <div class="add-data-title-r">
-                                        <a href="" class="icon-more-h" id="dropdownMenu<?php echo $ids; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>
+                                        <a href="" class="icon-more-h move_col" id="dropdownMenu<?php echo $ids; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu<?php echo $ids; ?>">
-                                            <li><a class="remove_col" data-colid="<?php echo $task['column_id']; ?>">Remove</a></li>
+                                            <li><a class="remove_col custom_cursor" data-colid="<?php echo $task['column_id']; ?>" data-listid="<?php echo $list_id; ?>">Remove</a></li>
                                         </ul>
                                     </div>
                                 </div>

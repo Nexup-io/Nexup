@@ -177,7 +177,7 @@ class TasksModel extends CI_Model {
      * @author SG
      */
     public function get_max_column_order($list_id){
-        $condition = array('list_inflo_id' => $list_id);
+        $condition = array('list_inflo_id' => $list_id, 'is_deleted' => 0);
         $this->db->select_max('order');
         $this->db->where($condition);
         $query = $this->db->get('list_columns');
@@ -190,7 +190,7 @@ class TasksModel extends CI_Model {
      * @author SG
      */
     public function get_tasks_by_columns_order($list_id) {
-        $condition = array('list_data.list_inflo_id' => $list_id, 'list_data.is_deleted' => 0);
+        $condition = array('list_data.list_inflo_id' => $list_id, 'list_data.is_deleted' => 0, 'list_columns.is_deleted' => 0);
         $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted, list_data.order as order, column_id, list_columns.column_name as column_name');
         $this->db->join('list_columns', 'list_columns.id = list_data.column_id', 'left');
         $this->db->where($condition);
@@ -204,7 +204,7 @@ class TasksModel extends CI_Model {
      * @author SG
      */
     public function FindColumnMaxOrder($list_id){
-        $condition = array('list_inflo_id' => $list_id);
+        $condition = array('list_inflo_id' => $list_id, 'is_deleted' => 0);
         $this->db->select('IF(MAX(`order`) IS NULL,0,MAX(`order`)) AS `order`');
         $this->db->where($condition);
         $query = $this->db->get('list_columns');
@@ -229,7 +229,7 @@ class TasksModel extends CI_Model {
      * @author SG
      */
     public function getColumns($list_id){
-        $condition = array('list_inflo_id' => $list_id);
+        $condition = array('list_inflo_id' => $list_id, 'is_deleted' => 0);
         $this->db->select('id, column_name, order');
         $this->db->where($condition);
         $this->db->order_by('order', 'asc');
@@ -242,7 +242,7 @@ class TasksModel extends CI_Model {
      * @author SG
      */
     public function getColumnNameById($list_id, $col_id){
-        $condition = array('list_inflo_id' => $list_id, 'id' => $col_id);
+        $condition = array('list_inflo_id' => $list_id, 'id' => $col_id, 'is_deleted' => 0);
         $this->db->select('column_name');
         $this->db->where($condition);
         $query = $this->db->get('list_columns');
@@ -270,6 +270,32 @@ class TasksModel extends CI_Model {
         $condition = array('list_inflo_id' => $list_id, 'id' => $col_id);
         $this->db->where($condition);
         return $this->db->update('list_columns', $col_data);
+    }
+    
+    
+    /*
+     * Delete Column
+     * @author SG
+     */
+    
+    public function delete_column($list_id, $column_id){
+        $condition = array('list_inflo_id' => $list_id, 'id' => $column_id);
+        $del_data['is_deleted'] = 1;
+        $this->db->where($condition);
+        return $this->db->update('list_columns', $del_data);
+    }
+    
+    
+    /*
+     * Delete task related to column which is deleted
+     * @author SG
+     */
+    
+    public function remove_items($list_id, $column_id){
+        $condition = array('list_inflo_id' => $list_id, 'id' => $column_id);
+        $del_data['is_deleted'] = 1;
+        $this->db->where($condition);
+        return $this->db->update('list_data', $del_data);
     }
     
 

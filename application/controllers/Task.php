@@ -1062,5 +1062,22 @@ class Task extends CI_Controller {
         }
     }
     
+    /*
+     * Delete column
+     * @author SG
+     */
+    public function delete_column(){
+        if($this->input->post()){
+            $delete_col = $this->TasksModel->delete_column($this->input->post('list_id'), $this->input->post('column_id'));
+            if($delete_col){
+                $delete_items = $this->TasksModel->remove_items($this->input->post('list_id'), $this->input->post('column_id'));
+                echo 'success';
+            }else{
+                echo 'fail';
+            }
+            exit;
+        }
+    }
+    
 
 }

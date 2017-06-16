@@ -142,7 +142,7 @@ class ListsModel extends CI_Model {
      * @author SG
      */
     public function update_list_data($list_id, $list_data) {
-        $condition = array('list_inflo_id' => $list_id);
+        $condition = array('id' => $list_id);
         $this->db->where($condition);
         return $this->db->update('lists', $list_data);
     }

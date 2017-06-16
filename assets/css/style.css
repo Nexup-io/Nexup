@@ -378,4 +378,5 @@ ul#log_dd2{overflow: auto;}
 #TaskListDiv{min-height: 500px;}
 .column_name_class{float:left;line-height:34px;}
 #edit_column_box{width: 80%;background: #f0f0f0;border: transparent;}
-.move_col{float: left;position: relative;margin-top: 2%;font-size: 25px;cursor: move;}
+.move_col{float: left;position: relative;margin-top: 2%;font-size: 25px;cursor: pointer;}
+a.icon-more-h.move_col{visibility: hidden;}

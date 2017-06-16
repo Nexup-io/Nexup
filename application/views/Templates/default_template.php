@@ -285,12 +285,15 @@
 
 
             //Show hide actions on list when button clicked which appears on list while mouse over it.
-            $(document).on('click', '.list-body-dropdown > a', function () {
-                if ($(this).closest('.list-body-box').hasClass('action-show')) {
-                    $(this).closest('.list-body-box').removeClass('action-show');
+            $(document).on('click', '.list-body-dropdown > a', function (e) {
+//                e.preventDefault();
+//                $(this).parent('.list-body-dropdown').parent('.list-body-box').addClass('action-show');
+                if ($(this).parent('.list-body-dropdown').parent('.list-body-box').hasClass('action-show')) {
+                    $(this).parent('.list-body-dropdown').parent('.list-body-box').removeClass('action-show');
                 } else {
                     $('.list-body-box').removeClass('action-show');
-                    $(this).closest('.list-body-box').addClass('action-show');
+                    $(this).parent('.list-body-dropdown').parent('.list-body-box').addClass('action-show');
+//                    $(document).find(this).parents('.list-body-box').attr('class', 'list-body-box custom_cursor action-show');
                 }
             });
 
@@ -501,7 +504,7 @@
 //                }
             } else {
 //                $('.enable-move').hide();
-                $(document).on('mouseover', '.ui-sortable .task_li', function () {
+                $(document).on('mouseover', '.tasks_lists_display.ui-sortable .task_li', function () {
                     var did = $(this).attr('data-id');
                     $('#task_' + did + ' .icon-more').css({'visibility': 'visible'});
                 });
@@ -514,11 +517,11 @@
 
 
                 $(document).on('mouseover', '.heading_items_col', function () {
-                    $(this).children().children('span.icon-more.move_col').css({'visibility': 'visible'});
+                    $(this).children().children().children('a.icon-more-h.move_col').css({'visibility': 'visible'});
                 });
 
                 $(document).on('mouseout', '.heading_items_col', function () {
-                    $(this).children().children('span.icon-more.move_col').css({'visibility': 'hidden'});
+                    $(this).children().children().children('a.icon-more-h.move_col').css({'visibility': 'hidden'});
                 });
 
 
@@ -549,48 +552,48 @@
                                 $('#' + current_id).sortable('destroy');
                                 var first_id = $('#TaskListDiv ul:nth-child(2)').attr('id');
 //                                console.log(first_id); return false;
-                                    $("#" + first_id).sortable({
-                                        handle: '.icon-more',
-                                        cancel: '.heading_col',
-                                        update: function (event, ui) {
+                                $("#" + first_id).sortable({
+                                    handle: '.icon-more',
+                                    cancel: '.heading_col',
+                                    update: function (event, ui) {
 
-                                            var tasks_ids = [];
-                                            $('.tasks_lists_display li').each(function (e) {
-                                                var ids = $(this).attr('data-id');
-                                                tasks_ids.push(ids);
-                                            });
+                                        var tasks_ids = [];
+                                        $('.tasks_lists_display li').each(function (e) {
+                                            var ids = $(this).attr('data-id');
+                                            tasks_ids.push(ids);
+                                        });
 
-                                            var task_id = $(ui.item).attr('data-id');
-                                            var list_id = $(ui.item).children().attr('data-listid');
-                                            var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
-                                            $.ajax({
-                                                url: '<?php echo base_url() . 'order_change' ?>',
-                                                type: 'POST',
-                                                data: {
-                                                    OrderId: ui.item.index() + 1,
-                                                    Taskid: JSON.stringify(tasks_ids),
-                                                    ListId: list_id,
-                                                    user_ip: user_ip
-                                                },
-                                                success: function (res) {
-                                                    if (res == 'success') {
-                                                        $('span#next_task_name').text($('#TaskList li:nth-child(2)').text());
-                                                        $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:nth-child(2)').text());
-                                                        $.ajax({
-                                                            url: '<?php echo base_url() . 'item_order' ?>',
-                                                            type: 'POST',
-                                                            data: {
-                                                                OrderId: ui.item.index() + 1,
-                                                                Taskid: task_id
-                                                            },
-                                                            success: function (res) {
-                                                            }
-                                                        });
-                                                    }
+                                        var task_id = $(ui.item).attr('data-id');
+                                        var list_id = $(ui.item).children().attr('data-listid');
+                                        var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                                        $.ajax({
+                                            url: '<?php echo base_url() . 'order_change' ?>',
+                                            type: 'POST',
+                                            data: {
+                                                OrderId: ui.item.index() + 1,
+                                                Taskid: JSON.stringify(tasks_ids),
+                                                ListId: list_id,
+                                                user_ip: user_ip
+                                            },
+                                            success: function (res) {
+                                                if (res == 'success') {
+                                                    $('span#next_task_name').text($('#TaskList li:nth-child(2)').text());
+                                                    $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:nth-child(2)').text());
+                                                    $.ajax({
+                                                        url: '<?php echo base_url() . 'item_order' ?>',
+                                                        type: 'POST',
+                                                        data: {
+                                                            OrderId: ui.item.index() + 1,
+                                                            Taskid: task_id
+                                                        },
+                                                        success: function (res) {
+                                                        }
+                                                    });
                                                 }
-                                            });
-                                        }
-                                    });
+                                            }
+                                        });
+                                    }
+                                });
                             }
                         }
                     });
@@ -1226,7 +1229,7 @@
             //Hide options from list/tasks when mouse clicked anywhere on page
 
             $(document).on('click', 'body', function (e) {
-                if ($(e.target).attr('id') == 'edit_task_name' || $(e.target).attr('id') == 'edit_list_name') {
+                if ($(e.target).attr('id') == 'edit_task_name' || $(e.target).attr('id') == 'edit_list_name' || $(e.target).attr('class') == 'icon-more') {
                     e.preventDefault();
                 } else {
                     $('.edit_list_cls').remove();
@@ -2047,24 +2050,109 @@
                 }
             });
 
-//            $(".tasks_lists_display").sortable({
-//                handle: '.icon-more',
-//                update: function (event, ui) {
-//                    var task_id = $(ui.item).attr('data-id');
-//                    $.ajax({
-//                        url: '<?php echo base_url() . 'item_order' ?>',
-//                        type: 'POST',
-//                        data: {
-//                            OrderId: ui.item.index() + 1,
-//                            Taskid: task_id
-//                        },
-//                        success: function (res) {
-//
-//                        }
-//                    });
-//
-//                }
-//            });
+
+            $(document).on('click', '.icon-more.move_col', function () {
+                return false;
+            });
+
+
+            $(document).on('click', '.remove_col', function () {
+                if (confirm('Are you sure want to delete this column?')) {
+                    var list_id = $(this).attr('data-listid');
+                    var col_id = $(this).attr('data-colid');
+                    $.ajax({
+                        url: '<?php echo base_url(); ?>delete_column',
+                        type: 'POST',
+                        context: this,
+                        data: {
+                            'list_id': list_id,
+                            'column_id': col_id
+                        },
+                        success: function (res) {
+                            if (res == 'success') {
+                                $(this).parents('.tasks_lists_display').remove();
+                                var current_id = $('.tasks_lists_display.ui-sortable').attr('id');
+                                $('#' + current_id).sortable('destroy');
+                                var first_id = $('#TaskListDiv ul:nth-child(2)').attr('id');
+//                                console.log(first_id); return false;
+                                $("#" + first_id).sortable({
+                                    handle: '.icon-more',
+                                    cancel: '.heading_col',
+                                    update: function (event, ui) {
+
+                                        var tasks_ids = [];
+                                        $('.tasks_lists_display li').each(function (e) {
+                                            var ids = $(this).attr('data-id');
+                                            tasks_ids.push(ids);
+                                        });
+
+                                        var task_id = $(ui.item).attr('data-id');
+                                        var list_id = $(ui.item).children().attr('data-listid');
+                                        var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                                        $.ajax({
+                                            url: '<?php echo base_url() . 'order_change' ?>',
+                                            type: 'POST',
+                                            data: {
+                                                OrderId: ui.item.index() + 1,
+                                                Taskid: JSON.stringify(tasks_ids),
+                                                ListId: list_id,
+                                                user_ip: user_ip
+                                            },
+                                            success: function (res) {
+                                                if (res == 'success') {
+                                                    $('span#next_task_name').text($('#TaskList li:nth-child(2)').text());
+                                                    $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:nth-child(2)').text());
+                                                    $.ajax({
+                                                        url: '<?php echo base_url() . 'item_order' ?>',
+                                                        type: 'POST',
+                                                        data: {
+                                                            OrderId: ui.item.index() + 1,
+                                                            Taskid: task_id
+                                                        },
+                                                        success: function (res) {
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                                if($('.tasks_lists_display').length > 3){
+                                    $('#TaskListDiv').removeClass('column-2');
+                                    $('#TaskListDiv').removeClass('column-3');
+                                    $('#TaskListDiv').removeClass('column-4');
+                                    $('#TaskListDiv').addClass('column-4');
+                                }else if($('.tasks_lists_display').length == 3){
+                                    $('#TaskListDiv').removeClass('column-2');
+                                    $('#TaskListDiv').removeClass('column-3');
+                                    $('#TaskListDiv').removeClass('column-4');
+                                    $('#TaskListDiv').addClass('column-3');
+                                }else if($('.tasks_lists_display').length == 2){
+                                    $('#TaskListDiv').removeClass('column-2');
+                                    $('#TaskListDiv').removeClass('column-3');
+                                    $('#TaskListDiv').removeClass('column-4');
+                                    $('#TaskListDiv').addClass('column-2');
+                                }else{
+                                    $('#TaskListDiv').removeClass('column-2');
+                                    $('#TaskListDiv').removeClass('column-3');
+                                    $('#TaskListDiv').removeClass('column-4');
+                                }
+                                if ($('#TaskListDiv').hasClass('column-4')) {
+                                    $('#addTaskDiv').mCustomScrollbar("destroy");
+                                    $("#addTaskDiv").mCustomScrollbar({
+                                        axis: "x",
+                                        scrollButtons: {enable: true},
+                                        theme: "3d",
+                                        scrollbarPosition: "outside"
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+                return false;
+            });
+
 
 
 
