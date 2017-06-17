@@ -178,7 +178,9 @@
                     }elseif($task_size > 3){
                         $task_class = ' column-4';
                     }
-                    $task_list_div_class= ' task_multi_col_div';
+                    if($task_size > 2){
+                        $task_list_div_class= ' task_multi_col_div';
+                    }
                 }
                 
             }

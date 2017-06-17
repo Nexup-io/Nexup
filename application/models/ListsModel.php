@@ -178,5 +178,14 @@ class ListsModel extends CI_Model {
         $result = $query->row_array();
        return $result['list_slug'];
     }
+    
+    public function find_list_name_by_id($list_id) {
+        $condition = array('list_inflo_id' => $list_id);
+        $this->db->select('name');
+        $this->db->where($condition);
+        $query = $this->db->get('lists');
+        $list_details =  $query->row_array();
+        return $list_details['name'];
+    }
 
 }

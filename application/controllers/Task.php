@@ -66,13 +66,16 @@ class Task extends CI_Controller {
             $tasks = $this->TasksModel->get_tasks($list['list_id']);
             $columns = $this->TasksModel->getColumns($list['list_id']);
             if(!empty($columns)){
+                $j = 1;
                 foreach ($columns as $c_id => $col):
                     $all_tasks[$c_id]['column_id'] = $col['id'];
                     $all_tasks[$c_id]['column_name'] = $col['column_name'];
                     $all_tasks[$c_id]['tasks'] = array();
                     foreach ($tasks as $task):
+                        $task['col_order'] = $j;
                         if($task['column_id'] == $col['id']){
                             array_push($all_tasks[$c_id]['tasks'], $task);
+                        $j++;
                         }
                     endforeach;
                 endforeach;
@@ -107,6 +110,8 @@ class Task extends CI_Controller {
             }else{
                 $data['tasks'] = $tasks;
             }
+            
+//            p($data['tasks']); exit;
             
 
             if (!empty($data)) {
@@ -952,10 +957,37 @@ class Task extends CI_Controller {
      */
     public function add_column(){
         if($this->input->post()){
+            $resp = array();
             $today = date('Y-m-d H:i:s');
             $new_col['list_inflo_id'] = $this->input->post('list_id');
             $new_col['column_name'] = $this->input->post('col_name');
+            
             $col_order = $this->TasksModel->FindColumnMaxOrder($this->input->post('list_id'));
+            $add_col_first = 0;
+            
+            if($col_order == 0){
+                $current_list_name = $this->ListsModel->find_list_name_by_id($this->input->post('list_id'));
+                $col_order = $col_order + 1;
+                $add_first_col['list_inflo_id'] = $this->input->post('list_id');
+                $add_first_col['column_name'] = $current_list_name;
+                $add_first_col['order'] = $col_order;
+                $add_first_col['created'] = $today;
+                $add_first_col['modified'] = $today;
+                $add_col_first = $this->TasksModel->add_new_colum($add_first_col);
+                $col_order_add = $this->TasksModel->UpdateColumnOrder($this->input->post('list_id'), $add_col_first);
+                $first_col_resp = '<li class="heading_col heading_items_col">';
+                $first_col_resp .= '<div class="add-data-title" data-colid="' . $add_col_first . '" data-listid="' . $this->input->post('list_id') . '"><span class="column_name_class" id="col_name_' . $add_col_first . '">' . $current_list_name . '</span>';
+                $first_col_resp .= '<div class="add-data-title-r">';
+                $first_col_resp .= '<a class="icon-more-h" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>';
+                $first_col_resp .= '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
+                $first_col_resp .= '<li><a class="remove_col" data-colid="' . $add_col_first . '">Remove</a></li>';
+                $first_col_resp .= '</ul>';
+                $first_col_resp .= '</div>';
+                $first_col_resp .= '</div>';
+                $first_col_resp .= '</li>';
+                $resp['first_col'] = $first_col_resp;
+            }
+            
             $new_col['order'] = $col_order + 1;
             $new_col['created'] = $today;
             $new_col['modified'] = $today;
@@ -964,6 +996,7 @@ class Task extends CI_Controller {
                 if($col_order == 0){
                     $col_order_add = $this->TasksModel->UpdateColumnOrder($this->input->post('list_id'), $add_col);
                     $col_res_id = $col_order;
+                    
                     $resp_str = '<li class="heading_col heading_items_col">';
                     $resp_str .= '<div class="add-data-title" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '"><span class="column_name_class" id="col_name_' . $add_col . '">' . $this->input->post('col_name') . '</span>';
                     $resp_str .= '<div class="add-data-title-r">';
@@ -992,8 +1025,9 @@ class Task extends CI_Controller {
                     $resp_str .= '</li>';
                     $resp_str .= '</ul>';
                 }
+                $resp['new_col'] = $resp_str;
                 
-                echo $resp_str;
+                echo json_encode($resp);
             }else{
                 echo 'fail';
             }

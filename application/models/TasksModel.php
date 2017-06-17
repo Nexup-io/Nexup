@@ -40,7 +40,8 @@ class TasksModel extends CI_Model {
         $condition = array('list_data.list_inflo_id' => $list_id, 'list_data.is_deleted' => 0);
         $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted, order, column_id');
         $this->db->where($condition);
-        $this->db->order_by('list_data.order', 'asc');
+//        $this->db->order_by('list_data.order', 'asc');
+        $this->db->order_by('order asc', 'list_data.list_inflo_id asc');
         $query = $this->db->get('list_data');
         return $query->result_array();
     }

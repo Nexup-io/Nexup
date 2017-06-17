@@ -1933,12 +1933,19 @@
                         if (res != 'fail') {
                             $('.col-modal').modal('toggle');
                             $('#nexup_column').val('');
+                            
+                            var resp = JSON.parse(res);
 
                             if ($('.heading_items_col').length > 0) {
-                                $('#TaskListDiv').append(res);
+                                console.log('Here');
+                                $('#TaskListDiv').append(res.new_col);
                             } else {
-                                $('.heading_col').after(res);
+                                console.log('THere');
+                                $('.heading_col').after(resp.first_col);
+                                $('#TaskListDiv').append(resp.new_col);
                             }
+                             
+                             
                             if ($('.heading_items_col').length == 2) {
                                 $('#TaskListDiv').removeClass('column-2');
                                 $('#TaskListDiv').removeClass('column-3');
