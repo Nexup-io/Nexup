@@ -1,48 +1,5 @@
 <section id="content" class="content">
-    <?php
-    if ($type_id == 2) {
-        ?>
-        <div class="whoisnext-div">
-            <div class="nexup-group">
-                <?php
-                $btn_cls = '';
-                if (empty($tasks)) {
-                    $btn_cls = ' whosnext_img_bg';
-                }
-                ?>
-                <div class="button-outer custom_cursor<?php echo $btn_cls; ?>" data-toggle="tooltip" title="<?php
-                if (!empty($tasks)) {
-                    echo $tasks[0]['TaskName'];
-                }
-                ?>">
-                    <span id="next_task_name"><?php
-                        if (!empty($tasks)) {
-                            echo $tasks[0]['TaskName'];
-                        }
-                        ?></span>
-                    <!--<span class="tooltiptext-task-next"></span>-->
-                </div>
-                <div id="nexup_btns">
-                    <?php
-                    $undo_class = '';
-                    if ($config['allow_undo'] == 0) {
-                        $undo_class = ' disabled_undo';
-                    }
-                    ?>
-                    <a class="undo-btn custom_cursor<?php echo $undo_class; ?>" data-listid="<?php echo $list_id; ?>"><span id="undo_icon" class="icon-undo2"> </span> Back up</a>
-                    <div class="cmnt-btn-div">
-                        <a class="whoisnext-btn-cmnt custom_cursor"><span id="nexup_icon_cmnt" class="icon-redo2"> </span> Nexup</a>
-                        <span class="add-data-div hide_box" id="nexup_cmnt_span">
-                            <input type="text" id="nexup_comment" class="nexup_comment" placeholder="Comment...">
-                        </span>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <?php
-    }
-    ?>
+    
     <?php
     if ($this->session->flashdata('success') != '') {
         ?>
@@ -77,7 +34,115 @@
         ?>
         <h2 id="listname_<?php echo $list_id; ?>" class="listname_<?php echo $list_id; ?> edit_list_task" style="<?php echo $hide_list; ?>" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" id="edit_list_task_page"><?php echo $list_name; ?></h2>
         <a data-toggle="modal" data-target="#share-contact" id="share_list" class="icon-share custom_cursor" style="<?php echo $hide_list; ?>"> </a>
+        <div class="add-data-head-r<?php echo $show_add_column; ?>">
+            <a class="add_column_url custom_cursor icon-add"></a>
+        </div>
+    </div>
+
+    
+    <?php
+    if ($type_id == 2) {
+        ?>
+        <div class="whoisnext-div">
+            <div class="nexup-group">
+                <?php
+                $btn_cls = '';
+                if (empty($tasks)) {
+                    $btn_cls = ' whosnext_img_bg';
+                }
+                ?>
+                <div class="nexup-group-logo">
+                    <div class="inner-logo"><a href="http://34.206.184.180/lists"><img src="http://34.206.184.180/assets/img/logo-02.png" alt=""></a></div>
+                </div>
+                <div class="nexup-group-two">
+                <div class="button-outer custom_cursor<?php echo $btn_cls; ?>" data-toggle="tooltip" title="<?php if($multi_col == 0){ if (!empty($tasks)) { echo $tasks[0]['TaskName']; }}else{  } ?>">
+                    <div class="nexup-sub-group nexup-sub-group-one">
+                    <span id="next_task_name"><?php
+                    if($multi_col == 0){
+                        if (!empty($tasks)) {
+                            echo $tasks[0]['TaskName'];
+                        }
+                    }else{
+                        echo 'Task';
+                    }
+                        ?></span>
+                    <!--<span class="tooltiptext-task-next"></span>-->
+                    </div>
+                    <?php if($multi_col == 1){ ?>
+                        <div class="nexup-sub-group nexup-sub-group-two">
+                            <span>s1</span>
+                            <span>s2</span>
+                            <span>s3</span>
+                            <p class="icon-eye"></p>
+                        </div>
+                    <?php } ?>
+                </div>
+                <div id="nexup_btns">
+                    <?php
+                    $undo_class = '';
+                    if ($config['allow_undo'] == 0) {
+                        $undo_class = ' disabled_undo';
+                    }
+                    ?>
+                    <a class="undo-btn custom_cursor<?php echo $undo_class; ?>" data-listid="<?php echo $list_id; ?>"><span id="undo_icon" class="icon-undo2"> </span> Back up</a>
+                    <div class="cmnt-btn-div">
+                        <a class="whoisnext-btn-cmnt custom_cursor"><span id="nexup_icon_cmnt" class="icon-redo2"> </span> Nexup</a>
+                        <span class="add-data-div hide_box" id="nexup_cmnt_span">
+                            <input type="text" id="nexup_comment" class="nexup_comment" placeholder="Comment...">
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
+    
+    <?php
+    $hide_add_item_cls = '';
+    $collapsable_div = '';
+    if ($is_locked == 1) {
+        $hide_add_item_cls = ' hide_add_item';
+        $collapsable_div = ' collapse_div';
+    }
+    ?>
+    <span class="config_icons hide_data" id="config_icons">
+        <a  id="" class="icon-triangle-down custom_cursor"> </a>
+            <a data-toggle="modal" data-target="#listConfig" id="listConfig_lnk" class="icon-wrench custom_cursor"> </a>
+            <div class="ddl_lt">
+                <a id="listTypes_lnk" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="icon-list custom_cursor"> </a>
+                <ul class="dropdown-menu" id="listType_dd" aria-labelledby="listTypes_lnk">
+                    <?php
+                    foreach ($list_types as $listType):
+                        ?>
+                        <li id="listType_<?php echo $listType['ListTypeId']; ?>" class="list_type_cls custom_cursor" data-typeId="<?php echo $listType['ListTypeId']; ?>" data-listid="<?php echo $list_id; ?>"><?php echo $listType['ListTypeName']; ?></li>
+                        <?php
+                    endforeach;
+                    ?>
+                </ul>
+            </div>
+            <?php
+            if ($this->session->userdata('logged_in')) {
+                $class_lock = '';
+                if ($list_owner_id != $_SESSION['id']) {
+                    $class_lock = 'lock_hide';
+                }
+                if ($is_locked == 0) {
+                    ?>
+                    <a class="icon-lock2 custom_cursor <?php echo $class_lock; ?>" id="listLock_lnk" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>"></a>
+                    <?php
+                } else {
+                    ?>
+                    <a class="icon-lock-open2 custom_cursor <?php echo $class_lock; ?>" id="listUnlock_lnk" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>"></a>
+                    <?php
+                }
+            }
+            ?>
+        </span>
         <div class="plus-category">
+            
             <?php
             $class_hide_settings = '';
             $calss_hide_lock = '';
@@ -110,52 +175,8 @@
             }
             ?>></a>
         </div>
-        <span class="config_icons hide_data" id="config_icons">
-            <a data-toggle="modal" data-target="#listConfig" id="listConfig_lnk" class="icon-wrench custom_cursor"> </a>
-            <div class="ddl_lt">
-                <a id="listTypes_lnk" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="icon-list custom_cursor"> </a>
-                <ul class="dropdown-menu" id="listType_dd" aria-labelledby="listTypes_lnk">
-                    <?php
-                    foreach ($list_types as $listType):
-                        ?>
-                        <li id="listType_<?php echo $listType['ListTypeId']; ?>" class="list_type_cls custom_cursor" data-typeId="<?php echo $listType['ListTypeId']; ?>" data-listid="<?php echo $list_id; ?>"><?php echo $listType['ListTypeName']; ?></li>
-                        <?php
-                    endforeach;
-                    ?>
-                </ul>
-            </div>
-            <?php
-            if ($this->session->userdata('logged_in')) {
-                $class_lock = '';
-                if ($list_owner_id != $_SESSION['id']) {
-                    $class_lock = 'lock_hide';
-                }
-                if ($is_locked == 0) {
-                    ?>
-                    <a class="icon-lock2 custom_cursor <?php echo $class_lock; ?>" id="listLock_lnk" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>"></a>
-                    <?php
-                } else {
-                    ?>
-                    <a class="icon-lock-open2 custom_cursor <?php echo $class_lock; ?>" id="listUnlock_lnk" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>"></a>
-                    <?php
-                }
-            }
-            ?>
-        </span>
-        <div class="add-data-head-r<?php echo $show_add_column; ?>">
-            <a class="add_column_url custom_cursor icon-add"></a>
-        </div>
-    </div>
-
-    <?php
-    $hide_add_item_cls = '';
-    $collapsable_div = '';
-    if ($is_locked == 1) {
-        $hide_add_item_cls = ' hide_add_item';
-        $collapsable_div = ' collapse_div';
-    }
-    ?>
-    <div class="add-data-body<?php echo $collapsable_div; ?>">
+    <div class="add-data-body add-data-body-new <?php echo $collapsable_div; ?>">
+    
         <div id="addTaskDiv" class="item-add-div multi-column-lists">
             <?php
             $sort_class = '';
@@ -228,6 +249,15 @@
                     </ul>
                     <?php
                 } else {
+                    $max_key = 0;
+                    foreach ($tasks as $tsks):
+//                        p($tsks);
+                        if(!empty($tsks['tasks'])){
+                            if(max(array_keys($tsks['tasks'])) > $max_key){
+                                $max_key = max(array_keys($tsks['tasks']));
+                            }
+                        }
+                    endforeach;
                     foreach ($tasks as $ids => $task):
                         if($ids <= 0){
                             $task_ul_id = 'TaskList';
@@ -253,18 +283,23 @@
                                 </div>
                             </li>
                             <?php
-                                foreach ($task['tasks'] as $t):
+//                            if(max(array_keys($task['tasks'])) > $max_key){
+//                                $max_key = max(array_keys($task['tasks']));
+//                            }
+                            for($i = 0; $i <= $max_key; $i++){
+                                if(isset($task['tasks'][$i])){
+//                                foreach ($task['tasks'] as $tid => $t):
                             ?>
-                            <li id="task_<?php echo $t['TaskId']; ?>" class="task_li" data-id="<?php echo $t['TaskId']; ?>">
-                                <div class="add-data-div edit_task <?php if ($t['IsCompleted']) { echo 'completed_task'; } ?>" data-id="<?php echo $t['TaskId'] ?>" data-task="<?php echo $t['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
+                            <li id="task_<?php echo $task['tasks'][$i]['TaskId']; ?>" class="task_li" data-id="<?php echo $task['tasks'][$i]['TaskId']; ?>">
+                                <div class="add-data-div edit_task <?php if ($task['tasks'][$i]['IsCompleted']) { echo 'completed_task'; } ?>" data-id="<?php echo $task['tasks'][$i]['TaskId'] ?>" data-task="<?php echo $task['tasks'][$i]['TaskName']; ?>" data-listid="<?php echo $list_id; ?>">
                                     <span class="icon-more"></span>
-                                    <span id="span_task_<?php echo $t['TaskId']; ?>" class="task_name_span"><?php echo $t['TaskName']; ?></span>
+                                    <span id="span_task_<?php echo $task['tasks'][$i]['TaskId']; ?>" class="task_name_span"><?php echo $task['tasks'][$i]['TaskName']; ?></span>
                                     <div class="opertaions pull-right">
-                                        <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $t['TaskId']; ?>" data-task="<?php echo $t['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                        <a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="<?php echo $task['tasks'][$i]['TaskId']; ?>" data-task="<?php echo $task['tasks'][$i]['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
                                         <?php
                                         if ($type_id == 5) {
                                             ?>
-                                            <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $t['TaskId']; ?>" data-task="<?php echo $t['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
+                                            <a href="javascript:void(0)" class="icon-checked complete_task custom_cursor" data-id="<?php echo $task['tasks'][$i]['TaskId']; ?>" data-task="<?php echo $task['tasks'][$i]['TaskName']; ?>" data-listid="<?php echo $list_id; ?>"></a>
                                             <?php
                                         }
                                         ?>
@@ -272,7 +307,17 @@
                                 </div>
                             </li>
                             <?php
-                                endforeach;
+//                                endforeach;
+                                }else{
+                            ?>
+                            <li id="task_null" class="task_li task_li_empty" data-id="0">
+                                <div class="add-data-div edit_task" data-id="0" data-task="" data-listid="0">
+                                    <span id="span_task_null" class="task_name_span">&nbsp;</span>
+                                </div>
+                            </li>
+                            <?php
+                                }
+                            }
                             ?>
                         </ul>
                         <?php

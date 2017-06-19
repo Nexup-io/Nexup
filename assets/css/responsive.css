@@ -3,7 +3,11 @@
 
 @media(min-width:768px) and (max-width:1024px){
     .list-body-ul li {width:50%;padding:0 15px 30px;}
-
+    .nexup-group .nexup-group-logo .inner-logo img { width: initial;}
+    .whoisnext-div .button-outer {max-width: 340px !important;}
+    .nexup-group .nexup-group-two .nexup-sub-group-two span {padding: 10px 20px;margin-right: 15px;}
+    .nexup-group .nexup-group-logo .inner-logo {line-height: 260px;}
+    .nexup-group {padding: 50px 0px 0px 0px;}
 }
 
 @media(max-width:991px){
@@ -20,6 +24,7 @@
     .history_div {margin-right: 30px;}
     .add-data-head {margin: 0 0 20px;}
     .whoisnext-div .button-outer {top: -12px;}
+     .whoisnext-div .button-outer {max-width: 260px !important;}
 
 }
 @media(max-width:767px){
@@ -86,9 +91,15 @@
     .list-head a {font-size: 22px;}
     .input-outer > a#import_contacts {display: block;margin-top: 10px;position: unset;transform: none;width: 90%;word-wrap: break-word;}
     .input-outer > a#copy_btn{width: 60px;}
-    .plus-category {position: relative;top: 11px;}
+    .plus-category {position: relative;float: left;}
     .enable-move{display: block;margin: 0 auto;font-size: 16px;margin-bottom: 20px;}
     #share-contact{top: 90px;}
+    .nexup-group .nexup-group-logo .inner-logo {line-height: 120px;}
+    .nexup-group .nexup-group-logo , .nexup-group .nexup-group-two{width: 100%;}
+    .whoisnext-div .button-outer{max-width: 100% !important;}
+    .nexup-group .nexup-group-two #nexup_btns { float: none;}
+    .nexup-group {padding: 50px 0px 10px;}
+    
 }
     
 
@@ -121,6 +132,7 @@
     .ui-icon-triangle-1-e {background-position: 0 0; background-size:9px;}
     div.ui-accordion-header {position: absolute !important;right: 0;top: 22px;}
     .h-nav .dropdown-menu {right: -80px;}
+    .nexup-group .nexup-group-two .nexup-sub-group-two span {padding: 10px 25px;margin-right: 10px;}
 }
 @media(max-width:480px){
 

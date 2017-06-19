@@ -66,16 +66,17 @@ class Task extends CI_Controller {
             $tasks = $this->TasksModel->get_tasks($list['list_id']);
             $columns = $this->TasksModel->getColumns($list['list_id']);
             if(!empty($columns)){
-                $j = 1;
+//                $j = 1;
                 foreach ($columns as $c_id => $col):
                     $all_tasks[$c_id]['column_id'] = $col['id'];
                     $all_tasks[$c_id]['column_name'] = $col['column_name'];
                     $all_tasks[$c_id]['tasks'] = array();
-                    foreach ($tasks as $task):
-                        $task['col_order'] = $j;
+                    foreach ($tasks as $t_id => $task):
+//                        $task['col_order'] = $j;
                         if($task['column_id'] == $col['id']){
-                            array_push($all_tasks[$c_id]['tasks'], $task);
-                        $j++;
+//                            array_push($all_tasks[$c_id]['tasks'], $task);
+                            $all_tasks[$c_id]['tasks'][$t_id] = $task;
+//                        $j++;
                         }
                     endforeach;
                 endforeach;

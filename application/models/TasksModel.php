@@ -41,7 +41,8 @@ class TasksModel extends CI_Model {
         $rst = $this->db->select('value as TaskName, task_inflo_id as TaskId, is_completed as IsCompleted, order, column_id');
         $this->db->where($condition);
 //        $this->db->order_by('list_data.order', 'asc');
-        $this->db->order_by('order asc', 'list_data.list_inflo_id asc');
+//        $this->db->order_by('order asc', 'list_data.list_inflo_id asc');
+        $this->db->order_by('id asc');
         $query = $this->db->get('list_data');
         return $query->result_array();
     }

@@ -1517,9 +1517,15 @@
                                     $('.whoisnext-div').remove();
                                 } else {
                                     var task_name = '';
+//                                    if ($('#TaskList .task_li').length > 0) {
+//                                        task_name = $('#TaskList li:first-child').text();
+//                                    }
+                                    
                                     if ($('#TaskList .task_li').length > 0) {
-                                        task_name = $('#TaskList li:first-child').text();
+                                        task_name = $('#TaskListDiv ul:nth-child(2)').children('.tasks_lists_display li:nth-child(3)').text();
                                     }
+                                    
+                                    
                                     if ($('.whoisnext-div').length == 0) {
                                         if (task_name == '') {
                                             $('#content').prepend('<div class="whoisnext-div"><div class="button-outer whosnext_img_bg"><span id="next_task_name">' + task_name + '</span></div><a class="whoisnext-btn custom_cursor"><span id="nexup_icon" class="icon-redo2"> </span> Nexup</a></div>');
@@ -1590,7 +1596,7 @@
                         success: function (res) {
                             if (res == 'success') {
                                 $('#nexup_comment').val('');
-                                $('#TaskList li:nth-child(2)').appendTo('#TaskList');
+                                $('.tasks_lists_display li:nth-child(2)').appendTo('#TaskList');
                                 $('#next_task_name').html($('#TaskList li:nth-child(2)').text());
                                 $('.whoisnext-div .button-outer').attr('title', $('#TaskList li:first-child').text());
                                 $.ajax({
@@ -2160,7 +2166,16 @@
                 return false;
             });
 
-
+//            $.ajax({
+//                url: '<?php echo base_url(); ?>user/get_api_code',
+//                type: 'POST',
+//                data: {
+//                    'operation': 'Get data'
+//                },
+//                success:function(res){
+//                    console.log(res);
+//                }
+//            });
 
 
         </script>

@@ -385,6 +385,7 @@ class User extends CI_Controller {
 
     public function inflologin() {
         $post_data['apicode'] = $_GET['API_Code'];
+        $_SESSION['apicode'] = $_GET['API_Code'];
         $post_data['url'] = 'https://developer.inflo.io/';
 
 
@@ -526,6 +527,17 @@ class User extends CI_Controller {
         } else {
             $this->session->set_flashdata('error', 'Something went wrong. We are unable to process your request. Please try again!');
             redirect($this->agent->referrer());
+        }
+    }
+    
+    
+    public function get_api_code(){
+        if($this->input->post()){
+            $api_code = '';
+            if(isset($_SESSION['apicode'])){
+                $api_code = $_SESSION['apicode'];
+            }
+            echo $api_code;
         }
     }
 
