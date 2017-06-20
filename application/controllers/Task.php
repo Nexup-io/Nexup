@@ -380,7 +380,7 @@ class Task extends CI_Controller {
             } else {
                 $data['Listid'] = trim($this->input->post('list_id'));
             }
-            $last_order = $this->TasksModel->get_last_order_of_item($data['Listid'], $this->input->post('col_id'));
+            $last_order = $this->TasksModel->get_last_order_of_item($data['Listid']);
 
             if (isset($_SESSION['logged_in'])) {
                 $add_task['user_id'] = $_SESSION['id'];
@@ -962,7 +962,7 @@ class Task extends CI_Controller {
             $today = date('Y-m-d H:i:s');
             $new_col['list_inflo_id'] = $this->input->post('list_id');
             $new_col['column_name'] = $this->input->post('col_name');
-            
+            $li_cnt = $this->input->post('li_cnt');
             $col_order = $this->TasksModel->FindColumnMaxOrder($this->input->post('list_id'));
             $add_col_first = 0;
             
@@ -1024,6 +1024,13 @@ class Task extends CI_Controller {
                     $resp_str .= '</div>';
                     $resp_str .= '</div>';
                     $resp_str .= '</li>';
+                    for($i = 0; $i < $li_cnt; $i++){
+                        $resp_str .= '<li id="task_null" class="task_li task_li_empty" data-id="0">';
+                        $resp_str .= '<div class="add-data-div edit_task" data-id="0" data-task="" data-listid="0">';
+                        $resp_str .= '<span id="span_task_null" class="task_name_span">&nbsp;</span>';
+                        $resp_str .= '</div>';
+                        $resp_str .= '</li>';
+                    }
                     $resp_str .= '</ul>';
                 }
                 $resp['new_col'] = $resp_str;

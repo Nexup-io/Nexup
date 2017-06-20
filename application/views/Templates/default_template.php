@@ -1126,7 +1126,6 @@
                                 $('#add_task_li').removeClass('list-error');
                                 $('#add_task_li').addClass('list-error');
                             } else {
-                                $(this).prop('disabled', false);
                                 var resp = JSON.parse(res);
                                 $('#TaskList #task_name').attr('data-listid', resp[0]);
                                 $('#save_col').attr('data-listid', resp[0]);
@@ -1198,6 +1197,9 @@
                                 $('.add_task_cls').hide();
                                 $('#add_task_li').removeClass('list-error');
                                 $(this).parent().parent().parent().append(resp[1]);
+                                var append_id = $(this).parent().parent().parent().attr('id');
+                                var empty_li = '<li id="task_null" class="task_li task_li_empty" data-id="0"><div class="add-data-div edit_task" data-id="0" data-task="" data-listid="0"><span id="span_task_null" class="task_name_span">&nbsp;</span></div></li>';
+                                $('.tasks_lists_display').not(document.getElementById(append_id)).append(empty_li);
                                 if ($('#TaskList li').length <= 1) {
                                     $('.whoisnext-div .whoisnext-btn').removeClass('whosnext_img_bg');
 //                                    $('.whoisnext-div .whoisnext-btn').removeClass('whoisnext-btn_light_bg');
@@ -1208,6 +1210,7 @@
                                 $('.whoisnext-div .button-outer').removeClass('whosnext_img_bg');
                                 $('.add-data-head-r').removeClass('hidden_add_column_btn');
                             }
+                            $(this).prop('disabled', false);
                             $('.icon-lock2').removeClass('lock_hide');
                             $('.icon-lock-open2').removeClass('lock_hide');
                         }
@@ -1229,7 +1232,7 @@
             //Hide options from list/tasks when mouse clicked anywhere on page
 
             $(document).on('click', 'body', function (e) {
-                if ($(e.target).attr('id') == 'edit_task_name' || $(e.target).attr('id') == 'edit_list_name' || $(e.target).attr('class') == 'icon-more') {
+                if ($(e.target).attr('id') == 'edit_task_name' || $(e.target).attr('id') == 'edit_list_name' || $(e.target).attr('class') == 'icon-more' || $(e.target).attr('class') == 'icon-cross') {
                     e.preventDefault();
                 } else {
                     $('.edit_list_cls').remove();
@@ -1247,8 +1250,8 @@
                     $('.task_name_span').show();
                 }
 
-                if ($(e.target).attr('class') == 'column_name_class' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'edit_column_box' || $(e.target).attr('class') == 'remove_col' || $(e.target).attr('class') == 'move_col') {
-                    e.stopPropagation();
+                if ($(e.target).attr('class') == 'column_name_class' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'add-data-title' || $(e.target).attr('class') == 'edit_column_box' || $(e.target).attr('class') == 'remove_col' || $(e.target).attr('class') == 'move_col' || $(e.target).attr('class') == 'icon-cross') {
+                    e.preventDefault();
 
                 } else {
                     $('#edit_column_box').remove();
@@ -1259,7 +1262,6 @@
 
             //Open modal of edit task and fill value in text box
             $(document).on('click', '.edit_task', function (e) {
-
                 if ($('.icon-settings').attr('data-locked') == 1) {
                     alert('This list is locked. Please unlock it to perform any operation!');
                     return false;
@@ -1411,6 +1413,8 @@
 
             //Delete task ajax call
             $(document).on('click', '.delete_task', function () {
+                var indx = $(this).parent().parent().parent().index();
+                var ul_id = $(this).parent().parent().parent().attr('id');
                 var cnfrm = confirm('Are you sure want to delete this item?');
                 if (cnfrm) {
                     var task_id = $(this).attr('data-id');
@@ -1425,7 +1429,13 @@
                         success: function (res) {
 
                             if (res == 'success') {
-                                $('#task_' + task_id).remove();
+//                                $('#task_' + task_id).remove();
+                                $('.tasks_lists_display li:nth-child(' + (indx + 1) + ')').remove();
+//                                $('.tasks_lists_display').not(document.getElementById(ul_id).each(function (){
+//                                    $(this).n()
+//                                });
+//                                console.log($('.tasks_lists_display li:nth-child(' + indx + ')').not(document.getElementById(ul_id)));
+//                                $('.tasks_lists_display li:nth-child(' + indx + ')').not(document.getElementById(ul_id)).remove();
                                 if ($('li.task_li').length == 0) {
                                     $('.whoisnext-div .button-outer').addClass('whosnext_img_bg');
                                 }
@@ -1923,7 +1933,7 @@
             });
 
             $(document).on('click', '#save_col', function () {
-//                alert($('.heading_items_col').length); return false;
+                var li_cnt = $('#TaskListDiv ul:nth-child(2) li.task_li').length;
                 var col_name = $('#nexup_column').val();
                 var list_id = $(this).attr('data-listid');
                 $.ajax({
@@ -1932,7 +1942,7 @@
                     data: {
                         'col_name': col_name,
                         'list_id': list_id,
-//                        'order': 1
+                        'li_cnt': li_cnt
                     },
                     success: function (res) {
 
@@ -1943,13 +1953,12 @@
                             var resp = JSON.parse(res);
 
                             if ($('.heading_items_col').length > 0) {
-                                console.log('Here');
-                                $('#TaskListDiv').append(res.new_col);
+                                $('#TaskListDiv').append(resp.new_col);
                             } else {
-                                console.log('THere');
                                 $('.heading_col').after(resp.first_col);
                                 $('#TaskListDiv').append(resp.new_col);
                             }
+                            
                              
                              
                             if ($('.heading_items_col').length == 2) {
@@ -1984,6 +1993,7 @@
                             }
 
                         }
+                        $("#TaskListDiv ul.tasks_lists_display:last-child #task_name").focus();
                     }
                 });
                 return false;

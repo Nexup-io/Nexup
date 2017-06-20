@@ -73,7 +73,7 @@
                             <span>s1</span>
                             <span>s2</span>
                             <span>s3</span>
-                            <p class="icon-eye"></p>
+                            <p>i</p>
                         </div>
                     <?php } ?>
                 </div>

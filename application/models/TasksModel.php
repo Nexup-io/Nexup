@@ -42,7 +42,7 @@ class TasksModel extends CI_Model {
         $this->db->where($condition);
 //        $this->db->order_by('list_data.order', 'asc');
 //        $this->db->order_by('order asc', 'list_data.list_inflo_id asc');
-        $this->db->order_by('id asc');
+        $this->db->order_by('order asc');
         $query = $this->db->get('list_data');
         return $query->result_array();
     }
@@ -95,8 +95,8 @@ class TasksModel extends CI_Model {
         return $this->db->update('list_data', $task_data);
     }
 
-    public function get_last_order_of_item($list_id, $col_id) {
-        $condition = array('list_inflo_id' => $list_id, 'column_id' => $col_id);
+    public function get_last_order_of_item($list_id) {
+        $condition = array('list_inflo_id' => $list_id);
         $this->db->select_max('order');
         $this->db->where($condition);
         $query = $this->db->get('list_data');

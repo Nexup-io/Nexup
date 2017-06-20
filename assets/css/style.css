@@ -93,17 +93,8 @@ input[type=checkbox]:checked + label:before {content: "\2713";font-size: 15px; c
 #config_icons a{display:inline-block;vertical-align:middle;margin:0 10px 15px 0;line-height:34px; font-size:28px;color:#9f9f9f;text-decoration:none;}
 #config_icons a:hover{color:#01b9e6;}
 .add-data-body{position:relative;padding:0 0 0 190px;min-height:93px;}
-.add-data-body.add-data-body-new {
-    position: absolute;
-    padding: 0 0 0 190px;
-    min-height: 93px;
-    width: 100%;
-    margin-top: 50px;
-}
-span#config_icons {
-    float: left;
-    width: 100%;
-}
+.add-data-body.add-data-body-new {padding: 0 0 0 190px;min-height: 93px;width: 100%;}
+span#config_icons {float: left;width: 100%;}
 .plus-category{position:absolute;z-index: 999;margin-top: 51px;}
 .plus-category a{border:1px solid #f5f3f3;background:#fff;text-align:center;line-height:148px;text-decoration:none;width:150px;height:150px;display:block;font-size:40px;color:#01b9e6;}
 .plus-category a:hover{border:1px solid #01b9e6;}
@@ -365,7 +356,7 @@ ul#log_dd2{overflow: auto;}
 .colmodal-head h2, .logmodal-head h2{text-transform:uppercase;font-size:25px;margin:0;}
 #col_list #config_btn_div{margin:0; }
 .add-data-head-r{border:1px solid #e0e0e0; background:#fff; text-align:center; line-height:48px; text-decoration:none; width:50px;height:50px; display:block; font-size:30px; color:#01b9e6;float:right;}
-.add-data-head .add-data-head-r a{margin:0;vertical-align:top;line-height: 48px;}
+.add-data-head .add-data-head-r a{margin:0;vertical-align:top;line-height: 48px;text-decoration: none;}
 .add-data-input input, .task_li_empty .edit_task{ border:1px solid #e0e0e0;padding:16px 20px;line-height:30px;font-size:18px;font-weight:300;color:#4c4c4c;font-family:'Roboto';width:100%;}
 .add-data-title{ border:1px solid #e0e0e0;padding:16px 20px;line-height:30px;font-size:18px;font-weight:300;color:#4c4c4c;font-family:'Roboto';width:100%;background:#f0f0f0;display:inline-block;vertical-align:middle;width:100%;}
 .add-data-title-r{float:right;}
@@ -394,9 +385,9 @@ ul#log_dd2{overflow: auto;}
 #addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger:hover .mCSB_dragger_bar, 
 #addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger:active .mCSB_dragger_bar, 
 #addTaskDiv .mCS-3d-dark.mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar { background-color:#01b9e6;}
-.task_multi_col_div{min-width: 1600px; width: auto;}
 .hidden_add_column_btn{display: none;}
-#TaskListDiv{min-height: 500px;}
+#TaskListDiv{min-height: 500px; width: 1200px;margin-top: 81px;}
+.task_multi_col_div{min-width: 1600px; width: auto;}
 .column_name_class{float:left;line-height:34px;}
 #edit_column_box{width: 80%;background: #f0f0f0;border: transparent;}
 .move_col{float: left;position: relative;margin-top: 2%;font-size: 25px;cursor: pointer;}
