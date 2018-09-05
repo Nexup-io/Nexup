@@ -1,0 +1,28 @@
+
+table th { cursor: pointer; }
+
+table th.noDrag { cursor: not-allowed; }
+
+.ghost { /* �?тили плавающей таблицы */
+  /*background: #FC6D58;*/
+  position: absolute;
+  z-index: 10000;
+}
+
+.arrow_down {
+  display: block;
+  position: absolute;
+  z-index: 10000;
+  width: 16px;
+  height: 16px;
+  background: url('arrow-down.png') no-repeat bottom center;
+}
+
+.arrow_right {
+  display: block;
+  position: absolute;
+  z-index: 10000;
+  width: 16px;
+  height: 16px;
+  background: url('arrow-right.png') no-repeat center right;
+}

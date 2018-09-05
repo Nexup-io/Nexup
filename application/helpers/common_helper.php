@@ -8,6 +8,8 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+include APPPATH . 'third_party/fb_link_preview/php/classes/LinkPreview.php';
+
 /**
  * Print array/string.
  * @param array $data - data which is going to be printed
@@ -401,9 +403,188 @@ function common_email_send($email_values = array()) {
     return 'success';
 }
 
-
-function create_slug($name){
+function create_slug($name) {
     $slug = str_replace(' ', '-', $name);
     return $slug;
-    
+}
+
+/*
+ * Generate Preview from view
+ * @author SG
+ */
+
+function get_preview($text) {
+    SetUp::init();
+    $imageQuantity = 1;
+    $text = " " . str_replace("\n", " ", $text);
+    $header = "";
+
+    $linkPreview = new LinkPreview();
+    $answer = $linkPreview->crawl($text, $imageQuantity, $header);
+
+    return $answer;
+
+    SetUp::finish();
+}
+
+/**
+ * Common Send Email Function
+ * @param string $to - To Email ID
+ * @param string $template - Email Template file
+ * @param Array $data - Data to be passed
+ * @return boolean
+ */
+function send_mail($to = '', $data = []) {
+    if (empty($to) || empty($data)) {
+        return false;
+    }
+    $ci = &get_instance();
+    $ci->load->library('email');
+
+    $config['protocol'] = 'smtp';
+    $config['smtp_host'] = 'ssl://smtp.gmail.com';
+    $config['smtp_port'] = '465';
+    $config['smtp_user'] = 'sg.narola1@gmail.com';
+    $config['smtp_pass'] = 'narola@21';
+    $config['charset'] = 'utf-8';
+    $config['newline'] = "\r\n";
+    $config['mailtype'] = 'html';
+    $config['validation'] = TRUE;
+
+    $ci->email->initialize($config);
+
+    $ci->email->to($to);
+    $ci->email->from('noreply@nexup.io', 'Nexup');
+    $ci->email->subject($data['subject']);
+    $ci->email->message($data['message']);
+    $ci->email->send();
+}
+
+//Shor number formate converter
+function number_format_short( $n, $precision = 1 ) {
+	if ($n < 900) {
+		// 0 - 900
+		$n_format = number_format($n, $precision);
+		$suffix = '';
+	} else if ($n < 900000) {
+		// 0.9k-850k
+		$n_format = number_format($n / 1000, $precision);
+		$suffix = 'K';
+	} else if ($n < 900000000) {
+		// 0.9m-850m
+		$n_format = number_format($n / 1000000, $precision);
+		$suffix = 'M';
+	} else if ($n < 900000000000) {
+		// 0.9b-850b
+		$n_format = number_format($n / 1000000000, $precision);
+		$suffix = 'B';
+	} else {
+		// 0.9t+
+		$n_format = number_format($n / 1000000000000, $precision);
+		$suffix = 'T';
+	}
+  // Remove unecessary zeroes after decimal. "1.0" -> "1"; "1.00" -> "1"
+  // Intentionally does not affect partials, eg "1.50" -> "1.50"
+	if ( $precision > 0 ) {
+		$dotzero = '.' . str_repeat( '0', $precision );
+		$n_format = str_replace( $dotzero, '', $n_format );
+	}
+	return $n_format . $suffix;
+}
+
+/**
+ * Common password salt generator
+ * @param number
+ * @param from base
+ * @param to base
+ * @return string
+ */
+
+function custombase_convert($numstring, $baseFrom = "0123456789", $baseTo = "0123456789") {
+    $numstring = (string) $numstring;
+    $baseFromLen = strlen($baseFrom);
+    $baseToLen = strlen($baseTo);
+    if ($baseFrom == "0123456789") { // No analyzing needed, because $numstring is already decimal
+        $decVal = (int) $numstring;
+    } else {
+        $decVal = 0;
+        for ($len = (strlen($numstring) - 1); $len >= 0; $len--) {
+            $char = substr($numstring, 0, 1);
+            $pos = strpos($baseFrom, $char);
+            if ($pos !== FALSE) {
+                $decVal += $pos * ($len > 0 ? pow($baseFromLen, $len) : 1);
+            }
+            $numstring = substr($numstring, 1);
+        }
+    }
+    if ($baseTo == "0123456789") { // No converting needed, because $numstring needs to be converted to decimal
+        $numstring = (string) $decVal;
+    } else {
+        $numstring = FALSE;
+        $nslen = 0;
+        $pos = 1;
+        while ($decVal > 0) {
+            $valPerChar = pow($baseToLen, $pos);
+            $curChar = floor($decVal / $valPerChar);
+
+            if ($curChar >= $baseToLen) {
+                $pos++;
+            } else {
+                $decVal -= ($curChar * $valPerChar);
+                if ($numstring === FALSE) {
+                    $numstring = str_repeat($baseTo{1}, $pos);
+                    $nslen = $pos;
+                }
+
+                $numstring = substr($numstring, 0, ($nslen - $pos)) . $baseTo{(int) $curChar} . substr($numstring, (($nslen - $pos) + 1));
+                $pos--;
+            }
+        }
+        if ($numstring === FALSE)
+            $numstring = $baseTo{1};
+    }
+    return $numstring;
+}
+
+/**
+ * Common password encrypt generator
+ * @param string password
+ * @param string encryption key
+ * @return string
+ */
+function encrypt($pure_string, $encryption_key) {
+    $iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_ECB);
+    $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+    $encrypted_string = mcrypt_encrypt(MCRYPT_BLOWFISH, $encryption_key, utf8_encode($pure_string), MCRYPT_MODE_ECB, $iv);
+    return $encrypted_string;
+}
+
+/**
+ * Common password encrypt generator
+ * @param string encrypted password
+ * @param string encryption key
+ * @return string
+ */
+function decrypt($encrypted_string, $encryption_key) {
+    $iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_ECB);
+    $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+    $decrypted_string = mcrypt_decrypt(MCRYPT_BLOWFISH, $encryption_key, $encrypted_string, MCRYPT_MODE_ECB, $iv);
+    return $decrypted_string;
+}
+
+
+
+/**
+ * Common password string generator
+ * @param int length
+ * @return string
+ */
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
 }

@@ -24,10 +24,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 //$config['base_url'] = '';
-if ($_SERVER['HTTP_HOST'] == 'my.nexup.io') {
-  $base_url = 'http://my.nexup.io/';
+if(isset($_SERVER['HTTP_HOST'])){
+    if ($_SERVER['HTTP_HOST'] == 'nexup.io') {
+        if($_SERVER['REQUEST_SCHEME'] == 'https'){
+            $base_url = 'https://nexup.io/';
+        }else{
+            $base_url = 'http://nexup.io/';
+        }
+    }elseif ($_SERVER['HTTP_HOST'] == 'test.nexup.io') {
+        if($_SERVER['REQUEST_SCHEME'] == 'https'){
+            $base_url = 'https://test.nexup.io/';
+        }else{
+            $base_url = 'http://test.nexup.io/';
+        }
+    }elseif ($_SERVER['HTTP_HOST'] == 'dev.nexup.io') {
+      $base_url = 'http://dev.nexup.io/';
+    }else{
+      $base_url = 'http://34.206.184.180/';
+    }
 }else{
-  $base_url = 'http://34.206.184.180/';
+    $base_url = 'http://test.nexup.io/';
 }
 $config['base_url'] = $base_url;
 
@@ -164,7 +180,7 @@ $config['composer_autoload'] = FALSE;
 | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
 |
 */
-$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
+$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-#=\'';
 
 /*
 |--------------------------------------------------------------------------
@@ -375,7 +391,7 @@ $config['encryption_key'] = '';
 */
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'ci_session';
-$config['sess_expiration'] = 7200;
+$config['sess_expiration'] = 86400; //7200 default value
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
@@ -428,7 +444,8 @@ $config['standardize_newlines'] = FALSE;
 |          for backwards compatibility purposes!
 |
 */
-$config['global_xss_filtering'] = FALSE;
+//$config['global_xss_filtering'] = FALSE;
+$config['global_xss_filtering'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------

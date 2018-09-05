@@ -195,6 +195,9 @@
 .icon-more-h:before {
   content: "\e908";
 }
+.icon-more-o:before {
+  content: "\e908";
+}
 .icon-nine-circles-button:before {
   content: "\e909";
 }
@@ -204,7 +207,7 @@
 .icon-search:before {
   content: "\e90b";
 }
-.icon-settings:before {
+.icon-settings:before, .icon-settings-sub:before {
   content: "\e90c";
 }
 .icon-share:before {

@@ -5,3 +5,4 @@ $( 'ul.nav.nav-tabs  a' ).click( function ( e ) {
   ( function( $ ) {
 	  fakewaffle.responsiveTabs( [ 'xs', 'sm' ] );
   } )( jQuery );
+  

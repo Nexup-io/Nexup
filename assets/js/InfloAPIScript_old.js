@@ -6,7 +6,7 @@ $(document)
         //Redirect to Inflo for Login
         $("a.inflologinlink")
             .click(function () {
-               var infloUrl = 'https://demo.inflo.io/Login.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=http://34.206.184.180/';
+               var infloUrl = 'https://test.inflo.io/Login.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=http://34.206.184.180/';
                 //var infloUrl = 'http://localhost:2314/Login.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=http://localhost:51593/Default.aspx';
                 
                 var myWin = window.open(infloUrl, 'InfloLogin', 'height=700, width=600, left=300, top=100, resizable=no, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');

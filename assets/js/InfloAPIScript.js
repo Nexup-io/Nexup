@@ -1,39 +1,91 @@
+var call_url = '';
+if(location.protocol == 'http:'){
+    call_url = 'http://test.nexup.io';
+}else{
+    call_url = 'https://test.nexup.io';
+}
+
 $(document)
-        .ready(function () {
+    .ready(function () {
+        GetEncryptedAPIKey("974CB208-48DD-41D4-99C1-53599EB107DA");
 
-            GetEncryptedAPIKey("974CB208-48DD-41D4-99C1-53599EB107DA");
+        //Redirect to Inflo for Login
+        $("a.inflologinlink")
+            .click(function () {
+                var ref_url = window.location.href;
+                $.ajax({
+                    type: "POST",
+                    crossDomain: true,
+                    url: call_url + '/save_ref',
+                    dataType: "json",
+                    data: { ref: ref_url },
+                    cache: false,
+                    success: function (data) {
+                    }
+                });
 
-            //Redirect to Inflo for Login
-            $("a.inflologinlink")
-                    .click(function () {
-                        var ref_url = window.location.href;
-                        $.ajax({
-                            type: "POST",
-                            crossDomain: true,
-                            url: 'http://34.206.184.180/save_ref',
-                            dataType: "json",
-                            data: {ref: ref_url},
-                            cache: false,
-                            success: function (data) {
-                            }
-                        });
-                        
-                        
-                         var infloUrl = 'https://demo.inflo.io/Login.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=http://34.206.184.180/inflo_login/';
+                var redirectUrl = encodeURIComponent(call_url + "/inflo_login/");
+                var infloUrl = 'https://inflo.io/Login.aspx?SkipApiLogin=1&ApiKey=' + encodeURIComponent($("#hndautoid").val()) + '&RedirectUrl=' + redirectUrl;
 
-                                var myWin = window.open(infloUrl, 'InfloLogin', 'height=700, width=600, left=300, top=100, resizable=no, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
+                var myWin = window.open(infloUrl, 'Popup', 'height=700, width=600, left=300, top=100, resizable=no, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
+                //PopupCenter(infloUrl, 'xtf', '600', '700');  
+            });
+
+        var mytoken = GetToken();
 
 
 
-                    });
 
-            //Inflo API Code
-            var infloApiCode = getUrlVars()["API_Code"];
+        //Redirect to Inflo for Login
+        $(document)
+            .on('click',
+                ".share-btn",
+                function (e) {
+                    if ($('.inflologinlink').length == 1) {
+                        e.preventDefault();
+                        $('.inflologinlink').trigger('click');
+                        return false;
+                    }
+                    $('#hidden_share_click').val('1');
+                    if ($(this).hasClass('noevents')) {
+                        return false;
+                    }
 
-            if (infloApiCode !== null && infloApiCode != undefined) {
-                GetInfloCredentials(infloApiCode);
-            }
-        });
+                    var listId = $(this).attr("data-id");
+                    var userId = $("#hdnuserid").val();
+                    if (listId > 0) {
+
+                        var redirectUrl = encodeURIComponent(window.location.href);
+
+                        var infloShareUrl = 'https://inflo.io/ShareWithInflo/ShareWithInfloPage.aspx?SkipApiLogin=1&ApiKey=' + encodeURIComponent($("#hndautoid").val()) + '&RedirectUrl=' + redirectUrl + "&UserId=" + userId + "&SmartListingId=" + listId + "&SmartListingType=List";
+                        var myWin = window.open(infloShareUrl,
+                            'infloShareUrl',
+                            'height=600, width=998, left=300, top=100, resizable=0, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
+                    } else {
+                        alert("Invalid List");
+                    }
+                });
+
+
+    });
+
+function PopupCenter(url, title, w, h) {
+    // Fixes dual-screen position                         Most browsers      Firefox
+    var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : window.screenX;
+    var dualScreenTop = window.screenTop != undefined ? window.screenTop : window.screenY;
+
+    var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+    var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+    var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+    var top = ((height / 2) - (h / 2)) + dualScreenTop;
+    var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+    // Puts focus on the newWindow
+    if (window.focus) {
+        newWindow.focus();
+    }
+}
 
 function GetInfloCredentials(apicode) {
 
@@ -53,10 +105,31 @@ function GetInfloCredentials(apicode) {
 
             if (data !== null) {
 
-                console.log(data);
+                //console.log(data);
                 $("#hdnuserid").val(data.data.UserId);
                 $("#hdnaccesstoken").val(data.data.XAuthToken);
             }
+        }
+    });
+}
+
+function GetToken() {
+    $.ajax({
+        url: call_url + '/user/get_api_code',
+        type: 'POST',
+        data: {
+            'operation': 'Get data'
+        },
+        success: function (res) {
+            //var registerSuccess = getUrlVars("RegistrationSuccess");
+            //if (registerSuccess == null || registerSuccess === "") {
+            //Inflo API Code
+            var infloApiCode = res; //getUrlVars("API_Code");
+
+            if (infloApiCode != null && infloApiCode !== "" && infloApiCode !== undefined) {
+                GetInfloCredentials(infloApiCode);
+            }
+            //}
         }
     });
 }
@@ -87,13 +160,9 @@ function GetEncryptedAPIKey(apikey) {
 
 
 // Read a page's GET URL variables and return them as an associative array.
-function getUrlVars() {
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-    return vars;
+function getUrlVars(param) {
+    param = param.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + param + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }

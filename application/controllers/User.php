@@ -123,7 +123,7 @@ class User extends CI_Controller {
                 $body = substr($server_output, -$info['download_content_length']);
 
                 $response = (array) json_decode($body);
-
+            
 
                 $header_text = substr($header, 0, strpos($header, "\r\n\r\n"));
 
@@ -137,6 +137,7 @@ class User extends CI_Controller {
                     }
 
                 curl_close($ch);
+                
 
                 if (isset($response['success']) && $response['success'] == 1) {
                     $user_data['id'] = $response['data']->userid;
@@ -404,7 +405,7 @@ class User extends CI_Controller {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $server_output = curl_exec($ch);
         $response = (array) json_decode($server_output);
-//        p($response); exit;
+        
         if (isset($response['success']) && $response['success'] == 1) {
             $headers = array('Content-Type: application/json');
             $vals = 'X-AuthToken: ' . $response['data']->XAuthToken;
@@ -436,39 +437,79 @@ class User extends CI_Controller {
                 $user_data['xauthtoken'] = $response['data']->XAuthToken;
                 $user_data['logged_in'] = 1;
                 $this->session->set_userdata($user_data);
-                if ($this->session->userdata('list_id') != null) {
-                    
-                    foreach ($this->session->userdata('list_id') as $lst):
-                        $update_info['user_id'] = $this->session->userdata('id');
-                        $this->ListsModel->update_list_data($lst, $update_info);
-                    endforeach;
-                    $list_save_data['Apikey'] = API_KEY;
-                    $list_save_data['ListId'] = $this->session->userdata('list_id');
-                    if ($this->session->userdata('task_id') != null) {
-                        $list_save_data['TaskIdList'] = $this->session->userdata('task_id');
-                    }
-                    $list_save_data = json_encode($list_save_data);
+                if(isset($_SESSION['list_id'])){
+                $data_send['Apikey'] = API_KEY;
+                $data_send['CreatedByUserId'] = $_SESSION['id'];
+                    if (!empty($_SESSION['list_id'])) {
+                        foreach ($this->session->userdata('list_id') as $lst):
+                            $lists_found = $this->ListsModel->find_list_details_by_id($lst);
+                            if(empty($lists_found['user_id']) || $lists_found['user_id'] == 0){
+                                $update_info['user_id'] = $this->session->userdata('id');
 
-                    $header_save_listdata = array('Content-Type: application/json');
-                    if (isset($_SESSION['xauthtoken'])) {
-                        $val_save = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
-                        array_push($header_save_listdata, $val_save);
+                                $user_name = '';
+                                if(isset($_SESSION['first_name']) && !empty($_SESSION['first_name'])){
+                                    $user_name .= $_SESSION['first_name'];
+                                }
+                                if(isset($_SESSION['last_name']) && !empty($_SESSION['last_name'])){
+                                    $user_name .= ' '. $_SESSION['last_name'];
+                                }
+                                if(empty($_SESSION['first_name']) && empty($_SESSION['last_name'])){
+                                    $user_name = $_SESSION['email'];
+                                }
+                                $updt_list['created_user_name'] = $user_name;
+
+                                $this->ListsModel->update_list_data($lst, $update_info);
+
+                                
+                                $data_send['Listid'] = $lists_found['list_inflo_id'];
+                                
+//                                p($data_send); exit;
+
+                                $data_send = json_encode($data_send);
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, API_URL . "account/UpdateList");
+                                curl_setopt($ch, CURLOPT_POST, 1);
+                                curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+                                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_send);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                $server_output = curl_exec($ch);
+                                $response_update = (array) json_decode($server_output);
+                                if(isset($response_update['success'])  && $response_update['success'] == 1){
+                                    $update_list['created_user_name'] = $response_update['data']->CreateByUserFullName;
+                                    $this->ListsModel->update_list_data($lists_found['list_id'], $update_list);
+                                }
+
+                            }
+                        endforeach;
+                        $list_save_data['Apikey'] = API_KEY;
+                        $list_save_data['ListId'] = $this->session->userdata('list_id');
+                        if ($this->session->userdata('task_id') != null) {
+                            $list_save_data['TaskIdList'] = $this->session->userdata('task_id');
+                        }
+                        $list_save_data = json_encode($list_save_data);
+
+                        $header_save_listdata = array('Content-Type: application/json');
+                        if (isset($_SESSION['xauthtoken'])) {
+                            $val_save = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+                            array_push($header_save_listdata, $val_save);
+                        }
+                        $ch_save = curl_init();
+                        curl_setopt($ch_save, CURLOPT_URL, API_URL . "account/SaveHistory");
+                        curl_setopt($ch_save, CURLOPT_POST, 1);
+                        curl_setopt($ch_save, CURLOPT_HTTPHEADER, $header_save_listdata);
+                        curl_setopt($ch_save, CURLOPT_POSTFIELDS, $list_save_data);
+                        curl_setopt($ch_save, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch_save, CURLOPT_SSL_VERIFYPEER, false);
+                        $server_output = curl_exec($ch_save);
+                        $response_save = (array) json_decode($server_output);
+    //                        p($response); exit;
+                        if (isset($response_save['success']) && $response_save['success'] == 1) {
+                            $this->session->unset_userdata('list_id');
+                            $this->session->unset_userdata('task_id');
+                        }
+                        curl_close($ch_save);
                     }
-                    $ch_save = curl_init();
-                    curl_setopt($ch_save, CURLOPT_URL, API_URL . "account/SaveHistory");
-                    curl_setopt($ch_save, CURLOPT_POST, 1);
-                    curl_setopt($ch_save, CURLOPT_HTTPHEADER, $header_save_listdata);
-                    curl_setopt($ch_save, CURLOPT_POSTFIELDS, $list_save_data);
-                    curl_setopt($ch_save, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch_save, CURLOPT_SSL_VERIFYPEER, false);
-                    $server_output = curl_exec($ch_save);
-                    $response_save = (array) json_decode($server_output);
-//                        p($response); exit;
-                    if (isset($response_save['success']) && $response_save['success'] == 1) {
-                        $this->session->unset_userdata('list_id');
-                        $this->session->unset_userdata('task_id');
-                    }
-                    curl_close($ch_save);
                 }
             }
             curl_close($ch1);
@@ -515,7 +556,7 @@ class User extends CI_Controller {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $server_output = curl_exec($ch);
         $response = (array) json_decode($server_output);
-        if (isset($response['success']) && $response['success'] == 1) {
+//        if (isset($response['success']) && $response['success'] == 1) {
             $unauth_sess_visit = array();
             if (isset($_SESSION['unauth_visit']) && $_SESSION['unauth_visit'] != null) {
                 $unauth_sess_visit = $_SESSION['unauth_visit'];
@@ -524,10 +565,10 @@ class User extends CI_Controller {
             $_SESSION['unauth_visit'] = $unauth_sess_visit;
             $this->session->set_flashdata('success', 'You are successfully logged out.');
             redirect(base_url());
-        } else {
-            $this->session->set_flashdata('error', 'Something went wrong. We are unable to process your request. Please try again!');
-            redirect($this->agent->referrer());
-        }
+//        } else {
+//            $this->session->set_flashdata('error', 'Something went wrong. We are unable to process your request. Please try again!');
+//            redirect($this->agent->referrer());
+//        }
     }
     
     

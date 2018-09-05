@@ -88,14 +88,13 @@
                                 </div>
                                 <div class="col-md-12 col-sm-12 col-xs-12">
                                     <div class="input-outer">
-                                        <label>Password</label>
+                                        <label>Email</label>
                                         <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="<?php echo $user_details['email']; ?>" disabled="" style="background: #fff;border: none;">
                                     </div>  
                                 </div>
-<!--                                <div class="col-md-12 col-sm-12 col-xs-12">
-                                    <button type="submit" class="btn btn-info save-btn" id="update_info">Save</button>
-                                    <input type="reset" class="btn btn-default" value="Clear">
-                                </div>-->
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <a class="btn btn-info save-btn" id="update_info" href="https://inflo.io/User/MyProfile.aspx">Edit Profile</a>
+                                </div>
                             </form>
 
                         </div>
@@ -128,6 +127,8 @@
                                     <button type="submit" class="btn btn-info save-btn">Update</button>
                                     <input type="reset" class="btn btn-default" value="Clear">
                                 </div>
+                                
+                                
                             </form>
                         </div>
 
