@@ -86,8 +86,12 @@ class TasksModel extends CI_Model {
     }
     
     
-    public function get_tasks_for_calendar($list_id, $column_ids) {
-        $query = "SELECT `list_data`.`id` as `TaskId`, `list_data`.`user_id` as `UserId`, `value` as `TaskName`, list_columns.type, list_columns.height, `is_completed` as `IsCompleted`, `is_present` as `IsPresent`, `list_data`.preview_meta as preview_meta, `list_data`.`order` as `order`, `column_id`, `list_columns`.`order` as `col_order`, `attendance_data`.`id` as `attendance_id`, `attendance_data`.`item_ids`, `attendance_data`.`comment`, `attendance_data`.`check_date` FROM `list_data` LEFT JOIN `list_columns` ON `list_columns`.`id` = `list_data`.`column_id` LEFT JOIN `attendance_data` ON `attendance_data`.`is_deleted` = 0 AND FIND_IN_SET(list_data.id,attendance_data.item_ids) !=0 WHERE `list_data`.`list_id` = '" . $list_id . "' AND `list_data`.`is_deleted` =0 AND `list_data`.`column_id` IN (" . implode(',', $column_ids) . ")";
+    public function get_tasks_for_calendar($list_id, $column_ids, $limit = 0) {
+        $add_limit = '';
+        if($limit > 0){
+            $add_limit = ' LIMIT ' . $limit;
+        }
+        $query = "SELECT `list_data`.`id` as `TaskId`, `list_data`.`user_id` as `UserId`, `value` as `TaskName`, list_columns.type, list_columns.height, `is_completed` as `IsCompleted`, `is_present` as `IsPresent`, `list_data`.preview_meta as preview_meta, `list_data`.`order` as `order`, `column_id`, `list_columns`.`order` as `col_order`, `attendance_data`.`id` as `attendance_id`, `attendance_data`.`item_ids`, `attendance_data`.`comment`, `attendance_data`.`check_date` FROM `list_data` LEFT JOIN `list_columns` ON `list_columns`.`id` = `list_data`.`column_id` LEFT JOIN `attendance_data` ON `attendance_data`.`is_deleted` = 0 AND FIND_IN_SET(list_data.id,attendance_data.item_ids) !=0 WHERE `list_data`.`list_id` = '" . $list_id . "' AND `list_data`.`is_deleted` =0 AND `list_data`.`column_id` IN (" . implode(',', $column_ids) . ")" . $add_limit;
         return $this->db->query($query)->result_array();
     }
     

@@ -845,5 +845,18 @@ class ListsModel extends CI_Model {
         $list_details = $query->row_array();
         return $list_details;
     }
+    
+    /*
+     * Function to get list id from list name
+     * @author: SG
+     */
+    public function get_child_list_id($parent_list_id, $list_name){
+        $condition = array('lists.parent_id' => $parent_list_id, 'name' => $list_name);
+        $this->db->select('id');
+        $this->db->where($condition);
+        $query = $this->db->get('lists');
+        $list_details = $query->row_array();
+        return $list_details['id'];
+    }
 
 }

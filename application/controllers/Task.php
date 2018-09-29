@@ -574,7 +574,7 @@ class Task extends CI_Controller {
         if(isset($list) && $list['type_id'] == 12){
             $this->template->load('default_template2', 'task/index2', $data);
         }elseif(isset($list) && $list['type_id'] == 6){
-            $data['week_start_end'] = $this->x_week_range(date('Y-m-d'));
+            $data['week_start_end'] = $this->x_week_range(date('m/j/Y'));
             $start_date = $data['week_start_end'][0];
             $end_date = date_add( new DateTime($data['week_start_end'][1]) , new DateInterval('P1D') );
             $end_date = $end_date->format('Y-m-d H:i:s');
@@ -587,10 +587,10 @@ class Task extends CI_Controller {
             $dates_list_names = array();
             $child_list_data = array();
             foreach ($period as $key => $value) {
-                $child_list_id = $this->ListsModel->find_list_id_by_name($value->format('Y-m-d'), $list_id);
+                $child_list_id = $this->ListsModel->find_list_id_by_name($value->format('m/j/Y'), $list_id);
                 
-                $dates_list_names[$value->format('Y-m-d')] = $child_list_id;
-                $child_list_data[$value->format('Y-m-d')] = array();
+                $dates_list_names[$value->format('m/j/Y')] = $child_list_id;
+                $child_list_data[$value->format('m/j/Y')] = array();
                 
                 if(!empty($child_list_id)){
                     $first_column_id = $this->TasksModel->find_first_column($child_list_id);
@@ -606,7 +606,7 @@ class Task extends CI_Controller {
                     }
                     
                     if(!empty($first_column_id)){
-                        $child_list_data[$value->format('Y-m-d')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
                     }
                 }
             }
@@ -634,10 +634,10 @@ class Task extends CI_Controller {
     public function get_week_data(){
         if($this->input->post()){
             $list_id = $this->input->post('list_id');
-            $week_start_end = $this->x_week_range(date('Y-m-d', strtotime($this->input->post('startDate'))));
+            $week_start_end = $this->x_week_range(date('m/j/Y', strtotime($this->input->post('startDate'))));
             $start_date = $week_start_end[0];
             $end_date = date_add( new DateTime($week_start_end[1]) , new DateInterval('P1D') );
-            $end_date = $end_date->format('Y-m-d H:i:s');
+            $end_date = $end_date->format('m/j/Y');
             $period = new DatePeriod(
                 new DateTime($start_date),
                 new DateInterval('P1D'),
@@ -646,10 +646,9 @@ class Task extends CI_Controller {
             $dates_list_names = array();
             $child_list_data = array();
             foreach ($period as $key => $value) {
-                $child_list_id = $this->ListsModel->find_list_id_by_name($value->format('Y-m-d'), $list_id);
-                
-                $dates_list_names[$value->format('Y-m-d')] = $child_list_id;
-                $child_list_data[$value->format('Y-m-d')] = array();
+                $child_list_id = $this->ListsModel->find_list_id_by_name($value->format('m/j/Y'), $list_id);
+                $dates_list_names[$value->format('m/j/Y')] = $child_list_id;
+                $child_list_data[$value->format('m/j/Y')] = array();
                 
                 if(!empty($child_list_id)){
                     $first_column_id = $this->TasksModel->find_first_column($child_list_id);
@@ -665,14 +664,52 @@ class Task extends CI_Controller {
                     }
                     
                     if(!empty($first_column_id)){
-                        $child_list_data[$value->format('Y-m-d')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
                     }
                 }
             }
+//            p($child_list_id);
             
             $res = '';
+            $res .= '<div class="head_row_week">';
+            $count_date = 0;
+            $current_month = date('m', strtotime(key($dates_list_names)));
+            foreach ($dates_list_names as $date_key => $date_val):
+                if($date_val != '') {
+                    $print_date_id = $date_val;
+                } else {
+                    $print_date_id = 0;
+                }
+                $res .= '<div class="date_Detail_week" data-date="' . $date_key . '" data-listid="' . $print_date_id . '">';
+                $res .= '<h2>';
+                $day = '';
+                if(date('D', strtotime($date_key)) != 'Sun'){
+                    $day = date('D', strtotime($date_key));
+                            
+                }
+                $res .= '<div class="day_w day_sun">' . $day . '</div>';
+                $res .= '<div class="day_date">';
+                    $this_month = date('m', strtotime($date_key));
+                    if ($count_date == 0) {
+                        $res .= date('M', strtotime($date_key)) . ' ';
+                    } elseif ($this_month > $current_month) {
+                        $current_month = $this_month;
+                        $res .= date('M', strtotime($date_key)) . ' ';
+                    }
+                    $res .= date('d', strtotime($date_key));
+                    $count_date++;
+                $res .= '</div>';
+                $res .= '</h2>';
+                $res .= '</div>';
+            endforeach;
+            $res .= '</div>';
+            $res .= '<div class="body_week">';
             foreach ($child_list_data as $data_key => $data_val):
-                $res .= '<div class="day_content" data-date="' . $data_key . '">';
+                $data_list_id = 0;
+            if($dates_list_names[$data_key] != ''){
+                $data_list_id = $dates_list_names[$data_key];
+            }
+                $res .= '<div class="day_content" data-date="' . $data_key . '" data-listid="' . $data_list_id . '">';
                 foreach ($data_val as $key_d => $val_d):
                     $res .= '<div class="data_content_w">';
                     $res .= '<div class="data_name">';
@@ -685,12 +722,308 @@ class Task extends CI_Controller {
                 endforeach;
                 $res .= '</div>';
             endforeach;
+            $res .= '</div>';
+//            exit;
             
             echo $res; exit;
             
             p($child_list_data); exit;
-            p($this->input->post());
+        }
+    }
+    
+    /*
+     * Get monthly list
+     * @author: SG
+     */
+    public function get_month_list(){
+        if($this->input->post()){
+            $list_id = $this->input->post('list_id');
+            if($this->input->post('start_date') != ''){
+                $start_date = date('m/j/Y', strtotime($this->input->post('start_date')));
+            }else{
+                $start_date = date('m/01/Y'); // hard-coded '01' for first day
+            }
+            if($this->input->post('end_date') != ''){
+                $end_date = date('m/j/Y', strtotime($this->input->post('end_date')));
+            }else{
+                $end_date  = date('m/t/Y');
+            }
+            
+            
+            $firstdayofmonth = date('w', strtotime($start_date));
+            $lastdayofmonth = date('w', strtotime($end_date));
+            $month_start_diff = $this->x_week_range(date('m/j/Y', strtotime($start_date)));
+            $month_end_diff = $this->x_week_range(date('m/j/Y', strtotime($end_date)));
+            $month_end_date = date_add( new DateTime($month_end_diff[1]) , new DateInterval('P1D') );
+            $month_end_date = $month_end_date->format('Y-m-d H:i:s');
+            $period = new DatePeriod(
+                new DateTime($month_start_diff[0]),
+                new DateInterval('P1D'),
+                new DateTime($month_end_date)
+            );
+            
+            
+            $dates_list_names = array();
+            foreach ($period as $pkey=>$pval):
+                $child_list_id = $this->ListsModel->find_list_id_by_name($pval->format('m/j/Y'), $list_id);
+                $dates_list_names[$pval->format('m/j/Y')] = $child_list_id;
+                $child_list_data[$pval->format('m/j/Y')] = array();
+                if(!empty($child_list_id)){
+                    $first_column_id = $this->TasksModel->find_first_column($child_list_id);
+                    $second_column_id = $this->TasksModel->find_second_column($child_list_id);
+                    $array_col_ids = array();
+                    if(!empty($first_column_id)){
+                        array_push($array_col_ids, $first_column_id);
+                    }
+                    
+                    if(!empty($second_column_id)){
+                        array_push($array_col_ids, $second_column_id);
+                    }
+                    
+                    if(!empty($first_column_id)){
+                        $child_list_data[$pval->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids, 6), 2);
+                    }
+                }
+            endforeach;
+            
+            $data['dates_list_names'] = $dates_list_names;
+            $data['child_list_data'] = $child_list_data;
+            
+            
+            $list_names_array = array_chunk($dates_list_names, 7, true);
+            
+            $res = '';
+            if($this->input->post('start_date') == ''){
+                $res .= '<div class="caleneder_div_wrapper">';
+                $res .= '<div class="container month_view_container">';
+                $res .= '<div class="div_btn_name">';
+                $res .= '<div class="btn_box_add">';
+                $res .= '<a class="btn-today">Today</a>';
+                $res .= '<a class="btn-day">Day</a>';
+                $res .= '<a class="btn-week">Week</a>';
+                $res .= '<a class="active btn-month">Month</a>';
+                $res .= '</div>';
+                $res .= '</div>';
+                $res .= '<div class="calender_div_inner_box">';
+                $res .= '<div class="div_left_one">';
+                $res .= '<div class="month_calendar"></div>';
+                $res .= '</div>';
+                $res .= '<div class="div_right_one month_view_class">';
+            }
+                
+            
+            
+            
+            
+            $res .= '<div class="div_celender_detail">';
+            $res .= '<div class="row_date">';
+            $res .= '<div class="day_name"><span>Sun</span></div>';
+            $res .= '<div class="day_name"><span>Mon</span></div>';
+            $res .= '<div class="day_name"><span>Tue</span></div>';
+            $res .= '<div class="day_name"><span>Wed</span></div>';
+            $res .= '<div class="day_name"><span>Thu</span></div>';
+            $res .= '<div class="day_name"><span>Fri</span></div>';
+            $res .= '<div class="day_name"><span>Sat</span></div>';
+            $res .= '</div>';
+            $res .= '<div class="presentation">';
+            $count_date = 0;
+            $current_month = date('m', strtotime(key($child_list_data)));
+            
+            foreach ($list_names_array as $list_names_key => $list_name_data):
+                
+            
+                $res .= '<div class="row_detail">';
+                $res .= '<div class="date_wrap">';
+                foreach ($list_name_data as $name_key => $name_data):
+                    $dlist_id = 0;
+                    if($name_data != ''){
+                        $dlist_id = $name_data;
+                    }
+                    $this_month = date('m', strtotime($name_key));
+                    $res .= '<div class="day_number" data-listid="' . $dlist_id . '">';
+                    $res .= '<h2 class="date_h2">';
+                    if ($count_date == 0) {
+                        $date_show = date('M j, Y', strtotime($name_key)) . ' ';
+                    } elseif ($this_month > $current_month) {
+                        $current_month = $this_month;
+                        $date_show = date('M j', strtotime($name_key)) . ' ';
+                    }else{
+                        $date_show = date('j', strtotime($name_key));
+                    }
+                    $res .=  $date_show;
+                    $res .= '</h2>';
+                    $res .= '</div>';
+                    $count_date ++;
+                endforeach;
+                $res .= '</div>';
+                $res .= '<div class="content_wrap">';
+                 foreach ($list_name_data as $names_key => $names_data):
+                    $res .= '<div class="day_data" data-listid="' . $names_data . '">';
+                    foreach ($child_list_data[$names_key] as $c_key => $c_data):
+                        $res .= '<h2 class="h2_content">';
+                        if(!empty($c_data)){
+                            $res .= $c_data[0]['TaskName'];
+                        }else{
+                            $res .= '&nbsp;';
+                        }
+                        $res .= '</h2>';
+                    endforeach;
+                    
+                    $res .= '</div>';
+                 endforeach;
+                    
+                $res .= '</div>';
+                $res .= '</div>';
+            endforeach;
+            
+            $res .= '</div>';
+            $res .= '</div>';
+            
+            
+            if($this->input->post('start_date') == ''){
+                $res .= '</div>';
+                $res .= '</div>';
+                $res .= '</div>';
+                $res .= '</div>';
+            }
+                
+            echo $res; exit;
+            
+            
+            $this->template->load('default_template_calendar', 'task/month_index', $data);
+            
+        }
+    }
+    
+    /*
+     * Get weekly list
+     * @author: SG
+     */
+    
+    public function get_week_list(){
+        if($this->input->post()){
+            $res = '';
+            $list_id = $this->input->post('list_id');
+            $data['week_start_end'] = $this->x_week_range(date('m/j/Y'));
+            
+            if($this->input->post('start_date') && $this->input->post('start_date') != ''){
+                $start_date = $this->input->post('start_date');
+            }else{
+                $start_date = $data['week_start_end'][0];
+            }
+            
+            if($this->input->post('end_date') && $this->input->post('start_date') != ''){
+                $end_date = $this->input->post('start_date');
+                $end_date = date_add( new DateTime($end_date) , new DateInterval('P1D') );
+                $end_date = $end_date->format('Y-m-d H:i:s');
+            }else{
+                $end_date = $data['week_start_end'][0];
+                $end_date = date_add( new DateTime($data['week_start_end'][1]) , new DateInterval('P1D') );
+                $end_date = $end_date->format('Y-m-d H:i:s');
+            }
+            
+            
+                    
+            $period = new DatePeriod(
+                new DateTime($start_date),
+                new DateInterval('P1D'),
+                new DateTime($end_date)
+            );   
+            $dates_list_names = array();
+            $child_list_data = array();
+            foreach ($period as $key => $value) {
+                $child_list_id = $this->ListsModel->find_list_id_by_name($value->format('m/j/Y'), $list_id);
+                
+                $dates_list_names[$value->format('m/j/Y')] = $child_list_id;
+                $child_list_data[$value->format('m/j/Y')] = array();
+                
+                if(!empty($child_list_id)){
+                    $first_column_id = $this->TasksModel->find_first_column($child_list_id);
+                    $second_column_id = $this->TasksModel->find_second_column($child_list_id);
+                    
+                    $array_col_ids = array();
+                    if(!empty($first_column_id)){
+                        array_push($array_col_ids, $first_column_id);
+                    }
+                    
+                    if(!empty($second_column_id)){
+                        array_push($array_col_ids, $second_column_id);
+                    }
+                    
+                    if(!empty($first_column_id)){
+                        $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                    }
+                }
+            }
+//            p($child_list_data); exit;
+            
+            $res .='<div class="my_table my_scroll_table my_calendar_table">';
+            $res .= '<div class="caleneder_div_wrapper">';
+            $res .= '<div class="container week_view_container">';
+            $res .= '<div class="div_btn_name"><div class="btn_box_add"><a class="btn-today">Today</a><a class="btn-day">Day</a><a class="active btn-week">Week</a><a class="btn-month">Month</a></div></div>';
+            $res .= '<div class="calender_div_inner_box">';
+            $res .= '<div class="div_left_one"><div class="week_calendar"></div></div>';
+            $res .= '<div class="div_right_one">';
+            $res .= '<div class="week_view_c">';
+            $res .= '<div class="container">';
+            $res .= '<div class="week_view">';
+            $res .= '<div class="head_row_week">';
+            $count_date = 0;
+            $current_month = date('m', strtotime(key($dates_list_names)));
+            foreach ($dates_list_names as $date_key => $date_val):
+                if($date_val != '') { $my_list_id = $date_val; } else { $my_list_id = 0; }
+                $res .= '<div class="date_Detail_week" data-date="' . $date_key . '" data-listid="' . $my_list_id . '">';
+                $res .= '<h2>';
+                $res .= '<div class="day_w day_sun">';
+                $res .= '</div>';
+                $res .= '<div class="day_date">';
+                $this_month = date('m', strtotime($date_key));
+                if ($count_date == 0) {
+                    $res .= date('M', strtotime($date_key)) . ' ';
+                } elseif ($this_month > $current_month) {
+                    $current_month = $this_month;
+                    $res .= date('M', strtotime($date_key)) . ' ';
+                }
+                $res .= date('d', strtotime($date_key));
+                $count_date++;
+                $res .= '</div>';
+                $res .= '</h2>';
+                $res .= '</div>';
+            endforeach;
+            
+            $res .= '</div>';
+            $res .= '<div class="body_week">';
+            foreach ($child_list_data as $data_key => $data_val):
+                if($dates_list_names[$data_key] != '') { $data_sub_list_id =  $dates_list_names[$data_key]; } else { $data_sub_list_id = 0; }
+                $res .= '<div class="day_content" data-date="' . $data_key . '" data-listid="' . $data_sub_list_id . '">';
+                foreach ($data_val as $key_d => $val_d):
+                    $res .= '<div class="data_content_w">';
+                    $res .= '<div class="data_name">';
+                    $res .= trim($val_d[0]['TaskName']);
+                    $res .= '</div>';
+                    $res .= '<div class="time_display">';
+                    $res .= '<span>';
+                    $res .= trim($val_d[1]['TaskName']);
+                    $res .= '</span>';
+                    $res .= '</div>';
+                    $res .= '</div>';
+                endforeach;
+                $res .= '</div>';
+            endforeach;
+                
+            $res .= '</div>';
+            $res .= '</div>';
+            $res .= '</div>';
+            $res .= '</div>';
+            $res .= '</div>';
+            $res .= '</div>';
+            $res .= '</div>';
+            $res .= '</div>';
+            $res .= '</div>';
+            
+            echo $res;
             exit;
+            
         }
     }
 
@@ -3734,7 +4067,6 @@ class Task extends CI_Controller {
                 }
 
             endforeach;
-
             $largest_arr_size = 0;
             foreach ($updt_arr as $arid => $arnm):
                 if (sizeof($arnm) > $largest_arr_size) {
@@ -4086,6 +4418,10 @@ class Task extends CI_Controller {
         if ($this->input->post()) {
             if ($this->input->post('list_id') && $this->input->post('list_id') > 0) {
                 $desc = $this->ListsModel->list_desc_get($this->input->post('list_id'));
+                if($this->input->post('get_type') && $this->input->post('get_type') == 'get'){
+                    $desc = preg_replace('$(\s|^)(https?://[a-z0-9_./?=&-]+)(?![^<>]*>)$i', ' <a href="$2" target="_blank">$2</a> ', nl2br($desc));
+                    $desc = preg_replace('$(\s|^)(www\.[a-z0-9_./?=&-]+)(?![^<>]*>)$i', ' <a href="$2" target="_blank">$2</a> ', nl2br($desc));
+                }
             } else {
                 $desc = 'error';
             }

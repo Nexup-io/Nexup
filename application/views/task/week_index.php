@@ -250,7 +250,7 @@ if ($allowed_access == 0 && $list_id != 0) {
             }
             ?>
             <a class="add_column_url custom_cursor icon-add" data-toggle="tooltip" title="" data-original-title="New Column"><img src="<?php echo base_url(); ?>assets/img/add_col_icon.png"></a>
-            <a data-toggle="modal" data-target="#listConfig" id="listConfig_lnk" class="icon-wrench custom_cursor<?php echo $access_class; ?>" data-moveallow="<?php echo $allow_move_config; ?>" data-showcompleted="<?php echo $show_completed_config; ?>" data-allowcmnt="<?php echo $show_nexup_cmnt; ?>" data-allowundo="<?php echo $allow_undo_config; ?>" data-allowmaybe="<?php echo $allow_maybe_config; ?>" data-showtime="<?php echo $show_time; ?>" data-visiblesearch="<?php echo $config['visible_in_search']; ?>" data-toggle="tooltip" title="Settings" data-placement="bottom" data-allowappendLocked="<?php echo $config['allow_append_locked']; ?>" data-allowedAttendanceComment="<?php echo $config['enable_attendance_comment'] ?>" data-haspass="<?php echo $config['has_password']; ?>" data-collapsed="<?php echo $config['start_collapsed']; ?>"> </a>
+            <a data-toggle="modal" id="listConfig_lnk" class="icon-wrench custom_cursor<?php echo $access_class; ?>" data-moveallow="<?php echo $allow_move_config; ?>" data-showcompleted="<?php echo $show_completed_config; ?>" data-allowcmnt="<?php echo $show_nexup_cmnt; ?>" data-allowundo="<?php echo $allow_undo_config; ?>" data-allowmaybe="<?php echo $allow_maybe_config; ?>" data-showtime="<?php echo $show_time; ?>" data-visiblesearch="<?php echo $config['visible_in_search']; ?>" data-toggle="tooltip" title="Settings" data-placement="bottom" data-allowappendLocked="<?php echo $config['allow_append_locked']; ?>" data-allowedAttendanceComment="<?php echo $config['enable_attendance_comment'] ?>" data-haspass="<?php echo $config['has_password']; ?>" data-collapsed="<?php echo $config['start_collapsed']; ?>"> </a>
             <div class="ddl_lt">
 
                 <a id="listTypes_lnk" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="icon-list custom_cursor<?php echo $access_class; ?>" title="List Types" data-placement="bottom"> </a>
@@ -295,7 +295,7 @@ if ($allowed_access == 0 && $list_id != 0) {
             </div>
 
             <?php
-            $hide_bulk_cls = '';
+            $hide_bulk_cls = ' hdn_bulk';
             if ($list_id == 0) {
                 $hide_bulk_cls = ' hdn_bulk';
             }
@@ -358,7 +358,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                 $disabled_copy = '';
             }
             ?>
-            <a id="copy_list_btn" class="copy-list-btn copy-list-btn-items-page custom_cursor<?php echo $access_class; ?>" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" data-toggle="tooltip" data-placement="bottom" title="Copy List" style="<?php echo $disabled_copy; ?>"><img src="/assets/img/copy.png"></a>
+            <a id="copy_list_btn" class="copy-list-btn copy-list-btn-items-page custom_cursor<?php echo $access_class; ?>" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" data-toggle="tooltip" data-placement="bottom" title="Copy List" style="<?php echo $disabled_copy; ?>" style="pointer-events: none;opacity: 0.3;"><img src="/assets/img/copy.png"></a>
             <button type="button" class="btn btn-default enable-move hide_move_btn" data-toggle="tooltip" data-placement="bottom" data-title="Rearrange"><img src="/assets/img/move.png"></button>
         </span>
 
@@ -744,8 +744,8 @@ if ($allowed_access == 0 && $list_id != 0) {
             ?> data-typeid="<?php echo $type_id; ?>"  data-toggle="tooltip" title="Configuration" data-placement="bottom" data-showprev="<?php echo $config['show_preview']; ?>" data-showowner="<?php echo $config['show_author']; ?>"></a>
         </div>
 
-        <div class="add-data-body add-data-body-new <?php echo $collapsable_div; ?>">
-            <div class="added_div" id="added_div">
+        <div class="add-data-body add-data-body-new add-data-body-calendar <?php echo $collapsable_div; ?>">
+            <div class="added_div added_div_calendar" id="added_div">
 
                 <div id="addTaskDiv" class="item-add-div multi-column-lists">
                     <h3 id="TaskListHead"></h3>
@@ -799,9 +799,10 @@ if ($allowed_access == 0 && $list_id != 0) {
                                 <div class="container week_view_container">
                                     <div class="div_btn_name">
                                         <div class="btn_box_add">
-                                            <a>Day</a>
-                                            <a class="active">Week</a>
-                                            <a>Month</a>
+                                            <a class="btn-today">Today</a>
+                                            <a class="btn-day">Day</a>
+                                            <a class="active btn-week">Week</a>
+                                            <a class="btn-month">Month</a>
                                         </div>
                                     </div>
                                     <div class="calender_div_inner_box">
@@ -853,8 +854,20 @@ if ($allowed_access == 0 && $list_id != 0) {
                                                                     foreach ($data_val as $key_d => $val_d):
                                                                         ?>
                                                                         <div class="data_content_w">
+                                                                            <?php
+                                                                            if(isset($val_d[0])){
+                                                                            ?>
                                                                             <div class="data_name"><?php echo trim($val_d[0]['TaskName']); ?></div>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
+                                                                            <?php
+                                                                            if(isset($val_d[1])){
+                                                                            ?>
                                                                             <div class="time_display"><span><?php echo trim($val_d[1]['TaskName']); ?></span></div>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
                                                                         </div>
                                                                         <?php
                                                                     endforeach;
@@ -1090,8 +1103,7 @@ if ($allowed_access == 0 && $list_id != 0) {
         </div>
     </div>
 
-
-    <div class="modal fade config-modal" id="config-list" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
+<!-- <div class="modal fade config-modal" id="config-list" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="configmodal-head">
@@ -1181,7 +1193,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                     }
                     ?>
 
-                    <!--                <div class="checkbox-outer">
+                                    <div class="checkbox-outer">
                                         <div class="checkbox">
                     <?php
                     $show_preview = 'checked="checked"';
@@ -1192,7 +1204,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                                             <input id="show_preview" type="checkbox" name="show_preview" value="True" <?php echo $show_preview; ?>>
                                             <label for="show_preview">Show preview</label>
                                         </div>	
-                                    </div>-->
+                                    </div>
 
                     <?php
                     $hidden_cb_class = ' hidden_checkbox';
@@ -1336,7 +1348,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 
     <div class="modal fade bulk_data_modal" id="bulk_data_modal" tabindex="-3" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">

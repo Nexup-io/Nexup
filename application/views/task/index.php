@@ -1357,7 +1357,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                                     
 
 
-                                        <th class="noDrag nodrag_actions">
+                                        
                                     <?php
                                     if ($type_id == 3) {
                                         ?>
@@ -1365,6 +1365,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                                         <?php
                                     }
                                     ?>
+                                    <th class="noDrag nodrag_actions">
                                     <div class="add-data-title-nodrag<?php echo $nodrag_hidden_attendee; ?> status-column">
                                         <!--<span class="column_name_class" id="col_name_fixed">Status</span>-->
                                     </div>

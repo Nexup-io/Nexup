@@ -565,10 +565,11 @@ if(isset($response['success']) && $response['success'] == 1){
                     if ($('.plus-category').attr('data-access') == 1) {
                         if ($('.list_desc_div').hasClass('hiden_desc')) {
                             var list_id = $(this).attr('data-id');
+                            var get_type = 'get';
                             $.ajax({
                                 url: '<?php echo base_url() . 'get_list_desc' ?>',
                                 type: 'POST',
-                                data: {list_id: list_id},
+                                data: {list_id: list_id, get_type: get_type},
                                 success: function (res) {
                                     var resp_data = $.parseHTML(decodeURI(res));
                                     var resp = res;
@@ -580,7 +581,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                         }
                                     }
                                     document.getElementById("list_desc_text").innerText = resp;
-                                    $('#list_desc').text(res);
+                                    $('#list_desc_text').html(res);
                                 }
                             });
 
@@ -595,25 +596,26 @@ if(isset($response['success']) && $response['success'] == 1){
                 });
                 
                 $(document).on('click touchstart', '#add_sub_data_desc', function () {
-                var list_id = $(this).attr('data-id');
+                    var list_id = $(this).attr('data-id');
+                    var get_type = 'get';
                     if ($('#tabs-' + list_id).find('.plus-category').attr('data-access') == 1) {
                         if ($('#tabs-' + list_id).find('.sub_list_desc_div').hasClass('hiden_desc')) {
                             $.ajax({
                                 url: '<?php echo base_url() . 'get_list_desc' ?>',
                                 type: 'POST',
-                                data: {list_id: list_id},
+                                data: {list_id: list_id, get_type: get_type},
                                 success: function (res) {
                                     var resp_data = $.parseHTML(decodeURI(res));
                                     var resp = res;
                                     if (resp_data != null) {
                                         resp = resp_data[0]['data'];
-                                    } else {
-                                        if (resp == '') {
-                                            resp = 'Click here to add description.';
-                                        }
+                                    }
+                                    if (res == '') {
+                                        res = 'Click here to add description.';
                                     }
                                     $('#tabs-' + list_id).find('.sub_list_desc_div').find("#sublist_desc_text").html(resp);
-                                    $('#tabs-' + list_id).find('#list_sub_desc').text(res);
+                                    $('#tabs-' + list_id).find('#sublist_desc_text').html(res);
+                                    $('#tabs-' + list_id).find('#sub_list_desc_div').removeClass('hiden_desc');
                                 }
                             });
 
@@ -675,11 +677,12 @@ if(isset($response['success']) && $response['success'] == 1){
                 $(document).on('click touchstart', '#list_desc_text', function () {
                     $('#list_desc').text('');
                     var list_id = $(this).attr('data-listid');
+                    var get_type = 'edit';
                     $.ajax({
                         url: '<?php echo base_url() . 'get_list_desc' ?>',
                         type: 'POST',
                         context: this,
-                        data: {list_id: list_id},
+                        data: {list_id: list_id, get_type: get_type},
                         success: function (res) {
 
                             var resp_data = $.parseHTML(decodeURI(res));
@@ -698,11 +701,12 @@ if(isset($response['success']) && $response['success'] == 1){
                 $(document).on('click touchstart', '#sublist_desc_text', function () {
                     $('#tabs-' + list_id).find('#list_sub_desc').text('');
                     var list_id = $(this).attr('data-listid');
+                    var get_type = 'edit';
                     $.ajax({
                         url: '<?php echo base_url() . 'get_list_desc' ?>',
                         type: 'POST',
                         context: this,
-                        data: {list_id: list_id},
+                        data: {list_id: list_id, get_type: get_type},
                         success: function (res) {
 
                             var resp_data = $.parseHTML(decodeURI(res));

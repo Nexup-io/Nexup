@@ -1084,18 +1084,18 @@ h2.h2_content {font-size: 13px;margin: 0;font-weight: 400;    color: #4297d4;}
 .date_Detail_week {border-right: #e0e0e0 1px solid;overflow: hidden;-webkit-box-sizing: border-box;box-sizing: border-box;-webkit-box-flex: 1 1 0%;-webkit-flex: 1 1 0%;flex: 1 1 0%;display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;border-top: #e0e0e0 1px solid;border-bottom: #e0e0e0 1px solid;}
 .date_Detail_week h2 {font-weight: 400;margin: 0;padding: 5px 0;width: 100%;}
 .day_w {font-size: 16px;line-height: 32px;position: relative;z-index: 2;margin-left: 16px;color: #757575;display: inline-block;}
-.day_date {font-size: 35px;line-height: 30px;margin-left: 16px;display: inline-block;float: right;}
+.day_date {font-size: 33px;line-height: 30px;margin-left: 16px;display: inline-block;float: right;padding-right: 5px;}
 .body_week {display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-flex: none;-webkit-flex: none;flex: none;overflow: hidden;    min-height: 500px;}
 .day_content {border-right: #e0e0e0 1px solid;overflow: hidden;-webkit-box-sizing: border-box;box-sizing: border-box;-webkit-box-flex: 1 1 0%;-webkit-flex: 1 1 0%;flex: 1 1 0%;padding: 10px 0;}
 .data_content_w {display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-flex: none;-webkit-flex: none;padding: 5px;}
 .data_name {font-size: 16px;font-weight: 400;color: #999;min-width: 50%;}
 .time_display {margin-left: auto;font-size: 16px;font-weight: 400;color: #999;min-width: 50%;}
 .week_calendar{max-height: 300px;}
-.week_calendar .ui-datepicker-inline, .month_calendar .ui-datepicker-inline{width: 22em;}
+.day_calendar .ui-datepicker-inline, .week_calendar .ui-datepicker-inline, .month_calendar .ui-datepicker-inline{width: 22em;}
 
 
 .flatpickr-calendar.inline{max-height: 300px !important;}
-.week_view_container{width: 100% !important;margin: 30px auto;}
+.week_view_container{width: 100% !important;margin: 0px auto;}
 .week_view_container .date_Detail_week, .week_view_container .day_content {max-width: 175px;}
 .week_view_container .calender_div_inner_box, .week_view_container .calender_div_inner_box .div_left_one{border: none;}
 /*
@@ -1155,7 +1155,7 @@ h2.h2_content {font-size: 13px;margin: 0;font-weight: 400;    color: #4297d4;}
 
 .ui-datepicker-calendar .ui-state-default, .ui-datepicker-calendar .ui-widget-content .ui-state-default {border: none;background: transparent;text-align: center;color: #454545;}
 .ui-datepicker-calendar .ui-state-active, .ui-datepicker-calendar .ui-widget-content .ui-state-active{background: #007fff !important;font-weight: normal !important;color: #fff !important;}
-.day_content, .head_row_week{cursor: pointer;}
+.day_content, .head_row_week, .day_number, .content_wrap div{cursor: pointer;}
 /*.week_view .day_content .data_content_w div{background: #007FFF;padding: 2px 5px 2px 5px;border-radius: 8px;color: #fff;}*/
 .add-data-div.edit_task {
     width: 100% !important;
@@ -1169,7 +1169,20 @@ h2.h2_content {font-size: 13px;margin: 0;font-weight: 400;    color: #4297d4;}
     max-width: initial;
     padding:0;
 }
+.month_view_container h2.h2_content {display: block;}
+
 
 @media screen and (min-width:0\0) {
     .logo_main_contcept img.ft {height: 36px;}
 }
+
+.div_new_data {width: 77%;float: right;}
+.left_div {width: 23%;float: left;}
+.div_full_data {float: left;width: 100%;}
+.div_full_data .head_custom_sublist{text-align: center;}
+a.prev_day {font-size: 14px;background: #34c7eb;color: #fff;width: 24px;height: 24px;display: inline-block;vertical-align: middle;line-height: 25px;border-radius: 50%;text-align: center;margin-right: 10px;position: relative;top: -1px;cursor: pointer;}
+a.next_day {font-size: 14px;background: #34c7eb;color: #fff;width: 24px;height: 24px;display: inline-block;vertical-align: middle;line-height: 25px;border-radius: 50%;text-align: center;margin-left: 10px;position: relative;top: -1px;cursor: pointer;}
+a.next_day i {position: relative;left: 1px;}
+.sub_list_name_span_calendar {margin: 0 8px 0 0;padding: 0;display: inline-block;vertical-align: middle;font-family: 'Poppins';color: rgb(33, 206, 247) !important;font-size: 26px !important;font-weight: 700 !important;letter-spacing: 0.08em;line-height: 50px;}
+.custom_date_list_name{padding: 16px 20px;border: 1px solid #e0e0e0;line-height: 30px;font-size: 18px;font-weight: 300;color: #4c4c4c;font-family: 'Roboto';}
+.no_week_ends .ui-datepicker-week-end {display: none;}

@@ -208,8 +208,13 @@ if (isset($response['success']) && $response['success'] == 1) {
         
         <link href="<?php // echo base_url() . 'assets/css/bootstrap-responsive-tabs.css';  ?>" rel="stylesheet" />
         <link rel="icon" href="<?php echo base_url(); ?>assets/img/favicon.ico" type="image/ico">
+        <style>
+            @media (min-width:1200px) and (max-width:1349px){
+            .added_div.add-data-left div#addTaskDiv, .added_div.add-data-left div#addSubTaskDiv {width: 100%;}
+            }
+        </style>
     </head>
-    <body>
+    <body class="calendar_body">
         <div class="wrapper">
             <header id="header" class="header">
                 <div class="header-l">
@@ -431,6 +436,184 @@ if (isset($response['success']) && $response['success'] == 1) {
                     }
                 });
             }
+            
+            function week_calendar_init(){
+                var startDate;
+                var endDate;
+
+                var selectCurrentWeek = function() {
+                    window.setTimeout(function () {
+                        $('.week_calendar').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+                    }, 1);
+                }
+                $('.week_calendar').datepicker( {
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-100:+100",
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    beforeShowDay: function (date) {
+                        var cssClass = '';
+                        if(date >= startDate && date <= endDate)
+                            cssClass = 'ui-datepicker-current-day';
+                        return [true, cssClass];
+                    },
+                    onSelect: function(dateText, inst) {
+                        var date = $(this).datepicker('getDate');
+                        startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+                        endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+                        var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+                        selectCurrentWeek();
+
+                        var day2 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1);
+                        var day3 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 2);
+                        var day4 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 3);
+                        var day5 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 4);
+                        var day6 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 5);
+
+                        var date = [];
+                        var day = [];
+                        var month = [];
+                        var year = [];
+                        var data_date = [];
+
+                        date[1] = $.datepicker.formatDate( 'd', startDate, inst.settings);
+                        day[1] = $.datepicker.formatDate( 'D', startDate, inst.settings);
+                        month[1] = $.datepicker.formatDate( 'M', startDate, inst.settings);
+                        year[1] = $.datepicker.formatDate( 'yy', startDate, inst.settings);
+                        data_date[1] = $.datepicker.formatDate( 'yy-mm-dd', startDate, inst.settings);
+
+                        date[2] = $.datepicker.formatDate( 'd', day2, inst.settings);
+                        day[2] = $.datepicker.formatDate( 'D', day2, inst.settings);
+                        data_date[2] = $.datepicker.formatDate( 'yy-mm-dd', day2, inst.settings);
+
+                        date[3] = $.datepicker.formatDate('d', day3, inst.settings);
+                        day[3] = $.datepicker.formatDate('D', day3, inst.settings);
+                        data_date[3] = $.datepicker.formatDate( 'yy-mm-dd', day3, inst.settings);
+
+                        date[4] = $.datepicker.formatDate('d', day4, inst.settings);
+                        day[4] = $.datepicker.formatDate('D', day4, inst.settings);
+                        data_date[4] = $.datepicker.formatDate( 'yy-mm-dd', day4, inst.settings);
+
+                        date[5] = $.datepicker.formatDate('d', day5, inst.settings);
+                        day[5] = $.datepicker.formatDate('D', day5, inst.settings);
+                        data_date[5] = $.datepicker.formatDate( 'yy-mm-dd', day5, inst.settings);
+
+                        date[6] = $.datepicker.formatDate('d', day6, inst.settings);
+                        day[6] = $.datepicker.formatDate('D', day6, inst.settings);
+                        data_date[6] = $.datepicker.formatDate( 'yy-mm-dd', day6, inst.settings);
+
+                        date[7] = $.datepicker.formatDate('d', endDate, inst.settings);
+                        day[7] = $.datepicker.formatDate('D', endDate, inst.settings);
+                        data_date[7] = $.datepicker.formatDate( 'yy-mm-dd', endDate, inst.settings);
+
+                        var cnt_day = 1;
+                        $('.week_view').find('.head_row_week').find('.date_Detail_week').each(function(e){
+                            if(cnt_day > 1){
+                                $(this).find('h2').find('.day_w').text(day[cnt_day]);
+                            }
+                            $(this).attr('data-date', data_date[cnt_day]);
+                            if(cnt_day == 1){
+                                $(this).find('h2').find('.day_date').text(month[1] + ' ' + date[cnt_day]);
+                            }else{
+                                $(this).find('h2').find('.day_date').text(date[cnt_day]);
+                            }
+                            cnt_day++;
+                        });
+
+                        var list_id = $('.edit_list_task').attr('data-id');
+                        if($('.ui-datepicker-current-day').length > 1){
+                            $.ajax({
+                                url: '<?php echo base_url() . 'task/get_week_data' ?>',
+                                type: 'POST',
+                                data: {
+                                    list_id: list_id,
+                                    startDate: $.datepicker.formatDate( 'yy-mm-dd', startDate, inst.settings),
+                                    endDate: $.datepicker.formatDate( 'yy-mm-dd', endDate, inst.settings),
+                                },
+                                success: function (res) {
+                                    $('.week_view').html(res);
+//                                        console.log(res);
+                                }
+                            });
+                        }
+                    },
+                    onChangeMonthYear: function(year, month, inst) {
+                        selectCurrentWeek();
+                    }
+                });
+            }
+            
+            
+            function convert(str) {
+                var date = new Date(str),
+                    mnth = ("0" + (date.getMonth()+1)).slice(-2),
+                    day  = ("0" + date.getDate()).slice(-2);
+                return [ mnth, day, date.getFullYear() ].join("/");
+            }
+            
+            function month_calendar_init(){
+                    var startDate;
+                    var endDate;
+
+                    var selectCurrentWeek = function() {
+                        window.setTimeout(function () {
+                            $('.week_calendar').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+                        }, 1);
+                    }
+                    
+                $('.month_calendar').datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-100:+100",
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    beforeShowDay: function (date) {
+//                        noWeekends();
+                        var cssClass = '';
+                        if (date >= startDate && date <= endDate) cssClass = 'ui-datepicker-current-day';
+                        return [$.datepicker.noWeekends, cssClass];
+                    },
+                    onSelect: function(dateText, inst) {
+                        var date = $(this).datepicker('getDate');
+                        date.setDate(1);
+                        startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+                        endDate = new Date(date.getFullYear(), date.getMonth() + 1, date.getDate());
+                        var end_day = endDate.getDay();
+                        var selected_endDate = new Date(date.getFullYear(), date.getMonth() + 1, date.getDate() + (6 - endDate.getDay()));
+                        var currentDate = new Date(startDate);
+                        var between = [];
+
+                        while (currentDate <= selected_endDate) {
+                            between.push(new Date(currentDate));
+                            currentDate.setDate(currentDate.getDate() + 1);
+                        }
+                        
+                            var parent_list_id = $('.edit_list_task').attr('data-id');
+                            $.ajax({
+                                url: '<?php echo base_url() . 'task/get_month_list'; ?>',
+                                type: 'POST',
+                                data: {
+                                    list_id: parent_list_id,
+                                    start_date: convert(startDate),
+                                    end_date: convert(selected_endDate),
+                                },
+                                success: function (res) {
+                                    if(!$('#add_bulk_data').hasClass('hdn_bulk')){
+                                        $('#add_bulk_data').addClass('hdn_bulk');
+                                    }
+//                                    console.log(res);
+                                    $('#TaskListDiv').find('.div_right_one.month_view_class').html(res);
+//                                    month_calendar_init();
+                                }
+                            });
+                    },
+                    onChangeMonthYear: function(year, month, inst) {
+                    }
+                });
+            }
+            
+            
             $(document).ready(function () {
 
                     var startDate;
@@ -441,105 +624,11 @@ if (isset($response['success']) && $response['success'] == 1) {
                             $('.week_calendar').find('.ui-datepicker-current-day a').addClass('ui-state-active')
                         }, 1);
                     }
-
-                    $('.week_calendar').datepicker( {
-                        changeMonth: true,
-                        changeYear: true,
-                        yearRange: "-100:+100",
-                        showOtherMonths: true,
-                        selectOtherMonths: true,
-                        beforeShowDay: function (date) {
-                            var cssClass = '';
-                            if(date >= startDate && date <= endDate)
-                                cssClass = 'ui-datepicker-current-day';
-                            return [true, cssClass];
-                        },
-                        onSelect: function(dateText, inst) {
-                            var date = $(this).datepicker('getDate');
-                            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
-                            endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
-                            var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
-                            selectCurrentWeek();
-                            
-                            var day2 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1);
-                            var day3 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 2);
-                            var day4 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 3);
-                            var day5 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 4);
-                            var day6 = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 5);
-                            
-                            var date = [];
-                            var day = [];
-                            var month = [];
-                            var year = [];
-                            var data_date = [];
-                            
-                            date[1] = $.datepicker.formatDate( 'd', startDate, inst.settings);
-                            day[1] = $.datepicker.formatDate( 'D', startDate, inst.settings);
-                            month[1] = $.datepicker.formatDate( 'M', startDate, inst.settings);
-                            year[1] = $.datepicker.formatDate( 'yy', startDate, inst.settings);
-                            data_date[1] = $.datepicker.formatDate( 'yy-mm-dd', startDate, inst.settings);
-                            
-                            date[2] = $.datepicker.formatDate( 'd', day2, inst.settings);
-                            day[2] = $.datepicker.formatDate( 'D', day2, inst.settings);
-                            data_date[2] = $.datepicker.formatDate( 'yy-mm-dd', day2, inst.settings);
-                            
-                            date[3] = $.datepicker.formatDate('d', day3, inst.settings);
-                            day[3] = $.datepicker.formatDate('D', day3, inst.settings);
-                            data_date[3] = $.datepicker.formatDate( 'yy-mm-dd', day3, inst.settings);
-                            
-                            date[4] = $.datepicker.formatDate('d', day4, inst.settings);
-                            day[4] = $.datepicker.formatDate('D', day4, inst.settings);
-                            data_date[4] = $.datepicker.formatDate( 'yy-mm-dd', day4, inst.settings);
-                            
-                            date[5] = $.datepicker.formatDate('d', day5, inst.settings);
-                            day[5] = $.datepicker.formatDate('D', day5, inst.settings);
-                            data_date[5] = $.datepicker.formatDate( 'yy-mm-dd', day5, inst.settings);
-                            
-                            date[6] = $.datepicker.formatDate('d', day6, inst.settings);
-                            day[6] = $.datepicker.formatDate('D', day6, inst.settings);
-                            data_date[6] = $.datepicker.formatDate( 'yy-mm-dd', day6, inst.settings);
-                            
-                            date[7] = $.datepicker.formatDate('d', endDate, inst.settings);
-                            day[7] = $.datepicker.formatDate('D', endDate, inst.settings);
-                            data_date[7] = $.datepicker.formatDate( 'yy-mm-dd', endDate, inst.settings);
-                            
-                            var cnt_day = 1;
-                            $('.week_view').find('.head_row_week').find('.date_Detail_week').each(function(e){
-                                if(cnt_day > 1){
-                                    $(this).find('h2').find('.day_w').text(day[cnt_day]);
-                                }
-                                $(this).attr('data-date', data_date[cnt_day]);
-                                if(cnt_day == 1){
-                                    $(this).find('h2').find('.day_date').text(month[1] + ' ' + date[cnt_day]);
-                                }else{
-                                    $(this).find('h2').find('.day_date').text(date[cnt_day]);
-                                }
-                                cnt_day++;
-                            });
-                            
-                            var list_id = $('.edit_list_task').attr('data-id');
-                            if($('.ui-datepicker-current-day').length > 1){
-                                $.ajax({
-                                    url: '<?php echo base_url() . 'task/get_week_data' ?>',
-                                    type: 'POST',
-                                    data: {
-                                        list_id: list_id,
-                                        startDate: $.datepicker.formatDate( 'yy-mm-dd', startDate, inst.settings),
-                                        endDate: $.datepicker.formatDate( 'yy-mm-dd', endDate, inst.settings),
-                                    },
-                                    success: function (res) {
-                                        $('.body_week').html(res);
-//                                        console.log(res);
-                                    }
-                                });
-                            }
-                        },
-                        onChangeMonthYear: function(year, month, inst) {
-                            selectCurrentWeek();
-                        }
-                    });
                     
-                    $(document).on('click', '.day_content, .date_Detail_week', function(){
+                    week_calendar_init();
+                    
+                    
+                    $(document).on('click', '.day_content, .date_Detail_week, .day_number', function(){
                         var list_id = $(this).attr('data-listid');
                         var parent_list_id = $('.edit_list_task').attr('data-id');
                         var list_name = $(this).attr('data-date');
@@ -554,66 +643,42 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     },
                                 success: function (res) {
                                     if(res != '' || res != 'undefined'){
-                                        
+                                        $('#TaskListDiv').html(res);
+                                        day_calendar_init();
+                                        $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
+                                        sortable_tbl();
+                                        sortable_head_tbl()
+                                    }
+                                }
+                            });
+                        }else{
+                            $.ajax({
+                                url: '<?php echo base_url() . 'listing/get_list_cal_date'; ?>',
+                                type: 'POST',
+                                data: {
+                                        'list_id' : list_id,
+                                        'list_type': 'calendar',
+                                        'list_name': list_name
+                                    },
+                                success: function (res) {
+                                    if(res != '' || res != 'undefined'){
+                                        if($('#add_bulk_data').hasClass('hdn_bulk')){
+                                            $('#add_bulk_data').removeClass('hdn_bulk');
+                                        }
+                                        $('#TaskListDiv').html(res);
+                                        day_calendar_init();
+                                        $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
+                                        sortable_tbl();
+                                        sortable_head_tbl()
+//                                        console.log(res);
                                     }
                                 }
                             });
                         }
+                        
+                        
                     });
                     
-                    
-                    $('.month_calendar').datepicker({
-                        changeMonth: true,
-                        changeYear: true,
-                        yearRange: "-100:+100",
-                        showOtherMonths: true,
-                        selectOtherMonths: true,
-                        beforeShowDay: function (date) {
-                            var cssClass = '';
-                            if (date >= startDate && date <= endDate) cssClass = 'ui-datepicker-current-day';
-                            return [true, cssClass];
-                        },
-                        onSelect: function(dateText, inst) {
-                            var date = $(this).datepicker('getDate');
-                            date.setDate(1);
-                            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
-                            endDate = new Date(date.getFullYear(), date.getMonth() + 1, date.getDate());
-                            var end_day = endDate.getDay();
-                            var selected_endDate = new Date(date.getFullYear(), date.getMonth() + 1, date.getDate() + (6 - endDate.getDay()));
-                            var currentDate = new Date(startDate);
-                            var between = [];
-                            
-                            while (currentDate <= selected_endDate) {
-                                between.push(new Date(currentDate));
-                                currentDate.setDate(currentDate.getDate() + 1);
-                            }
-                            
-                            var date_h2_key = 0;
-                            var total_days_in_month = Math.round(((new Date(date.getFullYear(), date.getMonth()))-(new Date(date.getFullYear(), date.getMonth()-1)))/86400000);
-                            
-                            $.each(between, function(key, value){
-                                var date_create = '';
-                                var month_created = '';
-                                var year_created = '';
-                                
-                                if(date_h2_key == 0 || date_h2_key == date.getDay() || date_h2_key == date.getDay() + total_days_in_month + 1){
-                                    month_created = $.datepicker.formatDate( 'M', value, inst.settings);
-                                    year_created = $.datepicker.formatDate( 'yy', value, inst.settings);
-                                    if($(window).width() > 512){
-                                        date_create = month_created + ' ' + $.datepicker.formatDate( 'd', value, inst.settings) + ', ' + year_created;
-                                    }else{
-                                        date_create = month_created + ' ' + $.datepicker.formatDate( 'd', value, inst.settings);
-                                    }
-                                }else{
-                                    date_create = $.datepicker.formatDate( 'd', value, inst.settings);
-                                }
-                                $('.date_h2:eq(' + date_h2_key + ')').text(date_create);
-                                date_h2_key++;
-                            });
-                        },
-                        onChangeMonthYear: function(year, month, inst) {
-                        }
-                    });
                     
                     $(document).on('click', '.next_month', function(){
                         var currDate = new Date($('.month_calendar.hasDatepicker').datepicker('getDate'));
@@ -704,24 +769,24 @@ if (isset($response['success']) && $response['success'] == 1) {
                     if ($('.plus-category').attr('data-access') == 1) {
                         if ($('.list_desc_div').hasClass('hiden_desc')) {
                             var list_id = $(this).attr('data-id');
+                            var get_type = 'get';
                             $.ajax({
                                 url: '<?php echo base_url() . 'get_list_desc' ?>',
                                 type: 'POST',
-                                data: {list_id: list_id},
+                                data: {list_id: list_id, get_type: get_type},
                                 success: function (res) {
                                     var resp_data = $.parseHTML(decodeURI(res));
                                     var resp = res;
                                     if (resp_data != null) {
                                         resp = resp_data[0]['data'];
-                                    } else {
-                                        if (resp == '') {
-                                            resp = 'Click here to add description.';
-                                        }
+                                    }
+                                    if (res == '') {
+                                        res = 'Click here to add description.';
                                     }
 //                                    console.log($.parseHTML(decodeURI(res)));
 //                                    $('#list_desc_text').text(resp);
                                     document.getElementById("list_desc_text").innerText = resp;
-                                    $('#list_desc').text(res);
+                                    $('#list_desc_text').html(res);
                                 }
                             });
 
@@ -782,11 +847,12 @@ if (isset($response['success']) && $response['success'] == 1) {
                 $(document).on('click touchstart', '#list_desc_text', function () {
                     $('#list_desc').text('');
                     var list_id = $(this).attr('data-listid');
+                    var get_type = 'edit';
                     $.ajax({
                         url: '<?php echo base_url() . 'get_list_desc' ?>',
                         type: 'POST',
                         context: this,
-                        data: {list_id: list_id},
+                        data: {list_id: list_id, get_type: get_type},
                         success: function (res) {
 
                             var resp_data = $.parseHTML(decodeURI(res));
@@ -1052,6 +1118,46 @@ if (isset($response['success']) && $response['success'] == 1) {
                     }
                 }
             });
+            
+            
+            $(document).on('click', '.day-arrow', function(){
+                var parent_list_id = $('.edit_list_task').attr('data-id');
+                var list_name = $(this).attr('data-date');
+                $.ajax({
+                    url: '<?php echo base_url() . 'listing/get_list_id_cal' ?>',
+                    type: 'POST',
+                    data: {
+                        parent_list_id: parent_list_id,
+                        list_name: list_name,
+                    },
+                    success: function (res) {
+                        if(res != '' && res > 0){
+                            $.ajax({
+                            url: '<?php echo base_url() . 'listing/get_list_cal_date'; ?>',
+                            type: 'POST',
+                            data: {
+                                    'list_id' : res,
+                                    'list_type': 'calendar',
+                                    'list_name': list_name
+                                },
+                            success: function (res) {
+                                if(res != '' || res != 'undefined'){
+                                    if($('#add_bulk_data').hasClass('hdn_bulk')){
+                                        $('#add_bulk_data').removeClass('hdn_bulk');
+                                    }
+                                    $('#TaskListDiv').html(res);
+                                    day_calendar_init();
+                                    $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
+                                    sortable_tbl();
+                                    sortable_head_tbl();
+                                }
+                            }
+                        });
+                        }
+                    }
+                });
+            });
+            
 
             //Display icon for options when mouse is over list
 //            $(document).on('mouseover', '.list-body-box', function () {
@@ -3388,6 +3494,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                     $(document).find('.div_option_wrap[style="display: block;"]').toggle( "slow", function() {});
                 }else{
                 }
+                
 
             });
 
@@ -3929,14 +4036,21 @@ if (isset($response['success']) && $response['success'] == 1) {
                     var task_id = $(this).attr('data-id');
                     var ListId = $(this).attr('data-listid');
                     var orders = [];
-                    var del_order = $(this).closest('.icon-more-holder').attr('data-order');
+                    var del_order = $(this).parent().attr('data-order');
+                    
+                    
+                    
                     $('#test_table_' + ListId).find('.icon-more-holder').each(function () {
                         if ($(this).attr('data-order') != del_order) {
                             orders.push(parseInt($(this).attr('data-order')));
                         }
                     });
-                    orders.sort(sortNumber);
+                    
+                    
+                    orders.sort(function(a,b){ return a - b });
+                    
                     $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'none');
+                    
                     $.ajax({
                         url: "<?php echo base_url() . 'item/delete'; ?>",
                         type: 'POST',
@@ -3967,13 +4081,13 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         var ord_change = 1;
                                         var resp = JSON.parse(res);
                                         var del_ids = resp['remove'];
-                                        $('#test_table').find('tbody tr:nth-child(' + (indx + 1) + ')').remove();
+                                        $('#test_table_' + ListId).find('tbody tr:nth-child(' + (indx + 1) + ')').remove();
                                         setTimeout(function () {
-                                            $('#test_table').find('.delete_task').prop('disabled', false);
+                                            $('#test_table_' + ListId).find('.delete_task').prop('disabled', false);
                                         }, 2000);
-                                        if ($('#test_table').find('.rank_th').length > 0) {
+                                        if($('#test_table_' + ListId).find('.rank_th').length > 0) {
                                             var rnk_val = 1;
-                                            $('#test_table').find('.rank_th').each(function () {
+                                            $('#test_table_' + ListId).find('.rank_th').each(function () {
                                                 $(this).text(rnk_val);
                                                 rnk_val++;
                                             });
@@ -3984,15 +4098,15 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             $('#no_cnt').text(resp['total_no']);
                                             $('#blank_cnt').text(resp['total_blank']);
                                         }
-                                        $('#test_table').find('.icon-more-holder').each(function () {
+                                        $('#test_table_' + ListId).find('.icon-more-holder').each(function () {
                                             var row_order = $(this).attr('data-order');
                                             if (row_order > del_ord) {
                                                 $(this).attr('data-order', (row_order - 1));
                                             }
 //                                                    ord_change++;
                                         });
-                                        if ($('#test_table').find('.edit_task').length == 0 && $('.heading_items_col_add').length == 1) {
-                                            $('#test_table').find('.add-data-head-r').hide();
+                                        if ($('#test_table_' + ListId).find('.edit_task').length == 0 && $('.heading_items_col_add').length == 1) {
+                                            $('#test_table_' + ListId).find('.add-data-head-r').hide();
                                         }
 
                                         if ($('.icon-settings').attr('data-typeid') == 2 || $('#tabs-' + ListId).find('.icon-settings').attr('data-typeid') == 8) {
@@ -4007,14 +4121,14 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                         var row_indx = $('#span_task_' + res).parent().parent().parent().index();
                                                         if ($('.icon-settings').attr('data-typeid') == 2) {
                                                             if (row_indx >= 0) {
-                                                                $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
-                                                                $('.nexup-sub-group-one').attr('data-original-title', $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
-                                                                var item_list_nexup_data = '<tr><td>' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
+                                                                $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table_' + ListId).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                                $('.nexup-sub-group-one').attr('data-original-title', $.trim($('#test_table_' + ListId).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                                var item_list_nexup_data = '<tr><td>' + $.trim($('#test_table_' + ListId).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
                                                                 var grp_two = '';
 
                                                                 for (s = 1; s < 4; s++) {
-                                                                    if ($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').length == 1) {
-                                                                        grp_two += '<span data-toggle="tooltip" title="" data-original-title="' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '">' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</span>';
+                                                                    if ($('#test_table_' + ListId).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').length == 1) {
+                                                                        grp_two += '<span data-toggle="tooltip" title="" data-original-title="' + $.trim($('#test_table_' + ListId).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '">' + $.trim($('#test_table_' + ListId).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</span>';
                                                                         item_list_nexup_data += '<tr><td>' + $.trim(('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
                                                                     }
                                                                 }
@@ -4034,7 +4148,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                             }
 
                                                         } else if ($('.icon-settings').attr('data-typeid') == 8) {
-                                                            $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                            $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table_' + ListId).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
                                                         }
                                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
@@ -4082,7 +4196,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         if (total_rows > 0) {
                                             var ind = 0;
                                             if (resp['last_log'] != 'no log') {
-                                                $('#test_table').find('.edit_task').each(function () {
+                                                $('#test_table_' + ListId).find('.edit_task').each(function () {
                                                     if ($(this).attr('data-id') == resp['last_log']) {
                                                         ind = $(this).parent().parent().index();
                                                     }
@@ -4096,7 +4210,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             var k = 1;
                                             for (k = 1; k <= task_nm_span; k++) {
 
-                                                if ($('#test_table').find('tbody tr:nth-child(' + (ind + 1) + ') td:eq(' + (k + 1) + ')').length) {
+                                                if($('#test_table_' + ListId).find('tbody tr:nth-child(' + (ind + 1) + ') td:eq(' + (k + 1) + ')').length) {
                                                     $('.whoisnext-div .nexup-group .nexup-group-two .custom_cursor .nexup-sub-group-two span:nth-child(' + k + ')').text($('#test_table tbody tr:nth-child(' + (ind + 1) + ') td:eq(' + (k + 1) + ') .task_name_span').text());
                                                 }
                                             }
@@ -4116,21 +4230,21 @@ if (isset($response['success']) && $response['success'] == 1) {
 //                                alert('You are not allowed to delete this item');
 //                                return false;
 //                            }
-                            $('#test_table').find('.icon-more-holder').css('pointer-events', 'auto');
+                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'auto');
                         },
                         error: function (textStatus, errorThrown) {
                             alert('something went wrong. Plese try again!');
-                            $('#test_table').find('.icon-more-holder').css('pointer-events', 'auto');
+                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'auto');
 //                            $('.delete_task').prop('disabled', false);
                         },
                         complete: function (data) {
-                            $('#test_table').find('.icon-more-holder').css('pointer-events', 'auto');
+                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'none');
 //                            $('.delete_task').prop('disabled', false);
                         }
                     });
                 }
                 setTimeout(function () {
-                    $('#test_table').find('.delete_task').prop('disabled', false);
+                    $('#test_table_' + ListId).find('.delete_task').prop('disabled', false);
                 }, 5000);
             });
 
@@ -5906,9 +6020,10 @@ if (isset($response['success']) && $response['success'] == 1) {
                 $('.col_msg').text('');
                 $('.col_msg').removeClass('alert-danger');
                 $('.col_msg').hide();
-                var cells_cnt = $('#test_table tbody tr td.icon-more-holder').length;
+                var list_id = $('.edit_list_task_sub').attr('data-id');
+//                console.log(list_id); return false;
+                var cells_cnt = $('#test_table_' + list_id).find(' tbody tr td.icon-more-holder').length;
                 var col_name = $('#nexup_column').val();
-                var list_id = $('#save_col').attr('data-listid');
                 add_cols(cells_cnt, col_name, list_id);
 
             });
@@ -6041,21 +6156,21 @@ if (isset($response['success']) && $response['success'] == 1) {
                         },
                         success: function (res) {
                             if (res == 'success') {
-                                if ($('#test_table thead tr.td_arrange_tr th.heading_items_col').length <= 2) {
-                                    $('#test_table thead tr.td_arrange_tr th:eq(' + col_index + ')').remove();
+                                if ($('#test_table_' + list_id).find('thead tr.td_arrange_tr th.heading_items_col').length <= 2) {
+                                    $('#test_table_' + list_id).find('thead tr.td_arrange_tr th:eq(' + col_index + ')').remove();
                                     if ($('.icon-settings').attr('data-typeid') != 11) {
                                         $('.heading_items_col').addClass('hidden_heading');
                                     }
-                                } else if ($('#test_table thead tr.td_arrange_tr th.heading_items_col').length > 2) {
-                                    $('#test_table thead tr.td_arrange_tr th:eq(' + col_index + ')').remove();
+                                } else if ($('#test_table_' + list_id).find('thead tr.td_arrange_tr th.heading_items_col').length > 2) {
+                                    $('#test_table_' + list_id).find('thead tr.td_arrange_tr th:eq(' + col_index + ')').remove();
                                 }
 
-                                if ($('#test_table thead tr.td_add_tr th.heading_items_col_add').length > 1) {
-                                    $('#test_table thead tr.td_add_tr th:eq(' + col_index + ')').remove();
+                                if ($('#test_table_' + list_id).find('thead tr.td_add_tr th.heading_items_col_add').length > 1) {
+                                    $('#test_table_' + list_id).find('thead tr.td_add_tr th:eq(' + col_index + ')').remove();
                                 } else {
                                     $('#task_name').attr('data-colid', 0);
                                 }
-                                $('#test_table tbody tr').each(function () {
+                                $('#test_table_' + list_id).find('tbody tr').each(function () {
                                     $(this).children('td:eq(' + col_index + ')').remove();
                                 });
 
@@ -6103,7 +6218,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                             ord_val++;
                                                         });
                                                     }
-                                                    var total_rows = $('#test_table tbody tr').length;
+                                                    var total_rows = $('#test_table_' + list_id).find('tbody tr').length;
                                                     $.ajax({
                                                         url: '<?php echo base_url() . 'item_order' ?>',
                                                         type: 'POST',
@@ -6120,7 +6235,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     }
                                 });
 
-                                $('#test_table tbody tr').each(function () {
+                                $('#test_table_' + list_id).find('tbody tr').each(function () {
                                     var item_id = $(this).children('td.list-table-view:eq(0)').find('.edit_task').attr('data-id');
                                     var item_name = $(this).children('td.list-table-view:eq(0)').find('.edit_task').attr('data-task');
 //                                    console.log(item_id);
@@ -6157,14 +6272,14 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if (res != '') {
                                                 var row_indx = $('#span_task_' + res).parent().parent().parent().index();
                                                 if ($('.icon-settings').attr('data-typeid') == 2) {
-                                                    $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
-                                                    $('.nexup-sub-group-one').attr('data-original-title', $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
-                                                    var item_list_nexup_data = '<tr><td>' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
+                                                    $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                    $('.nexup-sub-group-one').attr('data-original-title', $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                    var item_list_nexup_data = '<tr><td>' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
                                                     var grp_two = '';
                                                     for (s = 1; s < 4; s++) {
-                                                        if ($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').length == 1) {
-                                                            grp_two += '<span data-toggle="tooltip" title="" data-original-title="' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '">' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</span>';
-                                                            item_list_nexup_data += '<tr><td>' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
+                                                        if ($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').length == 1) {
+                                                            grp_two += '<span data-toggle="tooltip" title="" data-original-title="' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '">' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</span>';
+                                                            item_list_nexup_data += '<tr><td>' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
                                                         }
                                                     }
                                                     grp_two += '<p data-toggle="modal" data-target="#items-list" id="items_model_p" data-rowid="' + (row_indx + 1) + '" data-placement="top" title="Show all items"><img src="<?php echo base_url(); ?>assets/img/information-button-icon-23.png"></p>';
@@ -6175,7 +6290,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                     }
 
                                                 } else if ($('.icon-settings').attr('data-typeid') == 8) {
-                                                    $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                    $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
                                                 }
                                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
@@ -6405,7 +6520,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                 $('#values_items').prop('disabled', true);
                 $('#include_header').prop("checked", true);
                 $('.bulk_data_modal #data_msg').text('');
-                var list_id = $(this).attr('data-id');
+                var list_id = $('.edit_list_task_sub').attr('data-id');
                 $.ajax({
                     url: "<?php echo base_url() . 'item/get_bulk_data'; ?>",
                     type: 'POST',
@@ -6444,7 +6559,7 @@ if (isset($response['success']) && $response['success'] == 1) {
 
 
             $(document).on('click', '#export_bulk_btn', function () {
-                var list_id = $('#add_bulk_data').attr('data-id');
+                var list_id = $('.edit_list_task_sub').attr('data-id');
                 var change = 0;
 
                 if ($('.plus-category').attr('data-access') == 0) {
@@ -6508,12 +6623,39 @@ if (isset($response['success']) && $response['success'] == 1) {
                             $('.bulk_loader').css('display', 'none');
                             $('.bulk_loader').hide();
                         } else {
-                            $('.bulk_loader').css('display', 'none');
-                            $('.bulk_loader').hide();
-                            $('#init_value_items').html(list_data);
-                            if (btn_click == 'click_save') {
-                                window.location.reload();
-                            }
+                            var type_id = $('#config_lnk').attr('data-typeid');
+                            $.ajax({
+                                url: '<?php echo base_url() . 'listing/get_list_body'; ?>',
+                                type: 'POST',
+                                data: {
+                                    'Listid': list_id,
+                                },
+                                success: function (res) {
+                                    var resp = JSON.parse(res);
+                                    $('#test_table_' + list_id + ' tbody').html(resp['body']);
+                                    $('#bulk_data_modal').modal('toggle');
+//                                    $('#test_table tbody').append(resp);
+
+                                    if (type_id == 11) {
+                                        $("#test_table tbody").sortable("disable");
+                                    } else {
+                                        $("#test_table tbody").sortable("enable");
+                                    }
+//                                    $("#test_table tbody").sortable("disable");
+//                                    $("#test_table tbody").sortable("enable");
+                                    if ($('#listConfig_lnk').attr('data-moveallow') == 0) {
+                                        $("#test_table tbody").sortable("disable");
+                                    }
+                                }
+                            });
+                            
+                            
+//                            $('.bulk_loader').css('display', 'none');
+//                            $('.bulk_loader').hide();
+//                            $('#init_value_items').html(list_data);
+//                            if (btn_click == 'click_save') {
+//                                window.location.reload();
+//                            }
                         }
                     }
                 });
@@ -6527,8 +6669,8 @@ if (isset($response['success']) && $response['success'] == 1) {
                 }
                 $('.bulk_loader').removeClass('hiden_img');
                 $('.bulk_loader').css('display', 'block');
-                var list_id = $('#add_bulk_data').attr('data-id');
-                var list_data = $('#values_items').text();
+                var list_id = $('.edit_list_task_sub').attr('data-id');
+                var list_data = $('#values_items').val();
                 var separator_opt = $('#spearator_options').val();
                 
 //                var list_type_opt = $('input[name=type_option]:checked').val();
@@ -6544,7 +6686,6 @@ if (isset($response['success']) && $response['success'] == 1) {
                     include_header = 1;
                 }
                 
-
                 save_bulk_data(list_id, list_data, separator_opt, include_header, 'click_save')
 
             });
@@ -7743,7 +7884,1465 @@ if (isset($response['success']) && $response['success'] == 1) {
                 format: 'HH:mm'
             });
             
+            $(document).on('click', '.btn-month', function(){
+                if($(this).hasClass('active')){
+                    return false;
+                }
+                var parent_list_id = $('.edit_list_task').attr('data-id');
+                var start_date = '';
+                var end_date = '';
+                $.ajax({
+                    url: '<?php echo base_url() . 'task/get_month_list'; ?>',
+                    type: 'POST',
+                    data: {
+                        list_id: parent_list_id,
+                        start_date: start_date,
+                        end_date: end_date,
+                    },
+                    success: function (res) {
+                        if(!$('#add_bulk_data').hasClass('hdn_bulk')){
+                            $('#add_bulk_data').addClass('hdn_bulk');
+                        }
+                        $('#TaskListDiv').html(res);
+                        month_calendar_init();
+                    }
+                });
+            });
+            
+            $(document).on('click', '.btn-week', function(){
+                if($(this).hasClass('active')){
+                    return false;
+                }
+                var parent_list_id = $('.edit_list_task').attr('data-id');
+                var start_date = '';
+                var end_date = '';
+                $.ajax({
+                    url: '<?php echo base_url() . 'task/get_week_list'; ?>',
+                    type: 'POST',
+                    data: {
+                        list_id: parent_list_id,
+                        start_date: start_date,
+                        end_date: end_date,
+                    },
+                    success: function (res) {
+//                        console.log(res);
+//                        return false;
+                        if(!$('#add_bulk_data').hasClass('hdn_bulk')){
+                            $('#add_bulk_data').addClass('hdn_bulk');
+                        }
+                        $('#TaskListDiv').html(res);
+                        week_calendar_init();
+                        $(".ui-datepicker-current-day").click();
+                    }
+                });
+            });
+            
+            
+            
+             $(document).on('click', '.btn-day', function(){
+             
+                if($(this).hasClass('active') || $('.btn-today').hasClass('active')){
+                    return false;
+                }
+             
+                var parent_list_id = $('.edit_list_task').attr('data-id');
+                var list_name = convert(new Date());
+                
+                get_day_list(parent_list_id, list_name);
+            });
+             $(document).on('click', '.btn-today', function(){
+             
+                if($(this).hasClass('active')){
+                    return false;
+                }
+             
+                var parent_list_id = $('.edit_list_task').attr('data-id');
+                var list_name = convert(new Date());
+                
+                get_day_list(parent_list_id, list_name);
+            });
+            
+            function get_day_list(parent_list_id, list_name){
+                $.ajax({
+                    url: '<?php echo base_url() . 'listing/get_list_id_cal' ?>',
+                    type: 'POST',
+                    data: {
+                        parent_list_id: parent_list_id,
+                        list_name: list_name,
+                    },
+                    success: function (res) {
+                        if(res != '' && res > 0){
+                            $.ajax({
+                            url: '<?php echo base_url() . 'listing/get_list_cal_date'; ?>',
+                            type: 'POST',
+                            data: {
+                                    'list_id' : res,
+                                    'list_type': 'calendar',
+                                    'list_name': list_name
+                                },
+                            success: function (res) {
+                                if(res != '' || res != 'undefined'){
+                                    if($('#add_bulk_data').hasClass('hdn_bulk')){
+                                        $('#add_bulk_data').removeClass('hdn_bulk');
+                                    }
+                                    $('#TaskListDiv').html(res);
+                                    day_calendar_init();
+                                    sortable_tbl();
+                                    sortable_head_tbl();
+//                                    $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
 
+                                }
+                            }
+                        });
+                        }
+                    }
+                });
+            }
+            
+            $(document).on('keydown', '.task_sub_name', function (evt) {
+                var key_code = evt.keyCode;
+                var did_edit = $(this).attr('data-id');
+                if(key_code == 27){
+                    $(this).trigger('blur');
+                }
+                    
+                if (key_code == 13) {
+                    if (evt.ctrlKey) {
+                        var start = window.getSelection().anchorOffset;
+                        if (start != $(this).html().length) {
+                            document.execCommand('insertText', false, '\n');
+                            if (start == ($(this).val().length - 2)) {
+                                $(this).scrollTop($(this)[0].scrollHeight);
+                            }
+                        } else {
+                            document.execCommand('insertText', false, '\n ');
+                            $(this).scrollTop($(this)[0].scrollHeight);
+                        }
+                        return false;
+                    }
+                    
+                    if($(this).attr('id') == 'edit_task_name'){
+                        $(this).trigger('blur');
+                    }
+                    
+                    if($(this).val() != ''){
+                        if($(this).attr('data-type') == 'number'){
+                            if(!$.isNumeric($(this).val())){
+                                    $(this).val('1');
+                            }
+                        } else if($(this).attr('data-type') == 'date'){
+                            if(!isDate($(this).val())){
+                                alert('Please enter a valid date');
+                                $(this).val('');
+                                return false;
+                            }
+                        } else if($(this).attr('data-type') == 'time'){
+                            var time_regexp = /([01][0-9]|[02][0-3]):[0-5][0-9]/;
+                            if(time_regexp.test($(this).val()) == false){
+                                $(this).val('');
+                            }
+                        } else if($(this).attr('data-type') == 'datetime'){
+                            var date_time_regexp = /^(\d{1,2})(\/|-)(\d{1,2})(\/|-)(\d{4}) ([01][0-9]|[02][0-3]):[0-5][0-9]$/;
+                            if(date_time_regexp.test($(this).val()) == false){
+                                var time_regexp = /([01][0-9]|[02][0-3]):[0-5][0-9]/;
+                                if(isDate($(this).val())){
+                                    $(this).val($(this).val() + ' 00:00');
+                                }else if(time_regexp.test($(this).val()) != false){
+                                    var d = new Date();
+                                    var month = d.getMonth()+1;
+                                    var day = d.getDate();
+
+                                    var c_date = ((''+day).length<2 ? '0' : '') + day + '/' + ((''+month).length<2 ? '0' : '') + month + '/' + d.getFullYear();
+
+                                    $(this).val(c_date + ' ' + $(this).val());
+                                }else{
+                                    alert('Please enter a valid date and time');
+                                    $(this).val('');
+                                    return false;
+                                }
+                            }
+                        } else if($(this).attr('data-type') == 'email'){
+                            var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                            if (!testEmail.test($(this).val())){
+                                alert('Please enter a valid email');
+                                $(this).val('');
+                                return false;
+                            }
+                        } else if($(this).attr('data-type') == 'link'){
+                            var testLink = /(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+                            var url = '';
+                            var is_url = 0;
+                            if(!testLink.test($(this).val())){
+                                var link_tst = /([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g;
+                                if(link_tst.test($(this).val())){
+                                    url = 'http://' + $(this).val();
+                                    is_url = 1;
+                                }else{
+                                    is_url = 0;
+                                }
+                            }else{
+                                url = $(this).val();
+                                is_url = 1;
+                            }
+                            if (is_url == 0){
+                                alert('Please enter a valid link');
+                                return false;
+                            }
+                        }
+                    }
+                    
+                        
+                        $('#tabs-' + list_id).find('.task_name').prop('disabled', true);
+                        var list_id = $(this).attr('data-listid');
+                        var col_id = $(this).attr('data-colid');
+                        var list_name = '';
+                        if (list_id == 0) {
+                            if ($('#test_table_' + list_id).find('#edit_list_name').length > 0) {
+                                list_name = $('#test_table_' + list_id).find('#edit_list_name').val();
+                            } else {
+                                list_name = $('#test_table_' + list_id).find('.add-data-head h2').val();
+                            }
+                        }
+                        $('#test_table_' + list_id).find('#add_task_li').removeClass('list-error');
+                        $('#test_table_' + list_id).find('.add_task_cls').text('');
+                        $('#test_table_' + list_id).find('.add_task_cls').hide();
+                        var task_data = [];
+                        var column = '';
+                        var list = '';
+                        var val_cnt = 0;
+                        $('#test_table_' + list_id).find('.task_sub_name').each(function () {
+                            column = $(this).attr('data-colid');
+                            list = $(this).attr('data-listid');
+                            var task_name = $(this).val();
+                            var value_save = ' ';
+                            if ($(this).val().trim() != '') {
+                                value_save = $(this).val().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                            }
+                            task_data.push({column: column, val: value_save});
+                            if ($(this).val() != '') {
+                                val_cnt++;
+                            }
+                        });
+                        if($(this).attr('id') != 'edit_task_name'){
+                            if (val_cnt <= 0) {
+                                alert('Please enter atleast 1 item.');
+                                $('#test_table_' + list_id).find('.task_name').prop('disabled', false);
+                                $('.task_name:eq(0)').focus();
+                                return false;
+                            }
+                        }
+                        if($(this).attr('id') == 'task_name'){
+                            add_item_new_sub(list_id, list_name, task_data, col_id);
+                        }
+                }
+            });
+            function add_item_new_sub(list_id, list_name, task_data, col_id) {
+                $('#test_table_' + list_id).find('.delete_task').prop('disabled', true);
+                $.ajax({
+                    url: "<?php echo base_url() . 'item/add'; ?>",
+                    async : false,
+                    type: 'POST',
+                    context: this,
+                    data: {
+                        'list_id': list_id,
+                        'list_name': list_name,
+                        'task_data': task_data,
+//                            'task_name': $(this).val(),
+                        'col_id': col_id
+                    },
+                    success: function (res) {
+                        $('.task_name').prop('disabled', false);
+                        if (res == 'existing') {
+                            $('.add_task_cls').text('This task already exist. Please try different name!');
+                            $('.add_task_cls').show();
+                            $('#add_task_li').removeClass('list-error');
+                            $('#add_task_li').addClass('list-error');
+                            $('.task_name').val('');
+                            $('.task_name').prop('disabled', false);
+                        } else if (res == 'fail') {
+                            $('#task_name').val('');
+                            $('.add_task_cls').text('Something went wrong. Your task was not added. Please try again later!');
+                            $('.add_task_cls').show();
+                            $('#add_task_li').removeClass('list-error');
+                            $('#add_task_li').addClass('list-error');
+                            $('.task_name').val('');
+                            $('.task_name').prop('disabled', false);
+                        } else if (res == 'empty') {
+                            $('.add_task_cls').text('Please enter task name!');
+                            $('.add_task_cls').show();
+                            $('#add_task_li').removeClass('list-error');
+                            $('#add_task_li').addClass('list-error');
+                            $('.task_name').val('');
+                            $('.task_name').prop('disabled', false);
+                        } else if (res == 'not allowed') {
+                            alert('You are not allowed to add items in this list!');
+                            $('#test_table_' + list_id).find('.task_name').val('');
+                            $('#test_table_' + list_id).find('.task_name').prop('disabled', false);
+                        } else {
+                            
+                            $('#tabs-' + list_id).find('.add-data-head-r').removeAttr('style');
+                            var opct = '';
+                            var opct_cnt = 0;
+                            $('#test_table_' + list_id).find('tbody').find('.icon-more-holder').find('.icon-more ').each(function (){
+                                if($(this).css('opacity') == 1) {
+                                    opct_cnt++;
+                                    
+                                }
+                            });
+                            if(opct_cnt > 0){
+                                opct = 'opacity: 1;';
+                            }
+                            var resp = JSON.parse(res);
+                            var task_ids = JSON.parse(resp[1]);
+                            var val_store = $('#test_table_' + list_id).find('.task_sub_name').first().val();
+                            var url = val_store.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
+                            var val_url = '';
+                            var val_txt = '';
+                            if (isAnchor(val_store.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
+                                val_store = val_store.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+                                val_url = '';
+                                val_txt = val_store.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+                            } else {
+                                if (url != null) {
+                                    $.each(url, function (i, v) {
+                                        val_url = v;
+                                        val_txt = val_store.replace(v, '');
+                                        val_store = val_store.replace(v, '<a class="link_clickable" href="' + v + '">' + v + '</a>');
+                                    });
+                                }
+                            }
+                            
+                            var attend_class= '';
+                            if($('#tabs-' + list_id).find('#config_lnk_sub').attr('data-typeid') == 11){
+                                attend_class = ' attendance_list_class';
+                            }
+                            var td_val = '<tr>';
+                            var total_th = $('#test_table_' + list_id).find('.rank_th').length;
+                            $('#test_table_' + list_id).find('#delete_sub_list_builder').attr('data-id', resp[2]);
+                            $('#test_table_' + list_id).find('#copy_sub_list_btn').attr('data-id', resp[2]);
+                            
+                            td_val += '<td class="icon-more-holder add_icon_holder" data-order="' + resp[0] + '" data-listid="' + resp[2] + '" data-taskname="' + val_txt + val_url + '"><span class="icon-more ui-sortable-handle' + attend_class + '" style="' + opct + '"></span>';
+                            td_val += '<a href="javascript:void(0)" class="icon-cross-out delete_task custom_cursor" data-id="' + task_ids[0] + '" data-task="' + val_txt + val_url + '" data-listid="' + resp[2] + '" style="' + opct +'"></a>';
+                            if ($('#tabs-' + list_id).find('.icon-settings-sub').attr('data-typeid') == 5) {
+                                td_val += '<input type="checkbox" class="complete_task custom_cursor" id="complete_' + task_ids[0] + '" data-id="' + task_ids[0] + '" data-listid="' + resp[2] + '" />';
+                                td_val += ' <label for="complete_' + task_ids[0] + '" class="complete_lbl"> </label>';
+                            } else if ($('#content_' + list_id).find('.icon-settings-sub').attr('data-typeid') == 11) {
+                                td_val += '<input type="checkbox" class="present_task custom_cursor" id="present_' + task_ids[0] + '" data-id="' + task_ids[0] + '" data-listid="' + resp[2] + '" />';
+                                td_val += ' <label for="present_' + task_ids[0] + '" class="present_lbl"> </label>';
+                            }
+                            td_val += '</td>';
+                            if ($('#test_table_' + list_id).find('.rank_th_head').length > 0) {
+                                td_val += '<td class="rank_th">' + (total_th + 1) + '</td>'
+                            }
+                            var hidden_time_class = '';
+                            var hidden_comment_class = '';
+                            if ($('#tabs-' + list_id).find('.icon-settings-sub').attr('data-typeid') == 11) {
+                                if ($('#tabs-' + list_id).find('#listConfig_lnk_' + list_id).attr('data-showtime') == 0) {
+                                    hidden_time_class = ' hidden_nodrag';
+                                }
+                            } else {
+                                hidden_time_class = ' hidden_nodrag';
+                                hidden_comment_class = ' hidden_nodrag';
+                            }
+
+                            var json_cnt = 0;
+
+
+                            $('#test_table_' + list_id).find('.task_sub_name').each(function () {
+                                var valuse_store = $(this).val();
+                                var display_val = $(this).val();
+                                display_val = display_val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                                url = display_val.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
+                                if (url == 'null' || url == null || url == 'undefined') {
+                                    url = display_val.match(/([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g);
+                                }
+                                var display_url = '';
+                                var display_txt = '';
+                                var title_text = '';
+
+                                if (isAnchor(display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
+                                    display_val = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+                                    display_url = '';
+                                    display_txt = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+                                } else {
+                                    if (url != null && url != 'null' && url != 'undefined' && url != '') {
+                                        $.each(url, function (i, v) {
+                                            v = v.split(' ')[0];
+                                            display_url = v;
+                                            
+                                            title_text = display_val.replace(v, '|url|');
+                                            display_txt = display_val.replace(v, '');
+                                            var url_http = v;
+                                            if(v.indexOf('http://') != 0){
+                                                if(v.indexOf('https://') != 0){
+                                                    url_http = 'http://' + v;
+                                                }
+                                            }
+                                            display_val = display_val.replace(v, '<a class="link_clickable" href="' + url_http + '">' + v + '</a>');
+                                            title_text = title_text.replace('|url|', v);
+                                        });
+                                    }
+                                }
+                                            
+
+                                td_val += '<td class="list-table-view">';
+                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="' + title_text + '">';
+
+                                td_val += '<span id="span_task_' + task_ids[json_cnt] + '" class="task_name_span">' + display_val + '</span>';
+
+                                td_val += '<div class="opertaions pull-right">';
+
+                                td_val += '</div>';
+                                td_val += '</div>';
+                                td_val += '</td>';
+                                json_cnt++;
+                            });
+                            td_val += '<td class="list-table-view-attend' + hidden_comment_class + '">';
+                            td_val += '<div class="add-comment-div edit_comment" data-id="' + resp['extra_id'] + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="">';
+                            td_val += '<span id="span_comment_' + resp['extra_id'] + '" class="comment_name_span">&nbsp;</span>';
+                            td_val += '</div>';
+                            td_val += '</td>';
+
+                            td_val += '<td class="list-table-view-attend' + hidden_time_class + '">';
+                            td_val += '<div class="add-date-div check_date" data-id="' + resp['extra_id'] + '" data-listid="' + resp[3] + '" data-toggle="tooltip" data-placement="top" title="">';
+                            td_val += '<span id="span_time_' + resp['extra_id'] + '" class="time_name_span">&nbsp;</span>';
+                            td_val += '</div>';
+                            td_val += '</td>';
+
+                            td_val += '</tr>';
+                            if ($('#tabs-' + list_id).find('.icon-settings-sub').attr('data-typeid') == 5) {
+                                if ($('#test_table_' + list_id).find('.complete_task:checked').length > 0) {
+                                    $('#test_table_' + list_id).find('.complete_task:checked:first').parent().parent().before(td_val);
+                                } else {
+                                    $('#test_table_' + list_id).find('tbody').append(td_val);
+                                }
+                            } else {
+                                $('#test_table_' + list_id).find('tbody').append(td_val);
+                            }
+
+                            if ($('#test_table_' + list_id).find('tbody tr').length == 1) {
+                                $('#tabs-' + list_id).find('.whoisnext-div .nexup-group .nexup-group-two .button-outer').removeClass('whosnext_img_bg');
+                                var next_elem_find = $('#test_table_' + list_id).find('tbody tr:eq(0) td.list-table-view:eq(0) .add-data-div .task_name_span').text();
+
+                                var first_elem = '';
+                                if ($('#tabs-' + list_id).find('#config_lnk_sub').attr('data-typeid') == 2) {
+                                    first_elem += '<div class="nexup-sub-group nexup-sub-group-one" data-toggle="tooltip" title="' + $.trim(next_elem_find) + '">';
+                                    first_elem += '<span id="next_task_name">' + $.trim(next_elem_find) + '</span>';
+                                    first_elem += '</div>';
+                                } else if ($('#tabs-' + list_id).find('#config_lnk_sub').attr('data-typeid') == 8) {
+                                    first_elem += '<div class="nexup-sub-group nexup-sub-group-single" data-toggle="tooltip" title="' + $.trim(next_elem_find) + '">';
+                                    first_elem += '<span id="next_task_name">' + $.trim(next_elem_find) + '</span>';
+                                    first_elem += '</div>';
+                                }
+                                
+
+                                var total_cols = $('#test_table_' + list_id).find('tbody tr:first-child td .add-data-div').length;
+                                
+                                if (total_cols >= 1) {
+                                    var index_row = $('#test_table_' + list_id).find('tbody tr:eq(0) td.list-table-view:eq(0) .add-data-div .task_name_span').parent('td').parent().index();
+                                    var loop_max = (total_cols - 1);
+                                    if ($('#tabs-' + list_id).find('#config_lnk_sub').attr('data-typeid') == 3) {
+                                        var loop_max = total_cols;
+                                    }
+                                    if (total_cols > 3) {
+                                        var loop_max = 3;
+                                    }
+                                    if ($('#test_table_' + list_id).find('tbody tr:first-child td .edit_task').length > 1) {
+
+                                        first_elem += '<div class="nexup-sub-group nexup-sub-group-two">';
+                                        for (j = 0; j < loop_max; j++) {
+                                            if (index_row < 0) {
+                                                index_row = 0;
+                                            }
+                                            first_elem += '<span data-toggle="tooltip" title="' + $.trim($('#test_table_' + list_id).find('tbody tr:nth-child(' + (index_row + 1) + ') td:eq(' + (j + 2) + ') .add-data-div .task_name_span').text()) + '">';
+                                            first_elem += $.trim($('#test_table_' + list_id).find('tbody tr:nth-child(' + (index_row + 1) + ') td:eq(' + (j + 2) + ') .add-data-div .task_name_span').text());
+                                            first_elem += '</span>';
+                                        }
+                                        first_elem += '<p data-toggle="modal" data-target="#items-list" id="items_model_p" data-rowid="' + (index_row + 1) + '"><img src="<?php echo base_url() . 'assets/img/information-button-icon-23.png'; ?>"></p>';
+                                        first_elem += '</div>';
+                                    }
+                                }
+                                
+                                
+
+
+                                $('#tabs-' + list_id).find('.whoisnext-div .nexup-group .nexup-group-two .button-outer').html(first_elem);
+                                var next_task = $('#tabs-' + list_id).find(".whoisnext-div .nexup-group .nexup-group-two .button-outer .nexup-sub-group-one #next_task_name");
+                                var numWords = $.trim(next_task.text()).length;
+                                if ((numWords >= 1) && (numWords < 10)) {
+                                    next_task.css("font-size", "50px");
+                                }
+                                else if ((numWords >= 10) && (numWords < 20)) {
+                                    next_task.css("font-size", "36px");
+                                }
+                                else if ((numWords >= 20) && (numWords < 30)) {
+                                    next_task.css("font-size", "30px");
+                                }
+                                else if ((numWords >= 30) && (numWords < 40)) {
+                                    next_task.css("font-size", "26px");
+                                }
+                                else {
+                                    next_task.css("font-size", "20px");
+                                }
+                            }
+
+                            
+                            if ($('#tabs-' + list_id).find('.add-data-head-r').hasClass('hidden_add_column_btn')) {
+                                $('#tabs-' + list_id).find('.add-data-head-r').removeClass('hidden_add_column_btn')
+                            }
+                            if ($('#tabs-' + list_id).find('#add_bulk_sub_data').hasClass('hdn_bulk')) {
+                                $('#tabs-' + list_id).find('#add_bulk_sub_data').removeClass('hdn_bulk');
+                            }
+                            if ($('#tabs-' + list_id).find('#add_sub_data_desc').hasClass('hdn_desc')) {
+                                $('#tabs-' + list_id).find('#add_sub_data_desc').removeClass('hdn_desc');
+                            }
+                            if ($('#tabs-' + list_id).find('.icon-settings-sub').attr('data-typeid') == 11) {
+                                $('#tabs-' + list_id).find('#yes_cnt').text(resp['total_yes']);
+                                $('#tabs-' + list_id).find('#maybe_cnt').text(resp['total_maybe']);
+                                $('#tabs-' + list_id).find('#no_cnt').text(resp['total_no']);
+                                $('#tabs-' + list_id).find('#blank_cnt').text(resp['total_blank']);
+                            }
+                            if (list_id == 0) {
+                                $('#test_table_' + list_id).find('.heading_items_col_add:eq(0)').attr('data-listid', resp[2]);
+                                $('#test_table_' + list_id).find('.heading_items_col_add:eq(0)').attr('data-colid', resp['col_id']);
+                                //$('#save_col_sub').attr('data-listid', resp[2]);
+                            }
+                            if ($('#test_table_' + list_id).find('.edit_task').length > 0) {
+                                $('#test_table_' + list_id).find('.add-data-head-r').show();
+                            }
+                            var type_id = $('#tabs-' + list_id).find('#config_lnk_sub').attr('data-typeid');
+                            
+                            $.ajax({
+                                url: '<?php echo base_url() . 'listing/get_list_body'; ?>',
+                                type: 'POST',
+                                data: {
+                                    'Listid': list_id,
+                                },
+                                success: function (res) {
+                                    var resp = JSON.parse(res);
+                                    $('#test_table_' + list_id).find('tbody').html(resp['body']);
+                                    if ($('#test_table_' + list_id).find("tbody").hasClass('ui-sortable')){
+                                        if (type_id == 11) {
+                                            $('#test_table_' + list_id).find("tbody").sortable("disable");
+                                        } else {
+                                            $('#test_table_' + list_id).find("tbody").sortable("enable");
+                                        }
+                                        if($('#listConfig_lnk_' + list_id).attr('data-moveallow') == 0){
+                                            $('#test_table_' + list_id).find("tbody").sortable("disable");
+                                        }
+                                    }else{
+                                        $('#test_table_' + list_id).find("tbody").sortable({
+                                            handle: '.icon-more',
+                                            connectWith: ".add-data-div.edit_task",
+                                            axis: "y",
+                                            tolerance: 'pointer',
+                                            scroll: true,
+                                            animation: 100,
+                                            revert: 100,
+                                            stop:function( event, ui ) {
+                                                $('#tabs-' + list_id).find('.my_table').removeClass('my_scroll_table_no_overflow');
+                                                $('#tabs-' + list_id).find('.my_table').addClass('my_scroll_table');
+                                            },
+                                            update: function (event, ui) {
+                                                if ($('#test_table_' + list_id).find('.rank_th').length > 0) {
+                                                    var rnk_val = 1;
+                                                    $('#test_table_' + list_id).find('.rank_th').each(function () {
+                                                        $(this).text(rnk_val);
+                                                        rnk_val++;
+                                                    });
+                                                }
+                                                var tasks_orders = [];
+                                                $('#test_table_' + list_id).find('tbody tr td.icon-more-holder').each(function (e) {
+                                                    var orders = $(this).attr('data-order');
+                                                    tasks_orders.push(orders);
+                                                });
+
+                                                var task_id = $(ui.item).children('td.list-table-view:eq(0)').find('div.edit_task').attr('data-id');
+                                                var list_id = '';
+                                                list_id = $(ui.item).children('td.icon-more-holder').attr('data-listid');
+                                                var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                                                $.ajax({
+                                                    url: '<?php echo base_url() . 'order_change' ?>',
+                                                    type: 'POST',
+                                                    data: {
+                                                        OrderId: ui.item.index() + 1,
+                                                        TaskOrders: JSON.stringify(tasks_orders),
+                                                        ListId: list_id,
+                                                        user_ip: user_ip
+                                                    },
+                                                    success: function (res) {
+                                                        if (res != 'fail') {
+                                                            if ($('#test_table_' + list_id).find('.icon-more-holder').length > 0) {
+                                                                var ord_val = 1;
+                                                                $('#test_table_' + list_id).find('.icon-more-holder').each(function () {
+                                                                    $(this).attr('data-order', ord_val);
+                                                                    ord_val++;
+                                                                });
+                                                            }
+
+                                                            var total_rows = $('#test_table_' + list_id).find('tbody tr').length;
+                                                            $.ajax({
+                                                                url: '<?php echo base_url() . 'item_order' ?>',
+                                                                type: 'POST',
+                                                                data: {
+                                                                    OrderId: ui.item.index() + 1,
+                                                                    Taskid: task_id
+                                                                },
+                                                                success: function (res) {
+                                                                }
+                                                            });
+                                                        } else {
+                                                            $('#test_table_' + list_id).find("tbody").sortable('cancel');
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                        
+                                }
+                            });
+                            $('#test_table_' + list_id).find('.task_sub_name').val('');
+                            $('#test_table_' + list_id + ' thead tr:eq(0) th.heading_items_col_add:eq(0) .task_sub_name:eq(0)').focus();
+                        }
+
+                        $('#test_table_' + list_id).find('.task_name:eq(0)').focus();
+                        var total_nexup_span = $('#content_' + list_id).find('.whoisnext-div .nexup-group .nexup-group-two .nexup-sub-group-two span').length;
+                        $('#test_table_' + list_id).find('.task_name').val('');
+                        $('.check_all_check_box').prop('checked', false);
+                        if (resp['col_id'] != 'undefined') {
+                            $('#test_table_' + list_id).find('#task_name:eq(0)').attr('data-colid', resp['col_id']);
+                        }
+                        if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+                            $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
+                                event.preventDefault()
+                            }).tooltip();
+                        }
+                        $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
+                            $('.tooltip').remove();
+                        })
+                    },
+                    error: function (textStatus, errorThrown) {
+                        alert('something went wrong. Items were not added. Plese try again!');
+                        $('#test_table_' + list_id).find('.task_name').prop('disabled', false);
+                        $('#test_table_' + list_id).find('.delete_task').prop('disabled', false);
+                    },
+                    complete: function (data) {
+                        $('#test_table_' + list_id).find('.task_name').prop('disabled', false);
+                        $('#test_table_' + list_id).find('.delete_task').prop('disabled', false);
+                    }
+                });
+                setTimeout(function () {
+                    $('#test_table_' + list_id).find('.delete_task').prop('disabled', false);
+                }, 5000);
+            }
+            
+            function day_calendar_init(date = null){
+                        
+                var startDate;
+
+                $('.day_calendar').datepicker( {
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-100:+100",
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    beforeShowDay: function (date) {
+                        var cssClass = '';
+                        startDate = new Date($('.edit_list_task_sub').attr('data-original-title'));
+
+                        if(date == startDate)
+                            cssClass = 'ui-datepicker-current-day';
+                        return [true, cssClass];
+
+                    },
+                    onSelect: function(dateText, inst) {
+                        var date = $(this).datepicker('getDate');
+                        startDate = date;
+
+
+                        var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+
+                        var date = [];
+                        var day = [];
+                        var month = [];
+                        var year = [];
+                        var data_date = [];
+
+                        date[1] = $.datepicker.formatDate( 'd', startDate, inst.settings);
+                        day[1] = $.datepicker.formatDate( 'D', startDate, inst.settings);
+                        month[1] = $.datepicker.formatDate( 'M', startDate, inst.settings);
+                        year[1] = $.datepicker.formatDate( 'yy', startDate, inst.settings);
+                        data_date[1] = $.datepicker.formatDate( 'yy-mm-dd', startDate, inst.settings);
+
+                        var cnt_day = 1;
+                        $('.day_view').find('.head_row_week').find('.date_Detail_week').each(function(e){
+                            if(cnt_day > 1){
+                                $(this).find('h2').find('.day_w').text(day[cnt_day]);
+                            }
+                            $(this).attr('data-date', data_date[cnt_day]);
+                            if(cnt_day == 1){
+                                $(this).find('h2').find('.day_date').text(month[1] + ' ' + date[cnt_day]);
+                            }else{
+                                $(this).find('h2').find('.day_date').text(date[cnt_day]);
+                            }
+                            cnt_day++;
+                        });
+
+                        var parent_list_id = $('.edit_list_task').attr('data-id');
+                        var list_name = convert(new Date($('.day_calendar').datepicker( "getDate" )));
+                        $.ajax({
+                            url: '<?php echo base_url() . 'listing/get_list_id_cal' ?>',
+                            type: 'POST',
+                            data: {
+                                parent_list_id: parent_list_id,
+                                list_name: list_name,
+                            },
+                            success: function (res) {
+                                if(res != '' && res > 0){
+                                    $.ajax({
+                                    url: '<?php echo base_url() . 'listing/get_list_cal_date'; ?>',
+                                    type: 'POST',
+                                    data: {
+                                            'list_id' : res,
+                                            'list_type': 'calendar',
+                                            'list_name': list_name
+                                        },
+                                    success: function (res) {
+                                        if(res != '' || res != 'undefined'){
+                                            if($('#add_bulk_data').hasClass('hdn_bulk')){
+                                                $('#add_bulk_data').removeClass('hdn_bulk');
+                                            }
+                                            $('#TaskListDiv').html(res);
+                                            day_calendar_init();
+                                            $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
+                                            sortable_tbl();
+                                            sortable_head_tbl();
+                                        }
+                                    }
+                                });
+                                }
+                            }
+                        });
+                    },
+                    onChangeMonthYear: function(year, month, inst) {
+//                        selectCurrentWeek();
+                    }
+                });
+            }
+            
+            function sortable_tbl(){
+                $('.test_table').find("tbody").sortable({
+                    handle: '.icon-more',
+                    connectWith: ".add-data-div.edit_task",
+                    axis: "y",
+                    tolerance: 'pointer',
+                    scroll: true,
+                    animation: 100,
+                    revert: 100,
+                    stop:function( event, ui ) {
+                        $('.my_table').removeClass('my_scroll_table_no_overflow');
+                        $('.my_table').addClass('my_scroll_table');
+                    },
+                    update: function (event, ui) {
+                        if ($('.test_table').find('.rank_th').length > 0) {
+                            var rnk_val = 1;
+                            $('.test_table').find('.rank_th').each(function () {
+                                $(this).text(rnk_val);
+                                rnk_val++;
+                            });
+                        }
+                        var tasks_orders = [];
+                        $('.test_table').find('tbody tr td.icon-more-holder').each(function (e) {
+                            var orders = $(this).attr('data-order');
+                            tasks_orders.push(orders);
+                        });
+
+                        var task_id = $(ui.item).children('td.list-table-view:eq(0)').find('div.edit_task').attr('data-id');
+                        var list_id = '';
+                        list_id = $(ui.item).children('td.icon-more-holder').attr('data-listid');
+                        var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                        $.ajax({
+                            url: '<?php echo base_url() . 'order_change' ?>',
+                            type: 'POST',
+                            data: {
+                                OrderId: ui.item.index() + 1,
+                                TaskOrders: JSON.stringify(tasks_orders),
+                                ListId: list_id,
+                                user_ip: user_ip
+                            },
+                            success: function (res) {
+                                if (res != 'fail') {
+                                    if ($('.test_table').find('.icon-more-holder').length > 0) {
+                                        var ord_val = 1;
+                                        $('.test_table').find('.icon-more-holder').each(function () {
+                                            $(this).attr('data-order', ord_val);
+                                            ord_val++;
+                                        });
+                                    }
+
+                                    var total_rows = $('.test_table').find('tbody tr').length;
+                                    $.ajax({
+                                        url: '<?php echo base_url() . 'item_order' ?>',
+                                        type: 'POST',
+                                        data: {
+                                            OrderId: ui.item.index() + 1,
+                                            Taskid: task_id
+                                        },
+                                        success: function (res) {
+                                        }
+                                    });
+                                } else {
+                                    $('.test_table').find("tbody").sortable('cancel');
+                                }
+                            }
+                        });
+                    }
+                });
+                }
+                
+                function sortable_head_tbl(){
+                    var list_id = $('.edit_list_task_sub').attr('data-id');
+                    var prev_index = 0;
+                    var new_index = 0;
+                    
+                    $('#test_table_' + list_id).find('thead tr').sortable({
+                        handle: '.move_sub_col',
+                        cancel: '.noDrag',
+                        connectWith: 'tbody thead tr.td_arrange_tr',
+                        tolerance: "pointer",
+                        items: "th:not(.noDrag)",
+                        helper: function (e, tr) {
+                            var $originals = tr.children();
+                            var $helper = tr.clone();
+                            $helper.children().each(function (index) {
+                                $(this).width($originals.eq(index).width())
+                            });
+                            return $helper;
+                        },
+                        start: function (e, ui) {
+                            prev_index = ui.item.index();
+                        },
+                        update: function (event, ui) {
+                            var next_class = $('#test_table_' + list_id).find('thead .td_arrange_tr th:nth-child(2)').attr('class');
+                            if ($('#tabs-' + list_id).find('.icon-settings').attr('data-typeid') == 3) {
+                                next_class = $('#test_table_' + list_id).find('thead .td_arrange_tr th:nth-child(3)').attr('class');
+                            }
+                            if (next_class == 'noDrag') {
+                                event.preventDefault();
+                            }
+
+                            var total_rows = $('#test_table_' + list_id).find('tbody tr').length;
+
+                            new_index = ui.item.index();
+                            var col_ids = [];
+                            $('#test_table_' + list_id).find('.heading_items_col .add-data-title').each(function () {
+                                var ids = $(this).attr('data-colid');
+                                col_ids.push(ids);
+
+                            });
+
+                            $.ajax({
+                                url: '<?php echo base_url() . 'change_column_order' ?>',
+                                type: 'POST',
+                                data: {
+                                    column_ids: JSON.stringify(col_ids),
+                                    list_id: list_id
+                                },
+                                success: function (res) {
+                                    if (res != 'fail') {
+                                        var resp = JSON.parse(res);
+                                        var old_pos = prev_index;
+                                        var new_pos = new_index;
+
+
+
+                                        if ($('#tabs-' + list_id).find('.icon-settings').attr('data-typeid') == 3) {
+                                            if (new_pos < 2) {
+                                                new_pos = 2;
+                                                $('#test_table_' + list_id).find('thead tr.td_arrange_tr').each(function () {
+                                                    var cols = $(this).children('th');
+                                                    cols.eq(old_pos).detach().insertBefore(cols.eq(new_pos));
+                                                });
+                                            }
+
+                                        } else {
+                                            if (new_pos < 1) {
+                                                new_pos = 1;
+                                                $('#test_table_' + list_id).find('thead tr.td_arrange_tr').each(function () {
+                                                    var cols = $(this).children('th');
+                                                    cols.eq(old_pos).detach().insertBefore(cols.eq(new_pos));
+                                                });
+                                            }
+
+                                        }
+
+                                        $('#test_table_' + list_id).find('thead tr.td_add_tr').each(function () {
+                                            var cols = $(this).children('th');
+
+                                            if (new_pos > old_pos) {
+                                                cols.eq(old_pos).detach().insertAfter(cols.eq(new_pos));
+                                            } else {
+                                                cols.eq(old_pos).detach().insertBefore(cols.eq(new_pos));
+                                            }
+                                        });
+
+                                        $('#test_table_' + list_id).find('tbody tr').each(function () {
+                                            var cols = $(this).children('td');
+
+                                            if (new_pos > old_pos) {
+                                                cols.eq(old_pos).detach().insertAfter(cols.eq(new_pos));
+                                            } else {
+                                                cols.eq(old_pos).detach().insertBefore(cols.eq(new_pos));
+                                            }
+                                        });
+
+                                        if (total_rows > 0) {
+
+                                            if (resp.length > 0) {
+
+                                                if($('#tabs-' + list_id).find('.icon-settings').attr('data-typeid') == 2 || $('#tabs-' + list_id).find('.icon-settings').attr('data-typeid') == 8){
+                                                    $.ajax({
+                                                       url: '<?php echo base_url(); ?>get_nexup_box',
+                                                       type: 'POST',
+                                                       data: {
+                                                           'list_id': list_id,
+                                                       },
+                                                       success: function (res) {
+                                                           if(res != ''){
+                                                               var row_indx = $('#span_task_' + res).parent().parent().parent().index();
+                                                               if($('#tabs-' + list_id).find('.icon-settings').attr('data-typeid') == 2){
+                                                                   $('#tabs-' + list_id).find('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table_' + list_id).find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                                                                               $('#tabs-' + list_id).find('.nexup-sub-group-one').attr('data-original-title', $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                                   var item_list_nexup_data = '<tr><td>' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
+                                                                   var grp_two = '';
+                                                                   for(s = 1; s < 4; s++){
+                                                                       if($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').length == 1){
+                                                                           grp_two += '<span data-toggle="tooltip" title="" data-original-title="' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) +'">' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</span>';
+                                                                           item_list_nexup_data += '<tr><td>' + $.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(' + s + ')').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
+                                                                       }
+                                                                   }
+                                                                   grp_two += '<p data-toggle="modal" data-target="#items-list" id="items_model_p" data-rowid="' + (row_indx + 1) +'" data-placement="top" title="Show all items"><img src="<?php echo base_url(); ?>assets/img/information-button-icon-23.png"></p>';
+                                                                   if(grp_two != ''){
+        //                                                               $('.nexup-sub-group-two').html(grp_two);
+                                                                       $('#tabs-' + list_id).find('.button-outer').find('.nexup-sub-group-two').html(grp_two);
+                                                                   }
+
+                                                               }else if($('#tabs-' + list_id).find('.icon-settings').attr('data-typeid') == 8){
+                                                                    $('#tabs-' + list_id).find('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table_' + list_id).find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                                               }
+                                                               if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+                                                                    $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
+                                                                       event.preventDefault()
+                                                                   }).tooltip();
+                                                               }
+                                                               $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
+                                                                   $('.tooltip').remove()
+                                                               });
+                                                           }
+                                                            var nexup_sun_grp_2_len = $('#tabs-' + list_id).find('.button-outer').find('.nexup-sub-group-two').find('span').length;
+                                                            if(nexup_sun_grp_2_len == 1){
+                                                                $('#tabs-' + list_id).find('.button-outer').find('.nexup-sub-group-two').find('span').css('font-size', '18px');
+                                                            }else if(nexup_sun_grp_2_len == 2){
+                                                                $('#tabs-' + list_id).find('.button-outer').find('.nexup-sub-group-two').find('span').css('font-size', '16px');
+                                                            }else{
+                                                                $('#tabs-' + list_id).find('.button-outer').find('.nexup-sub-group-two').find('span').css('font-size', '13px');
+                                                            }
+                                                            set_nexup_box_data();
+                                                       }
+                                                   });
+                                                   }
+                                            }
+                                        }
+
+                                        var current_id = $('#tabs-' + list_id).find('.tasks_lists_display.ui-sortable').attr('id');
+                                        $('#' + current_id).sortable('destroy');
+                                        var first_id = $('#test_table_' + list_id).find('tbody tr:nth-child(2)').attr('id');
+                                        $("#" + first_id).sortable({
+                                            handle: '.icon-more',
+                                            cancel: '.heading_col',
+                                            update: function (event, ui) {
+                                                if ($('#test_table_' + list_id).find('.rank_th').length > 0) {
+                                                    var rnk_val = 1;
+                                                    $('#test_table_' + list_id).find('.rank_th').each(function () {
+                                                        $(this).text(rnk_val);
+                                                        rnk_val++;
+                                                    });
+                                                }
+                                                var tasks_ids = [];
+                                                $('#test_table_' + list_id).find('.tasks_lists_display li').each(function (e) {
+                                                    var ids = $(this).attr('data-id');
+                                                    tasks_ids.push(ids);
+                                                });
+
+                                                var task_id = $(ui.item).attr('data-id');
+                                                var list_id = $(ui.item).children().attr('data-listid');
+                                                var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                                                $.ajax({
+                                                    url: '<?php echo base_url() . 'order_change' ?>',
+                                                    type: 'POST',
+                                                    data: {
+                                                        OrderId: ui.item.index() + 1,
+                                                        Taskid: JSON.stringify(tasks_ids),
+                                                        ListId: list_id,
+                                                        user_ip: user_ip
+                                                    },
+                                                    success: function (res) {
+                                                        if (res != 'fail') {
+                                                            if ($('#test_table_' + list_id).find('.icon-more-holder').length > 0) {
+                                                                var ord_val = 1;
+                                                                $('#test_table_' + list_id).find('.icon-more-holder').each(function () {
+                                                                    $(this).attr('data-order', ord_val);
+                                                                    ord_val++;
+                                                                });
+                                                            }
+                                                            var total_rows = $('#test_table tbody tr').length;
+                                                            $.ajax({
+                                                                url: '<?php echo base_url() . 'item_order' ?>',
+                                                                type: 'POST',
+                                                                data: {
+                                                                    OrderId: ui.item.index() + 1,
+                                                                    Taskid: task_id
+                                                                },
+                                                                success: function (res) {
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                        $('#test_table_' + list_id).find('thead tr').sortable('refresh');
+                                    }
+                                }
+                            });
+
+                        }
+                    });
+                }
+                
+                $(document).on('change', '#custom_date_list_name', function(e){
+                    var parent_list_id = $('.edit_list_task').attr('data-id');
+                    var list_name = $(this).val();
+                    $.ajax({
+                        url: '<?php echo base_url() . 'listing/get_list_id_cal' ?>',
+                        type: 'POST',
+                        data: {
+                            parent_list_id: parent_list_id,
+                            list_name: list_name,
+                        },
+                        success: function (res) {
+                            if(res != '' && res > 0){
+                                $.ajax({
+                                url: '<?php echo base_url() . 'listing/get_list_cal_date'; ?>',
+                                type: 'POST',
+                                data: {
+                                        'list_id' : res,
+                                        'list_type': 'calendar',
+                                        'list_name': list_name
+                                    },
+                                success: function (res) {
+                                    if(res != '' || res != 'undefined'){
+                                        if($('#add_bulk_data').hasClass('hdn_bulk')){
+                                            $('#add_bulk_data').removeClass('hdn_bulk');
+                                        }
+                                        $('#TaskListDiv').html(res);
+                                        day_calendar_init();
+                                        $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
+                                        sortable_tbl();
+                                        sortable_head_tbl();
+                                    }
+                                }
+                            });
+                            }
+                        }
+                    });
+                });
+                
+                
+                $(document).on('click', '.sub_list_name_span_calendar', function(e){
+                    var list_name = $(this).attr('data-listname');
+                    var date_box = '<span class="date_select_bpx_span"><input type="text" id="custom_date_list_name" class="custom_date_list_name" placeholder="mm/dd/yyyy" value="' + list_name + '"></span>';
+                    $('.sub_list_name_span_calendar').after(date_box);
+                    $('.sub_list_name_span_calendar').hide();
+                    $(".custom_date_list_name").datepicker({
+                        showOtherMonths: true,
+                        selectOtherMonths: true,
+                        dateFormat:'mm/d/yy',
+                        changeMonth: true,
+                        changeYear: true,
+                        yearRange: "-100:+100",
+                        onClose: function(dateText, inst) {
+                            $('.date_select_bpx_span').remove();
+                            $('.sub_list_name_span_calendar').show();
+                        }
+                    });
+                    $(".custom_date_list_name").datepicker('show');
+                });
+                
+                 $(document).on('keydown', '.custom_date_list_name', function(e){
+                     if(e.keyCode == 27){
+                         $('.date_select_bpx_span').remove();
+                         $('.sub_list_name_span_calendar').show();
+                     }
+                 });
+                
+                
+                $(document).on('click', '#listConfig_lnk', function(){
+                    if($('.day_calendar').length > 0){
+                        $('.config-submodal-calendar-body').html('');
+                        var list_id = $('.edit_list_task_sub').attr('data-id');
+                        $.ajax({
+                            url: '/get_list_config',
+                            type: 'POST',
+                            context: this,
+                            data: {list_id: list_id},
+                            success: function(res){
+                                $('.config-submodal-calendar-body').html(res);
+                            }
+                        });
+                        $('#config_sub_list_calendar').modal('toggle');
+                    }
+                });
+                
+                $(document).on('click', '#save_sub_config', function (){
+                    $(this).css('pointer-events', 'none');
+                    var list_id = $(this).attr('data-listid');
+                    if($('.plus-category').attr('data-access') == 0){
+                        alert('You are not allowed to change configuration!');
+                        return false;
+                    }
+                    var allow_move = 'False';
+                    if ($('.config-submodal-calendar-body').find('#move_sub_item').is(':checked')) {
+                        allow_move = 'True';
+                    }
+                    var show_completed = 'False';
+                    if ($('.config-submodal-calendar-body').find('#show_sub_completed_item').is(':checked')) {
+                        show_completed = 'True';
+                    }
+
+                    var allow_undo = 'False';
+                    if ($('.config-submodal-calendar-body').find('#undo_sub_item').is(':checked')) {
+                        allow_undo = 'True';
+                    }
+
+                    var allow_maybe = '0';
+                    if ($('.config-submodal-calendar-body').find('#maybe_sub_allowed').is(':checked')) {
+                        allow_maybe = '1';
+                    }
+
+                    var show_time = '0';
+                    if ($('.config-submodal-calendar-body').find('#show_sub_time').is(':checked')) {
+                        show_time = '1';
+                    }
+
+                    var enable_comment = '0';
+                    if ($('.config-submodal-calendar-body').find('#visible_sub_comment').is(':checked')) {
+                        enable_comment = '1';
+                    }
+
+                    var show_comment_attendance = '0';
+                    if ($('#enable_attendance_sub_comment').is(':checked')) {
+                        show_comment_attendance = '1';
+                    }
+
+                    var show_preview = '0';
+                    if ($('.config-submodal-calendar-body').find('#show_sub_preview').is(':checked')) {
+                        show_preview = '1';
+                    }
+
+                    var show_author = '0';
+                    if ($('.config-submodal-calendar-body').find('#show_sub_author').is(':checked')) {
+                        show_author = '1';
+                    }
+
+                    var allow_append_locked = '0';
+                    if($('.config-submodal-calendar-body').find('#allow_append_sub_locked').is(':checked')){
+                        allow_append_locked = '1';
+                    }
+
+                    var start_collapsed = '0';
+                    if ($('#start_collapsed').is(':checked')) {
+                        start_collapsed = '1';
+                    }
+                    
+                    $.ajax({
+                        url: '<?php echo base_url() . 'update_config' ?>',
+                        type: 'POST',
+                        data: {
+                            'list_id': list_id,
+                            'allow_move': allow_move,
+                            'show_completed': show_completed,
+                            'allow_undo': allow_undo,
+                            'allow_maybe': allow_maybe,
+                            'show_time': show_time,
+                            'enable_comment': enable_comment,
+                            'show_preview': show_preview,
+                            'show_author': show_author,
+                            'allow_append_locked': allow_append_locked,
+                            'show_comment_attendance': show_comment_attendance,
+                            'start_collapsed': start_collapsed
+                        },
+                        success: function (res) {
+                            if (res == 'success') {
+                                if(allow_move == 'False'){
+                                    $('#test_table_' + list_id).find('tbody').find('.icon-more').addClass('hidden_rearrange');
+                                    $('#test_table_' + list_id).find('thead').find('.move_sub_col').addClass('hidden_rearrange');
+                                }else{
+                                    $('#test_table_' + list_id).find('tbody').find('.icon-more').removeClass('hidden_rearrange');
+                                    $('#test_table_' + list_id).find('thead').find('.move_sub_col').removeClass('hidden_rearrange');
+                                }
+                                $('#config_sub_msg').html('Configurations updated successfully.');
+                                $('#config_sub_msg').removeClass('alert-danger');
+                                $('#config_sub_msg').addClass('alert-success');
+                                $('#config_sub_msg').show();
+                                $('#listConfig_lnk').attr('data-collapsed', start_collapsed);
+                                if (allow_undo == 'False') {
+                                    $('#nexup_btns .undo-btn').removeClass('disabled_undo');
+                                    $('#nexup_btns .undo-btn').addClass('disabled_undo');
+                                    $('#listConfig_lnk').attr('data-allowundo', '0');
+                                }else{
+                                    $('#nexup_btns .undo-btn').removeClass('disabled_undo');
+                                    $('#listConfig_lnk').attr('data-allowundo', '1');
+                                }
+                                if (allow_move == 'False') {
+                                    $('#test_table_' + list_id).find("tbody").sortable("disable");
+                                    $('#listConfig_lnk').attr('data-moveallow', '0');
+                                }else{
+                                    $('#listConfig_lnk').attr('data-moveallow', '1');
+                                    if($('#test_table_' + list_id).find('tbody').hasClass('ui-sortable')) {
+                                        $('#test_table_' + list_id).find("tbody").sortable("enable");
+                                    } else {
+                                        $('#test_table_' + list_id).find("tbody").sortable({
+                                            handle: '.icon-more',
+                                            connectWith: ".tasks_lists_display",
+                                            animation: 100,
+                                            revert: 100,
+                                            stop:function( event, ui ) {
+                                                $('.my_table').removeClass('my_scroll_table_no_overflow');
+                                                $('.my_table').addClass('my_scroll_table');
+                                            },
+                                            update: function (event, ui) {
+                                                if ($('#test_table_' + list_id).find('.rank_th').length > 0) {
+                                                    var rnk_val = 1;
+                                                    $('#test_table_' + list_id).find('.rank_th').each(function () {
+                                                        $(this).text(rnk_val);
+                                                        rnk_val++;
+                                                    });
+                                                }
+                                                var tasks_ids = [];
+                                                $('#test_table_' + list_id).find('tbody tr td.icon-more-holder').each(function (e) {
+                                                    var ids = $(this).attr('dta-taskid');
+                                                    tasks_ids.push(ids);
+                                                });
+
+                                                var task_id = $(ui.item).children('th').attr('dta-taskid');
+                                                var list_id = $(ui.item).children('th').attr('data-listid');
+                                                var user_ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+                                                $.ajax({
+                                                    url: '<?php echo base_url() . 'order_change' ?>',
+                                                    type: 'POST',
+                                                    data: {
+                                                        OrderId: ui.item.index() + 1,
+                                                        Taskid: JSON.stringify(tasks_ids),
+                                                        ListId: list_id,
+                                                        user_ip: user_ip
+                                                    },
+                                                    success: function (res) {
+                                                        if (res != 'fail') {
+                                                            if ($('#test_table_' + list_id).find('.icon-more-holder').length > 0) {
+                                                                var ord_val = 1;
+                                                                $('#test_table_' + list_id).find('.icon-more-holder').each(function () {
+                                                                    $(this).attr('data-order', ord_val);
+                                                                    ord_val++;
+                                                                });
+                                                            }
+
+                                                            var total_rows = $('#test_table_' + list_id).find('tbody tr').length;
+                                                            $.ajax({
+                                                                url: '<?php echo base_url() . 'item_order' ?>',
+                                                                type: 'POST',
+                                                                data: {
+                                                                    OrderId: ui.item.index() + 1,
+                                                                    Taskid: task_id
+                                                                },
+                                                                success: function (res) {
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                }
+                                if (show_completed == 'False') {
+                                    $('#listConfig_lnk').attr('data-showcompleted', '0');
+                                    $('#test_table_' + list_id).find('.completed').addClass('hidden_tbl_row');
+                                }else{
+                                    $('#listConfig_lnk').attr('data-showcompleted', '1');
+                                    $('#test_table_' + list_id).find('.completed').removeClass('hidden_tbl_row');
+                                }
+                                
+                                if (allow_maybe == 0) {
+                                    $('#listConfig_lnk').attr('data-allowmaybe', '0');
+                                    $('#test_table_' + list_id).find('.present_lbl').each(function () {
+                                        if ($(this).hasClass('yellow_label')) {
+                                            $(this).removeClass('yellow_label');
+                                        }
+                                    });
+                                    if($('.yellow_box').length == 1){
+                                        $('.yellow_box').hide();
+                                    }else{
+                                        $('#listConfig_lnk_' + list_id).attr('data-allowmaybe', '1');
+                                        if($('.yellow_box').length == 1){
+                                            $('.yellow_box').show();
+                                        }
+                                    }
+                                }
+                                
+                                if (show_time == 0) {
+                                    $('#listConfig_lnk').attr('data-showtime', '0');
+                                    if (!$('#test_table_' + list_id).find('.nodrag_time').hasClass('hidden_nodrag')) {
+                                        $('#test_table_' + list_id).find('.nodrag_time').addClass('hidden_nodrag');
+                                    }
+                                    $('#test_table_' + list_id).find('.check_date').each(function () {
+                                        if (!$(this).parent().hasClass('hidden_nodrag')) {
+                                            $(this).parent().addClass('hidden_nodrag');
+                                        }
+                                    });
+                                    
+                                    $('#test_table_' + list_id).find('.check_date').closest('td.list-table-view-attend').addClass('hidden_tbl_row');
+                                    if (!$('#test_table_' + list_id).find('.check_date').closest('td.list-table-view-attend').hasClass('hidden_nodrag')) {
+                                        $('#test_table_' + list_id).find('.check_date').closest('td.list-table-view-attend').addClass('hidden_nodrag');
+                                    }
+                                    
+                                }else{
+                                    $('#listConfig_lnk_' + list_id).attr('data-showtime', '1');
+                                    $('#test_table_' + list_id).find('.check_date').closest('td.list-table-view-attend').removeClass('hidden_tbl_row');
+                                    if ($('.icon-settings').attr('data-typeid') == 11) {
+                                        if ($('#test_table_' + list_id).find('.nodrag_time').hasClass('hidden_nodrag')) {
+                                            $('#test_table_' + list_id).find('.nodrag_time').removeClass('hidden_nodrag');
+                                        }
+                                        $('#test_table_' + list_id).find('.check_date').each(function () {
+                                            if ($(this).parent().hasClass('hidden_nodrag')) {
+                                                $(this).parent().removeClass('hidden_nodrag');
+                                            }
+                                        });
+                                    }
+                                }
+                                
+                                if (show_preview == 1) {
+                                    $('#listConfig_lnk').attr('data-showprev', '1');
+                                } else {
+                                    $('#listConfig_lnk').attr('data-showprev', '0');
+                                }
+                                
+                                if(show_author == 1){
+                                    $('#listConfig_lnk').attr('data-showowner', '1');
+                                }else{
+                                    $('#listConfig_lnk').attr('data-showowner', '0');
+                                }
+                                
+                                if(allow_append_locked == 1){
+                                    $find('#listConfig_lnk').attr('data-allowappendLocked', '1');
+                                }else{
+                                    $('#listConfig_lnk').attr('data-allowappendLocked', '0');
+                                }
+                                
+                                if ($('.count_box').length == 1) {
+                                    var total_lbl = $('.present_lbl').length;
+                                    var yes_cnt = $('.green_label').length;
+                                    var maybe_cnt = $('.yellow_label').length;
+                                    var no_cnt = $('.red_label').length;
+                                    var blank_cnt = total_lbl - (yes_cnt + maybe_cnt + no_cnt);
+
+                                    $('#yes_cnt').text(yes_cnt);
+                                    $('#maybe_cnt').text(maybe_cnt);
+                                    $('#no_cnt').text(no_cnt);
+                                    $('#blank_cnt').text(blank_cnt);
+                                }
+                                
+                                $.ajax({
+                                    url: '<?php echo base_url() . 'save_config' ?>',
+                                    type: 'POST',
+                                    data: {
+                                        'list_id': list_id,
+                                        'allow_move': allow_move,
+                                        'show_completed': show_completed
+                                    },
+                                    success: function (res) {
+                                    }
+                                });
+                                
+                                $.ajax({
+                                    url: '<?php echo base_url() . 'listing/get_list_body'; ?>',
+                                    type: 'POST',
+                                    data: {
+                                        'Listid': list_id,
+                                    },
+                                    success: function (res) {
+                                        var resp = JSON.parse(res);
+                                        $('#test_table_' + list_id).find('tbody').html(resp['body']);
+                                        if ($('#listConfig_lnk').attr('data-typeid') == 11) {
+                                            $('#test_table_' + list_id).find("tbody").sortable("disable");
+                                        } else {
+                                            $('#test_table_' + list_id).find("tbody").sortable("enable");
+                                        }
+
+                                        if($('#listConfig_lnk').attr('data-moveallow') == 0){
+                                            $('#test_table_' + list_id).find("tbody").sortable("disable");
+                                        }
+                                    }
+                                });
+                                    
+                                    
+                                    if (enable_comment == 0) {
+                                        if (!$('#nexup_cmnt_span').hasClass('hide_box')) {
+                                            $('#nexup_cmnt_span').addClass('hide_box');
+                                        }
+                                    } else {
+                                        if ($('#nexup_cmnt_span').hasClass('hide_box')) {
+                                            $('#nexup_cmnt_span').removeClass('hide_box');
+                                        }
+                                    }
+                                    
+                                    if (show_comment_attendance == 0) {
+                                        if(!$('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
+                                            $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
+                                        }
+                                    } else {
+                                        if($('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
+                                            $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                                        }
+                                    }
+                                    
+                                    $('#listConfig_lnk').attr('data-allowcmnt', enable_comment);
+                                    $('.config-modal-sub-list').modal('toggle');
+                                    $('#save_sub_config').css('pointer-events', 'all');
+                                    
+                                    
+                                
+                            } else if (res == 'not allowed') {
+                                $('#config_sub_msg').html('You have not created list. Please create list to proceed!');
+                                $('#config_sub_msg').addClass('alert-danger');
+                                $('#config_sub_msg').removeClass('alert-success');
+                                $('#config_sub_msg').show();
+                            } else {
+                                $('#config_sub_msg').html('Something went wrong. Configuration was not updated. Please try again!');
+                                $('#config_sub_msg').addClass('alert-danger');
+                                $('#config_sub_msg').removeClass('alert-success');
+                                $('#config_sub_msg').show();
+                            }
+                            
+                            $('#config_sub_msg').delay(5000).fadeOut('fast');
+                        }
+                    });
+                    
+                    
+                });
+                
+            
         </script>
         <?php
         $controller = $this->router->fetch_class();
@@ -7801,6 +9400,18 @@ if (isset($response['success']) && $response['success'] == 1) {
             <?php
         }
         ?>
+<div class="modal fade config-modal-sub-list" id="config_sub_list_calendar" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="configmodal-head">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
+                <h2>List Configuration</h2>
+            </div>
+            <div class="configmodal-body config-submodal-calendar-body">
 
+            </div>
+        </div>
+    </div>
+</div>
     </body>
 </html>

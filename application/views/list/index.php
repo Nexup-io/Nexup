@@ -72,6 +72,17 @@
                                                     } else {
                                                         echo ' tab';
                                                     }
+                                                }elseif($list['list_type_id'] == 6){
+                                                    $total_child = 0;
+                                                    if($list['total_child'] != NULL){
+                                                        $total_child = $list['total_child'];
+                                                    }
+                                                    echo '<span class="list_item_count">' . $total_child . '</span>';
+                                                    if ($total_child > 1 || $total_child == 0) {
+                                                        echo ' lists';
+                                                    } else {
+                                                        echo ' list';
+                                                    }
                                                 }else{
                                                     $total_cols = $this->TasksModel->count_col($list['ListId']);
                                                     if($total_cols == 0){
@@ -127,6 +138,17 @@
                                                 echo ' tabs';
                                             } else {
                                                 echo ' tab';
+                                            }
+                                        }elseif($list['list_type_id'] == 6){
+                                            $total_child = 0;
+                                            if($list['total_child'] != NULL){
+                                                $total_child = $list['total_child'];
+                                            }
+                                            echo '<span class="list_item_count">' . $total_child . '</span>';
+                                            if ($total_child > 1 || $total_child == 0) {
+                                                echo ' lists';
+                                            } else {
+                                                echo ' list';
                                             }
                                         }else{
                                             $total_cols = $this->TasksModel->count_col($list['ListId']);
@@ -203,6 +225,17 @@
                                         } else {
                                             echo ' tab';
                                         }
+                                    }elseif($slist['list_type_id'] == 6){
+                                        $total_child = 0;
+                                        if($slist['total_child'] != NULL){
+                                            $total_child = $slist['total_child'];
+                                        }
+                                        echo '<span class="list_item_count">' . $total_child . '</span>';
+                                        if ($total_child > 1 || $total_child == 0) {
+                                            echo ' lists';
+                                        } else {
+                                            echo ' list';
+                                        }
                                     }else{
                                         $total_cols = $this->TasksModel->count_col($slist['ListId']);
                                         if($total_cols == 0){
@@ -272,6 +305,17 @@
                                             echo ' tabs';
                                         } else {
                                             echo ' tab';
+                                        }
+                                    }elseif($vlist['list_type_id'] == 6){
+                                        $total_child = 0;
+                                        if($vlist['total_child'] != NULL){
+                                            $total_child = $vlist['total_child'];
+                                        }
+                                        echo '<span class="list_item_count">' . $total_child . '</span>';
+                                        if ($total_child > 1 || $total_child == 0) {
+                                            echo ' lists';
+                                        } else {
+                                            echo ' list';
                                         }
                                     }else{
                                         $total_cols = $this->TasksModel->count_col($vlist['ListId']);

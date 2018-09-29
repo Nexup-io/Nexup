@@ -502,24 +502,24 @@ if (isset($response['success']) && $response['success'] == 1) {
                     if ($('.plus-category').attr('data-access') == 1) {
                         if ($('.list_desc_div').hasClass('hiden_desc')) {
                             var list_id = $(this).attr('data-id');
+                            var get_type = 'get';
                             $.ajax({
                                 url: '<?php echo base_url() . 'get_list_desc' ?>',
                                 type: 'POST',
-                                data: {list_id: list_id},
+                                data: {list_id: list_id, get_type: get_type},
                                 success: function (res) {
                                     var resp_data = $.parseHTML(decodeURI(res));
                                     var resp = res;
                                     if (resp_data != null) {
                                         resp = resp_data[0]['data'];
-                                    } else {
-                                        if (resp == '') {
-                                            resp = 'Click here to add description.';
-                                        }
+                                    }
+                                    if (res == '') {
+                                        res = 'Click here to add description.';
                                     }
 //                                    console.log($.parseHTML(decodeURI(res)));
 //                                    $('#list_desc_text').text(resp);
                                     document.getElementById("list_desc_text").innerText = resp;
-                                    $('#list_desc').text(res);
+                                    $('#list_desc_text').html(res);
                                 }
                             });
 
@@ -580,11 +580,12 @@ if (isset($response['success']) && $response['success'] == 1) {
                 $(document).on('click touchstart', '#list_desc_text', function () {
                     $('#list_desc').text('');
                     var list_id = $(this).attr('data-listid');
+                    var get_type = 'edit';
                     $.ajax({
                         url: '<?php echo base_url() . 'get_list_desc' ?>',
                         type: 'POST',
                         context: this,
-                        data: {list_id: list_id},
+                        data: {list_id: list_id, get_type: get_type},
                         success: function (res) {
 
                             var resp_data = $.parseHTML(decodeURI(res));

@@ -3,13 +3,16 @@
     .my_table {overflow: auto !important;}
 }*/
 
-
+@media (min-width:1700px){
+.week_view_container .date_Detail_week, .week_view_container .day_content {max-width: 100%;}
+}
 
 @media (min-width:1350px){
     .added_div.add-data-left .add-data-head-r {position: relative !important;float: none;display: inline-block;vertical-align: top;}
     .added_div.add-data-left div#addTaskDiv, .added_div.add-data-left div#addSubTaskDiv {display: block;width: 100%;max-width: 100% !important;}
     .added_div.add-data-left {padding: 0;}
     .added_div.add-data-left div#addTaskDiv, .added_div.add-data-left div#addSubTaskDiv {max-width: 93%;}
+    .day_date {font-size: 20px;}
 }
 
 @media (min-width:1200px) and (max-width:1349px){
@@ -17,6 +20,8 @@
     .added_div.add-data-left div#addTaskDiv, .added_div.add-data-left div#addSubTaskDiv {display: inline-block;width: auto;}
     .added_div.add-data-left {padding: 0;}
     .added_div.add-data-left div#addTaskDiv, .added_div.add-data-left div#addSubTaskDiv {width: 93%;}
+    .day_date {font-size: 18px;}
+ 
 }
 
 @media (min-width:1200px){
@@ -29,6 +34,7 @@
 .list_desc_div, .sub_list_desc_div{margin: 0 0 25px 0;}
 .head_custom .list_desc_div span.list_desc_text, .head_custom .sub_list_desc_div span.sublist_desc_text {margin: 10px 0 0 0;} 
 .add-data-body.add-data-body-new {margin-top: 20px;position: relative;top: 0;padding: 0;margin-left: -20px;}
+.add-data-body-calendar{margin-top: -40px;}
 .collapse_div{margin-left: -20px !important;}
 /*.add-data-body.add-data-body-new {position: relative;margin-top: -150px;}*/
 .list-body-box:hover .dropdown-action {display: block;opacity: 1;bottom: 0;}
@@ -63,12 +69,15 @@
 #config_icons a.delete_list_builder {vertical-align: baseline;}
 #config_icons a.add_data_desc {vertical-align: baseline;}  
 .added_div {padding: 0 0px 0 0;}
-.my_table {max-width: 100%;max-height: 500px;overflow: auto !important;margin-bottom: 0;}
+/*.my_table {max-width: 100%;max-height: 500px;overflow: auto !important;margin-bottom: 0;}*/
+.my_table {max-width: 100%;max-height: 100%;overflow: auto !important;margin-bottom: 0;}
 .content {padding: 30px 60px 0px 60px;}
 
 .div_right_one.month_view_class {border-left: 1px solid #c3d9ff;}
 .div_left_one .month_calendar {padding: 3px;}
 .my_calendar_table{max-height: 100% !important;}
+.add-data-body.add-data-body-new.add-data-body-calendar .added_div.added_div_calendar {padding: 0;}
+.add-data-body.add-data-body-new.add-data-body-calendar {margin: 0;margin-top: -40px;}
 }
 
 @media (min-width:768px){
@@ -122,9 +131,15 @@ td.icon-more-holder {min-width: 110px !important;}
 .time_display {font-size: 12px;overflow: hidden;text-overflow: ellipsis;}
 .div_left_one {width: 255px;}
 .week_calendar .ui-datepicker-inline, .month_calendar .ui-datepicker-inline {width: 18em;}
-.day_w {font-size: 13px;margin-left: 10px;}
-.day_date {font-size: 18px;margin-left: 10px;}
+.day_w {font-size: 12px;margin-left: 5px;position: relative;top: -1px;}
+.day_date {font-size: 14px;margin-left: 10px;line-height: 43px;padding-right: 8px;}
 .div_right_one.month_view_class {border-left: 1px solid #c3d9ff;}
+.add-data-body.add-data-body-new.add-data-body-calendar .added_div.added_div_calendar {padding: 0;}
+.add-data-body.add-data-body-new.add-data-body-calendar {margin: 0;margin-top: -40px;}
+h2.date_h2 {padding-right: 3px;}
+.month_view_container h2.date_h2, .month_view_container h2.h2_content {font-size: 12px;}
+.day_calendar .ui-datepicker-inline {width: 100% ;}
+
 
 
 }
@@ -172,7 +187,7 @@ td.icon-more-holder {min-width: 110px !important;}
     .week_view_container .date_Detail_week, .week_view_container .day_content {max-width: 42px;}
     .date_Detail_week h2 {margin: 0;padding: 5px 0;}
     .day_w {font-size: 12px;line-height: 22px;margin-left: 5px;}
-    .day_date {font-size: 12px;line-height: 20px;margin-left: 5px;}
+    .day_date {font-size: 12px;line-height: 46px;margin-left: 5px;}
     .data_content_w {padding: 0;display: block;margin-bottom: 10px !important;margin-left: 3px;}
     .data_name {font-size: 10px;box-sizing: border-box;display: block;width: 100%;margin-bottom: 3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
     .time_display {margin-left: auto;font-size: 10px;display: block;color: #999;width: 100%;}
@@ -187,7 +202,14 @@ td.icon-more-holder {min-width: 110px !important;}
     .div_right_one.month_view_class {margin-right: 0;border: 1px solid #c3d9ff;margin-top: 20px;}
     .month_view_container .div_left_one {border: 0;text-align: center;justify-content: center;align-items: center;}
     .calender_div_inner_box{border: 0;}
-    
+    .add-data-body.add-data-body-new.add-data-body-calendar .added_div.added_div_calendar {padding: 0;}
+.add-data-body.add-data-body-new.add-data-body-calendar {margin: 0;}
+.add-data-body.add-data-body-new.add-data-body-calendar .container.week_view_container {padding-left: 0;}
+.month_view_container h2.date_h2, .month_view_container h2.h2_content {font-size: 14px;    padding-right: 3px;}
+.day_number {padding-left: 4px;}
+.left_div .day_calendar .ui-datepicker-inline {margin: 0 auto;}
+.div_new_data {width: 100%;float: none;margin-top: 20px;}
+.left_div {width: 100%;float: none;}
     
 }
 
@@ -394,8 +416,8 @@ td.icon-more-holder {min-width: 110px !important;}
     .head_row_week {height: 60px;}
     .week_view_container .date_Detail_week, .week_view_container .day_content {max-width: 42px;}
     .date_Detail_week h2 {margin: 0;padding: 5px 0;}
-    .day_w {font-size: 12px;line-height: 22px;margin-left: 5px;}
-    .day_date {font-size: 12px;line-height: 20px;margin-left: 5px;}
+    .day_w {font-size: 12px;line-height: 22px;margin-left: 0;width: 100%;box-sizing: border-box;text-align: center;}
+    .day_date {font-size: 12px;line-height: 20px;margin-left: 0;width: 100%;text-align: center;}
     .data_content_w {padding: 0;display: block;margin-bottom: 10px !important;margin-left: 3px;}
     .data_name {font-size: 10px;box-sizing: border-box;display: block;width: 100%;margin-bottom: 3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
     .time_display {margin-left: auto;font-size: 10px;display: block;color: #999;width: 100%;}
@@ -409,7 +431,7 @@ td.icon-more-holder {min-width: 110px !important;}
     .calender_div_inner_box {display: initial;}
     .div_right_one.month_view_class {margin-right: 0;border: 1px solid #c3d9ff;margin-top: 20px;}
     .month_view_container .div_left_one {border: 0;text-align: center;justify-content: center;align-items: center;}
-    .day_number {font-size: 14px;padding-left: 0px;    text-align: center;}
+    .day_number {font-size: 14px;padding-left: 0px;    text-align: center;overflow: hidden;}
     .month_view_container h2.date_h2, .month_view_container h2.h2_content {font-size: 12px;}
     .month_view_container h2.date_h2, .month_view_container h2.h2_content {font-size: 11.5px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;width: 100%;display: inline-block;padding-right: 0;text-align: center;}
     .content_wrap>div {padding-left: 0px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;width: 100%;display: inline-block;}
@@ -420,6 +442,23 @@ td.icon-more-holder {min-width: 110px !important;}
     .row_detail {min-height: 40px !important;}
     .div_two_logos {bottom: -2px;}
     .div_two_logos img.top, .div_two_logos img.bottom {max-width: 125px;}
+    .left_div{width: 100%;}
+    .div_new_data{max-width: 100%;width: auto;}
+    .my_table.my_scroll_table.my_calendar_table.table_one_page {overflow: hidden !important;}
+    .week_view_container {margin: 20px auto 0;}
+    .add-data-body.add-data-body-new.add-data-body-calendar .added_div.added_div_calendar {padding: 0;}
+.add-data-body.add-data-body-new.add-data-body-calendar {margin: 0;}
+.day_number {padding-left: 0;}
+body.calendar_body section#content {padding: 20px 10px;}
+body.calendar_body .container {padding: 0;}
+.div_right_one {margin-right: 0;}
+.left_div .day_calendar .ui-datepicker-inline {margin: 0 auto;}
+.div_new_data {width: 100%;float: none;margin-top: 20px;}
+.left_div {width: 100%;float: none;}
+.day_calendar .ui-datepicker-inline {width: 20em;}
+
+
+
 }
 
     
@@ -560,6 +599,7 @@ td.icon-more-holder {min-width: 110px !important;}
 
 .div_two_logos {bottom: 20px;}
 .logo_main_contcept {top: -5px;padding-bottom: 20px;margin: 0 auto;}
+.week_calendar .ui-datepicker-inline, .month_calendar .ui-datepicker-inline {width: 18em;}
 }
 
 

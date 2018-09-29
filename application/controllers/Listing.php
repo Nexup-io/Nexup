@@ -2728,7 +2728,7 @@ class Listing extends CI_Controller {
             $response = (array) json_decode($server_output);
 
             $list_inflo_id = 0;
-
+            $update_list_local = array();
             if (isset($response['success']) && $response['success'] == 1) {
                 $list_inflo_id = $response['data']->ListId;
                 $data['Listid'] = $addSubList;
@@ -2776,7 +2776,17 @@ class Listing extends CI_Controller {
 
             if ($addSubList > 0) {
                 if($this->input->post('list_type') && $this->input->post('list_type') == 'calendar'){
-                    echo $addSubList;
+                    if(isset($update_list_local)){
+                        $list_details['list_details'] = $update_list_local;
+                        $list_details['list_details']['list_id'] = $addSubList;
+                        $list_details['list_details']['list_slug'] = $update_list_local['slug'];
+                    }
+                    $list_details['list_details']['list_name'] = $this->input->post('list_name');
+                    $list_details['visit_history'] =  number_format_short($this->TasksModel->count_list_visitors($addSubList));
+                    $list_details['columns'] = $this->TasksModel->getColumns($addSubList);
+                    $list_details['task_data'] = array();
+                    echo $this->load->view('task/json_sublist', $list_details, TRUE);
+//                    echo $addSubList;
                     exit;
                 }
                 $hide_list = '';
@@ -4703,6 +4713,129 @@ class Listing extends CI_Controller {
     public function day_view(){
         if($this->input->post()){
             
+        }
+    }
+    
+    public function get_list_cal_date(){
+        if($this->input->post()){
+            $list_id = $this->input->post('list_id');
+            
+            $list_details = $this->ListsModel->find_list_details_by_id($list_id);
+            
+            if(empty($list_details)){
+                echo 'fail';
+                exit;
+            }
+            
+            $visit_user_id = 0;
+            if (isset($_SESSION['id'])) {
+                $visit_user_id = $_SESSION['id'];
+            }
+            $today_date = date('Y-m-d H:i:s');
+            $visit_data['user_id'] = $visit_user_id;
+            $visit_data['list_id'] = $list_details['list_id'];
+            $visit_data['date_visited'] = $today_date;
+            $visit_data['created'] = $today_date;
+            $visit_data['modified'] = $today_date;
+            $visit_data['user_ip'] = $_SERVER['REMOTE_ADDR'];
+            $record_history = $this->TasksModel->record_visit($visit_data);
+
+
+            $visit_history = number_format_short($this->TasksModel->count_list_visitors($list_id));
+            $columns = $this->TasksModel->getColumns($list_id);
+            
+            $sort = 'list_columns.order asc, list_data.order asc';
+            $list_items = $this->TasksModel->get_tasks_2($list_details['list_id'], $sort);
+            
+            $task_data = array();
+            $c_index = 1;
+            
+            foreach ($list_items as $tid => $tdata):
+
+                if ($tdata['order'] != $c_index) {
+                    $c_index = $tdata['order'];
+                }
+                $task_data[$c_index][] = $tdata;
+            endforeach;
+            
+            
+            $data_show['list_details'] = $list_details;
+            $data_show['visit_history'] = $visit_history;
+            $data_show['columns'] = $columns;
+            $data_show['task_data'] = $task_data;
+            $data_show['list_details'] = $list_details;
+            
+            echo $this->load->view('task/json_sublist', $data_show, TRUE);
+        }
+    }
+    
+    public function get_list_id_cal(){
+        if($this->input->post()){
+            $parent_list_id = $this->input->post('parent_list_id');
+            $list_name = $this->input->post('list_name');
+            $find_list = $this->ListsModel->get_child_list_id($parent_list_id, $list_name);
+            if(empty($find_list) || $find_list == 0){
+                $today = date('Y-m-d H:i:s');
+                $store['name'] = $list_name;
+                $store['list_type_id'] = 1;
+                $store['user_id'] = 0;
+                if (isset($_SESSION['logged_in'])) {
+                    $store['user_id'] = $_SESSION['id'];
+                }
+                $store['parent_id'] = $parent_list_id;
+                $store['created'] = $today;
+                $store['modified'] = $today;
+                $addSubList = $this->ListsModel->add_list($store);
+                if ($addSubList == 0) {
+                    echo 'fail';
+                    exit;
+                }
+                
+                $data['Apikey'] = API_KEY;
+                $data['Listname'] = $store['name'];
+                $post_data = json_encode($data);
+                $header = array('Content-Type: application/json');
+                if (isset($_SESSION['xauthtoken'])) {
+                    $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+                    array_push($header, $val);
+                }
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, API_URL . "account/CreateList");
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                $server_output = curl_exec($ch);
+                $response = (array) json_decode($server_output);
+
+                $list_inflo_id = 0;
+
+                if (isset($response['success']) && $response['success'] == 1) {
+                    $list_inflo_id = $response['data']->ListId;
+                    $data['Listid'] = $addSubList;
+                    $list_inflo_id = $response['data']->ListId;
+                    $data['list_inflo_id'] = $response['data']->ListId;
+                    $update_list_local['slug'] = $response['data']->ListSlug;
+                    $update_list_local['url'] = '/' . $response['data']->ListSlug;
+                    $update_list_local['list_inflo_id'] = $response['data']->ListId;
+                    $update_list_local['created_user_name'] = $response['data']->CreateByUserFullName;
+                    $updt = $this->ListsModel->update_list_data_from_inflo($addSubList, $update_list_local);
+                }
+                
+                $add_first_col['list_inflo_id'] = $list_inflo_id;
+                $add_first_col['list_id'] = $addSubList;
+                $add_first_col['column_name'] = $this->security->xss_clean($store['name']);
+                $add_first_col['order'] = 1;
+                $add_first_col['created'] = $today;
+                $add_first_col['modified'] = $today;
+                $add_col_first = $this->TasksModel->add_new_colum($add_first_col);
+                
+                echo $addSubList;
+            }else{
+                echo $find_list;
+            }
+            exit;
         }
     }
 }
