@@ -705,7 +705,7 @@ span#count_visit_span:hover{opacity: 1;background: #01b9e6;color: #fff}
 a.icon-cross-out.delete_task.custom_cursor {position: relative;left: -4px;}
 span.span_enter {position: absolute;right: 1px;top: 22px;}
 .edit_task span.span_enter {top: 16px;}
-.add-data-input, .add-data-div.edit_task {position: relative;text-align: center;}
+.add-data-input, .add-data-div.edit_task {position: relative;text-align: left;}
 .bulk_data_modal .checkbox-outer {margin: 0 auto 15px;width: 100%;}
 .bulk_data_modal .checkbox label:before, .radio label:before {right: 0;left:auto;margin-right: 0;}
 .bulk_data_modal .radio label, .bulk_data_modal .checkbox label {padding: 0 30px 0 0px;}
@@ -1002,7 +1002,7 @@ a.btn.btn-default.timestamp-all-btn {color: #337ab7 !important;}
 #test_table .td_add_tr th.heading_items_col_add, .test_table .td_add_tr th.heading_items_col_add{vertical-align: top !important;}
 .test_table tbody a {color: #337ab7 !important;}
 .my_table_drop {min-height: 700px;}
-#ui-datepicker-div.ui-datepicker{z-index: 999 !important;}
+#ui-datepicker-div.ui-datepicker{z-index: 1000000 !important;}
 /*.list-table-view .bootstrap-datetimepicker-widget.dropdown-menu {z-index: 99999;position: absolute;}*/
 .separator_div_import_export{padding: 0;height: 25px;margin-bottom: 20px;}
 .separator_div_import_export .cpoy_btn span{position: relative; top: 0;}
@@ -1039,7 +1039,7 @@ a.btn.btn-default.timestamp-all-btn {color: #337ab7 !important;}
 .day_number {font-size: 14px;line-height: 32px;border-right: 1px solid #c3d9ff;color: #757575;-webkit-box-flex: 1 1 0%;-webkit-flex: 1 1 0%;flex: 1 1 0%;padding-left: 8px;}
 h2.date_h2 {font-weight: 400;margin: 0;font-size: 14px;float: none;margin: 0;line-height: 22px;color: #4297d4;text-align: right;
     padding-right: 10px;}
-.content_wrap {margin-top: 32px;display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-flex: 1 1 0%;-webkit-flex: 1 1 0%;flex: 1 1 0%;}
+.content_wrap {margin-top: 32px;display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-flex: 1 1 0%;-webkit-flex: 1 1 0%;flex: 1 1 0%;flex-wrap: wrap;}
 .content_wrap>div {
     -webkit-box-flex: 1 1 0%;
     -webkit-flex: 1 1 0%;
@@ -1087,7 +1087,7 @@ h2.h2_content {font-size: 13px;margin: 0;font-weight: 400;    color: #4297d4;}
 .day_date {font-size: 33px;line-height: 30px;margin-left: 16px;display: inline-block;float: right;padding-right: 5px;}
 .body_week {display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-flex: none;-webkit-flex: none;flex: none;overflow: hidden;    min-height: 500px;}
 .day_content {border-right: #e0e0e0 1px solid;overflow: hidden;-webkit-box-sizing: border-box;box-sizing: border-box;-webkit-box-flex: 1 1 0%;-webkit-flex: 1 1 0%;flex: 1 1 0%;padding: 10px 0;}
-.data_content_w {display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-flex: none;-webkit-flex: none;padding: 5px;}
+.data_content_w {display: -webkit-box;display: -moz-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-flex: none;-webkit-flex: none;padding: 5px;    align-items: center;}
 .data_name {font-size: 16px;font-weight: 400;color: #999;min-width: 50%;}
 .time_display {margin-left: auto;font-size: 16px;font-weight: 400;color: #999;min-width: 50%;}
 .week_calendar{max-height: 300px;}
@@ -1184,5 +1184,14 @@ a.prev_day {font-size: 14px;background: #34c7eb;color: #fff;width: 24px;height: 
 a.next_day {font-size: 14px;background: #34c7eb;color: #fff;width: 24px;height: 24px;display: inline-block;vertical-align: middle;line-height: 25px;border-radius: 50%;text-align: center;margin-left: 10px;position: relative;top: -1px;cursor: pointer;}
 a.next_day i {position: relative;left: 1px;}
 .sub_list_name_span_calendar {margin: 0 8px 0 0;padding: 0;display: inline-block;vertical-align: middle;font-family: 'Poppins';color: rgb(33, 206, 247) !important;font-size: 26px !important;font-weight: 700 !important;letter-spacing: 0.08em;line-height: 50px;}
-.custom_date_list_name{padding: 16px 20px;border: 1px solid #e0e0e0;line-height: 30px;font-size: 18px;font-weight: 300;color: #4c4c4c;font-family: 'Roboto';}
+.custom_date_list_name, .date_to_copy{padding: 16px 20px;border: 1px solid #e0e0e0;line-height: 30px;font-size: 18px;font-weight: 300;color: #4c4c4c;font-family: 'Roboto';}
 .no_week_ends .ui-datepicker-week-end {display: none;}
+.date_select_box_div{margin: 0 0 25px 2px;}
+
+.my_calendar_table{overflow-y: hidden !important;}
+.data_name, .time_display{overflow: hidden;text-overflow: ellipsis;}
+.body_loader{position: fixed;left: 0;top: 0;z-index: 999999;width: 100%;height: 100%;overflow: visible;background: rgba(255,255,255,0.4);}
+.boy_loader_span{transform: translate(50%,50%);height: 100%;display: block;}
+.list_author_cls_calendar{margin: 0 0 10px 45%;}
+.bootstrap-datetimepicker-widget{top: 64px !important;background: #fff;}
+.test_table tbody .bootstrap-datetimepicker-widget.dropdown-menu{background: #fff !important; z-index: 99999 !important;top:-230px !important;}

@@ -1,4 +1,14 @@
-<div class="my_table my_scroll_table my_calendar_table table_one_page">
+<?php
+$locked_list = '';
+$collipsable_div = '';
+if($list_details['is_locked'] == 1){
+    $locked_list = ' locked_list';
+    if($list_details['start_collapsed'] == 1){
+        $collipsable_div = ' collapsible_div';
+    }
+}
+?>
+<div class="my_table my_scroll_table my_calendar_table table_one_page<?php echo $locked_list . $collipsable_div; ?>">
     <div class="caleneder_div_wrapper">
         <div class="container week_view_container">
             <div class="div_btn_name">
@@ -39,6 +49,16 @@
                             <span id="count_visit_span" data-totalvisits="<?php echo $visit_history; ?>"><?php echo $visit_history; ?></span>
                         </div>
                     </div>
+                    <?php
+                    if(isset($list_details['show_author']) && $list_details['show_author'] != 0){
+                        $list_author = 'Anonymous';
+                        if($list_details['created_user_name'] != 'Anonymous' && $list_details['created_user_name'] != '')
+                        $list_author = $list_details['created_user_name'];
+                    ?>
+                    <div class="list_author_cls list_author_cls_calendar"><?php echo $list_author; ?></div>
+                    <?php
+                    }
+                    ?>
 
 
                     <div class="my_table my_sub_table my_scroll_table">
@@ -106,6 +126,10 @@
                             <tr class="td_arrange_tr ui-sortable">
                                 <th class="noDrag nodrag_actions"><div class="add-data-title-nodrag hidden_nodrag status-column"></div></th>
                                 <?php
+                                $hide_col_class = '';
+                                if(count($columns) == 1){
+                                    $hide_col_class = ' hidden_heading';
+                                }
                                 foreach ($columns as $ids => $col):
                                     if ($ids <= 0) {
                                         $task_ul_id = 'TaskList';
@@ -113,36 +137,36 @@
                                         $task_ul_id = 'TaskList' . $ids;
                                     }
                                 ?>
-                                <th class="heading_items_col" data-listid="<?php echo $list_details['list_id']; ?>" data-colid="<?php echo $col['id']; ?>">
+                                <th class="heading_items_col<?php echo $hide_col_class; ?>" data-listid="<?php echo $list_details['list_id']; ?>" data-colid="<?php echo $col['id']; ?>">
                                     <div class="add-data-title-r">
                                         <a class="icon-more-h move_sub_col <?php echo $hide_rearrange_class; ?>" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="visibility: hidden;"></a>
                                         <a class="remove_sub_col remove_col custom_cursor icon-cross-out" data-colid="<?php echo $col['id']; ?>" data-listid="<?php echo $list_details['list_id']; ?>" style="visibility: hidden;"></a>
 
                                     </div>
-                                    <div class="add-data-title" data-colid="<?php echo $col['id']; ?>" data-listid="<?php echo $list_details['list_id']; ?>" data-toggle="tooltip" data-placement="bottom" title="" data-type="text" data-original-title="<?php echo $col['column_name']; ?>">
+                                    <div class="add-data-title" data-colid="<?php echo $col['id']; ?>" data-listid="<?php echo $list_details['list_id']; ?>" data-toggle="tooltip" data-placement="bottom" title="" data-type="<?php echo $col['type']; ?>" data-original-title="<?php echo $col['column_name']; ?>">
                                         <span class="column_name_class" id="col_name_<?php echo $col['id']; ?>"><?php echo $col['column_name']; ?></span>
 
                                     </div>
                                     <a class="icon-more-o icon_listing_table"></a>
                                     <div class="div_option_wrap">
                                         <ul class="ul_table_option" data-listid="<?php echo $list_details['list_id']; ?>">
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="text_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="text" data-col_id="<?php echo $col['id']; ?>" checked=""><label class="col_type_lbl" for="text_<?php echo $col['id']; ?>">Text</label></div></li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="memo_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="memo" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="memo_<?php echo $col['id']; ?>">Memo</label></div>
-                                                <div class="plus_minus_wrap"><span>Height</span><a class="minus_a">-</a><input id="number_rows" type="number" min="1" value="1"><a class="plus_a">+</a></div>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="text_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="text" data-col_id="<?php echo $col['id']; ?>"  <?php if($col['type'] == 'text'){ echo ' checked'; } ?>><label class="col_type_lbl" for="text_<?php echo $col['id']; ?>">Text</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="memo_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="memo" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'memo'){ echo ' checked'; } ?>><label class="col_type_lbl" for="memo_<?php echo $col['id']; ?>">Memo</label></div>
+                                                <div class="plus_minus_wrap"><span>Height</span><a class="minus_a">-</a><input id="number_rows" type="number" min="1" value="<?php echo $col['height']; ?>"><a class="plus_a">+</a></div>
                                             </li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="checkbox_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="checkbox" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="checkbox_<?php echo $col['id']; ?>">Check Box</label></div></li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="number_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="number" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="number_<?php echo $col['id']; ?>">Number</label></div></li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="currency_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="currency" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="currency_<?php echo $col['id']; ?>">Dollar</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="checkbox_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="checkbox" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'checkbox'){ echo ' checked'; } ?>><label class="col_type_lbl" for="checkbox_<?php echo $col['id']; ?>">Check Box</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="number_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="number" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'number'){ echo ' checked'; } ?>><label class="col_type_lbl" for="number_<?php echo $col['id']; ?>">Number</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="currency_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="currency" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'currency'){ echo ' checked'; } ?>><label class="col_type_lbl" for="currency_<?php echo $col['id']; ?>">Dollar</label></div></li>
 
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="datetime_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="datetime" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="datetime_<?php echo $col['id']; ?>">Date Time</label></div></li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="date_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="date" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="date_<?php echo $col['id']; ?>">Date</label></div></li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="time_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="time" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="time_<?php echo $col['id']; ?>">Time</label></div></li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="timestamp_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="timestamp" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="timestamp_<?php echo $col['id']; ?>">Time Stamp</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="datetime_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="datetime" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'datetime'){ echo ' checked'; } ?>><label class="col_type_lbl" for="datetime_<?php echo $col['id']; ?>">Date Time</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="date_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="date" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'date'){ echo ' checked'; } ?>><label class="col_type_lbl" for="date_<?php echo $col['id']; ?>">Date</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="time_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="time" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'time'){ echo ' checked'; } ?>><label class="col_type_lbl" for="time_<?php echo $col['id']; ?>">Time</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="timestamp_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="timestamp" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'timestamp'){ echo ' checked'; } ?>><label class="col_type_lbl" for="timestamp_<?php echo $col['id']; ?>">Time Stamp</label></div></li>
 
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="email_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="email" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="email_<?php echo $col['id']; ?>">Email</label></div></li>
-                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="link_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="link" data-col_id="<?php echo $col['id']; ?>"><label class="col_type_lbl" for="link_<?php echo $col['id']; ?>">Link</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="email_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="email" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'email'){ echo ' checked'; } ?>><label class="col_type_lbl" for="email_<?php echo $col['id']; ?>">Email</label></div></li>
+                                            <li><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="link_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="link" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'link'){ echo ' checked'; } ?>><label class="col_type_lbl" for="link_<?php echo $col['id']; ?>">Link</label></div></li>
 
-                                            <li class="disabled-radio-class"><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="inflo_ob_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="infloobject" data-col_id="<?php echo $col['id']; ?>" disabled="disabled"><label class="col_type_lbl" for="inflo_ob_<?php echo $col['id']; ?>" style="font-style: italic;">Inflo Object</label></div></li>
+                                            <li class="disabled-radio-class"><div class="custom_radio_class"><input class="radio-col-type" type="radio" id="inflo_ob_<?php echo $col['id']; ?>" name="radio-group-<?php echo $col['id']; ?>" value="infloobject" data-col_id="<?php echo $col['id']; ?>" <?php if($col['type'] == 'infloobject'){ echo ' checked'; } ?> disabled="disabled"><label class="col_type_lbl" for="inflo_ob_<?php echo $col['id']; ?>" style="font-style: italic;">Inflo Object</label></div></li>
                                         </ul>
                                     </div>
                                 </th>
@@ -165,10 +189,114 @@
                                     foreach ($task_val as $t_key => $t_val):
                                     ?>
                                     <td class="list-table-view">
-                                        <div class="add-data-div edit_task" data-id="<?php echo $t_val['TaskId']; ?>" data-task="<?php echo $t_val['TaskName']; ?>" data-listid="<?php echo $list_details['list_id']; ?>" data-type="text" data-toggle="tooltip" data-placement="bottom" title="" style="padding: 11px 20px;" data-original-title="<?php echo $t_val['TaskName']; ?>">
-                    <span class="icon-more"></span>
-                                            <span id="span_task_<?php echo $t_val['TaskId']; ?>" class="task_name_span" style="">
-                                                <?php echo $t_val['TaskName']; ?>
+                                        
+                                        <?php
+                                        $print_title = strip_tags(htmlspecialchars_decode(htmlspecialchars_decode($t_val['TaskName'])));
+
+                                        $t_val['TaskName'] = html_entity_decode($t_val['TaskName']);
+//                                                        $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+//                                                        $regex_email = '/^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i';
+                                        $regex_email = '/([a-zA-Z0-9_\-\.]*@\\S+\\.\\w+)/';
+                                        $reg_exUrl = "#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#";
+                                        $reg_exUrl2 = "^([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3}+)+.*)$^";
+                                        if($t_val['type'] == 'text' || $t_val['type'] == 'memo'){
+                                            if (preg_match($regex_email, trim($t_val['TaskName']), $eml)) {
+                                                $print_srt_name = preg_replace($regex_email, "<a class='mail_url' href='mailto:" . $eml[0] . "'>" . $eml[0] . "</a>", trim($t_val['TaskName']));
+                                            }elseif (preg_match($reg_exUrl, $t_val['TaskName'], $url)) {
+                                                if(empty($url) && empty($url[0])){
+                                                    if (preg_match($reg_exUrl, $t_val['TaskName'], $url)) {
+                                                        $print_srt_name = preg_replace($reg_exUrl, "<a class='link_clickable' href=" . $url[0] . ">" . $url[0] . "</a>", trim($t_val['TaskName']));
+                                                    }
+                                                }else{
+                                                    $print_srt_name = preg_replace($reg_exUrl, "<a class='link_clickable' href='http://" . $url[0] . "'>" . $url[0] . "</a>", trim($t_val['TaskName']));
+                                                }
+                                            } else {
+                                                $print_srt_name = trim($t_val['TaskName']);
+                                            }
+                                        }
+                                        ?>
+                                        
+                                        
+                                        
+                                        <?php
+                                        $div_css = '';
+                                        if($t_val['type'] == 'memo'){
+                                            $div_css .= 'padding: 11px 20px;';
+                                            if($t_val['height'] == 1){
+                                                $div_css .= 'height: 50px;';
+                                            }elseif($t_val['height'] == 2){
+                                                $div_css .= 'height: 80px;';
+                                            }elseif($t_val['height'] == 3){
+                                                $div_css .= 'height: 100px;';
+                                            }else{
+                                                $height = 110 + (30 * ($t_val['height'] - 3)) . 'px';
+                                                $div_css .= 'height: ' . $height;
+                                            }
+                                        }
+                                        $print_title = strip_tags(htmlspecialchars_decode(htmlspecialchars_decode($t_val['TaskName'])));
+                                        ?>
+                                        
+                                        <div class="add-data-div edit_task" data-id="<?php echo $t_val['TaskId']; ?>" data-task="<?php echo $t_val['TaskName']; ?>" data-listid="<?php echo $list_details['list_id']; ?>" data-toggle="tooltip" data-placement="bottom" data-type="<?php echo $t_val['type']; ?>" title="<?php echo $print_title; ?>" style="padding: 11px 20px;<?php echo $div_css; ?>" data-original-title="<?php echo $t_val['TaskName']; ?>">
+                                            <?php
+                                            $span_css = '';
+                                            if($t_val['type'] == 'memo'){
+                                                $span_css .= 'line-height: 30px;';
+                                            }
+                                            ?>
+                                            <span id="span_task_<?php echo $t_val['TaskId']; ?>" class="task_name_span" style="<?php echo $span_css; ?>">
+                                                <?php
+                                                $print_srt_name = $t_val['TaskName'];
+                                                $regex_email = '/([a-zA-Z0-9_\-\.]*@\\S+\\.\\w+)/';
+                                                $reg_exUrl = "#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#";
+                                                $reg_exUrl2 = "^([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3}+)+.*)$^";
+                                                $task_item = $t_val['TaskName'];
+                                                if($t_val['type'] == 'text' || $t_val['type'] == 'memo'){
+                                                    if (preg_match($regex_email, trim($t_val['TaskName']), $eml)) {
+                                                        $print_srt_name = preg_replace($regex_email, "<a class='mail_url' href='mailto:" . $eml[0] . "'>" . $eml[0] . "</a>", trim($t_val['TaskName']));
+                                                    }elseif (preg_match($reg_exUrl, $t_val['TaskName'], $url)) {
+                                                        if(empty($url) || empty($url[0])){
+                                                            if (preg_match($reg_exUrl, $t_val['TaskName'], $url)) {
+                                                                $print_srt_name = preg_replace($reg_exUrl, "<a class='link_clickable' href=" . $url[0] . ">" . $url[0] . "</a>", trim($t_val['TaskName']));
+                                                            }
+                                                        }else{
+                                                            $print_srt_name = preg_replace($reg_exUrl, "<a class='link_clickable' href='" . $url[0] . "'>" . $url[0] . "</a>", trim($t_val['TaskName']));
+                                                        }
+                                                    }elseif (preg_match($reg_exUrl2, $t_val['TaskName'], $url)) {
+                                                        $match_url=substr($url[0], 0, strrpos($url[0], ' '));
+                                                        if($match_url == '' && $url[0] != ''){
+                                                            $match_url = $url[0];
+                                                        }
+                                                        $task_item = str_replace($match_url, '|url|', html_entity_decode($task_item));
+                                                        $anchor = "<a class='link_clickable' href='http://" . $match_url . "'>" . $match_url . '</a>';
+                                                        $print_srt_name = str_replace('|url|', $anchor, $task_item);
+                                                    } else {
+                                                        $print_srt_name = html_entity_decode($t_val['TaskName']);
+                                                    }
+                                                }
+                                                if($t_val['type'] == 'currency'){
+                                                    if($print_srt_name != ''){
+                                                        echo '$ ';
+                                                    }
+                                                    if($t_val['TaskName'] != ''){
+                                                        if(filter_var($t_val['TaskName'], FILTER_VALIDATE_INT)){
+                                                            $print_srt_name = $t_val['TaskName'] . '.00';
+                                                        }else{
+                                                            $print_srt_name = number_format((float)$t_val['TaskName'], 2, '.', '');
+                                                        }
+                                                    }else{
+                                                        $print_srt_name = '';
+                                                    }
+                                                }
+                                                if($t_val['type'] == 'email'){
+                                                    $print_srt_name = '<a class="mail_url" href="mailto:' . trim($t_val['TaskName']) . '">' . trim($t_val['TaskName']) . '</a>';
+                                                }
+                                                if($t_val['type'] == 'text'){
+                                                    echo trim(preg_replace("/[\n\r]/","",$print_srt_name));
+                                                }else{
+                                                    echo nl2br(trim($print_srt_name));
+                                                }
+                                                
+                                                ?>
                                             </span>
 
                                         </div>

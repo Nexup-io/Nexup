@@ -1,3 +1,16 @@
+<style>
+    .timestamp-btn{max-width: 100%;font-size: 13px;padding: 6px 3px; pointer-events: none;}
+    .my_data_checkbox, .my_data_checkbox:checked{width: 32px !important;height: 32px !important; pointer-events: none;}
+    @media (min-width:992px) and (max-width:1199px){
+    .timestamp-btn {font-size: 12px !important;padding: 1px 3px !important;}
+    }
+    @media (min-width:768px) and (max-width:991px){
+    .timestamp-btn {font-size: 12px !important;padding: 1px 3px !important;}
+    }
+    @media (max-width:767px){
+        .timestamp-btn {font-size: 11px !important;padding: 1px 3px !important;margin-bottom: 3px;}
+    }
+</style>
 <?php
 $current_user = 0;
 $stored_pass = array();
@@ -249,7 +262,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                 $show_nexup_cmnt = 1;
             }
             ?>
-            <a class="add_column_url custom_cursor icon-add" data-toggle="tooltip" title="" data-original-title="New Column"><img src="<?php echo base_url(); ?>assets/img/add_col_icon.png"></a>
+            <a class="add_column_url custom_cursor icon-add hdn_bulk" data-toggle="tooltip" title="" data-original-title="New Column"><img src="<?php echo base_url(); ?>assets/img/add_col_icon.png"></a>
             <a data-toggle="modal" id="listConfig_lnk" class="icon-wrench custom_cursor<?php echo $access_class; ?>" data-moveallow="<?php echo $allow_move_config; ?>" data-showcompleted="<?php echo $show_completed_config; ?>" data-allowcmnt="<?php echo $show_nexup_cmnt; ?>" data-allowundo="<?php echo $allow_undo_config; ?>" data-allowmaybe="<?php echo $allow_maybe_config; ?>" data-showtime="<?php echo $show_time; ?>" data-visiblesearch="<?php echo $config['visible_in_search']; ?>" data-toggle="tooltip" title="Settings" data-placement="bottom" data-allowappendLocked="<?php echo $config['allow_append_locked']; ?>" data-allowedAttendanceComment="<?php echo $config['enable_attendance_comment'] ?>" data-haspass="<?php echo $config['has_password']; ?>" data-collapsed="<?php echo $config['start_collapsed']; ?>"> </a>
             <div class="ddl_lt">
 
@@ -358,7 +371,7 @@ if ($allowed_access == 0 && $list_id != 0) {
                 $disabled_copy = '';
             }
             ?>
-            <a id="copy_list_btn" class="copy-list-btn copy-list-btn-items-page custom_cursor<?php echo $access_class; ?>" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" data-toggle="tooltip" data-placement="bottom" title="Copy List" style="<?php echo $disabled_copy; ?>" style="pointer-events: none;opacity: 0.3;"><img src="/assets/img/copy.png"></a>
+            <a id="copy_list_btn" class="copy-list-btn copy-list-btn-items-page custom_cursor<?php echo $access_class; ?> hdn_bulk" data-id="<?php echo $list_id; ?>" data-slug="<?php echo $list_slug; ?>" data-toggle="tooltip" data-placement="bottom" title="Copy List" style="<?php echo $disabled_copy; ?>" style="pointer-events: none;opacity: 0.3;"><img src="/assets/img/copy.png"></a>
             <button type="button" class="btn btn-default enable-move hide_move_btn" data-toggle="tooltip" data-placement="bottom" data-title="Rearrange"><img src="/assets/img/move.png"></button>
         </span>
 
@@ -857,14 +870,14 @@ if ($allowed_access == 0 && $list_id != 0) {
                                                                             <?php
                                                                             if(isset($val_d[0])){
                                                                             ?>
-                                                                            <div class="data_name"><?php echo trim($val_d[0]['TaskName']); ?></div>
+                                                                            <div class="data_name"><?php if($val_d[0]['type'] == 'currency') { echo '$ '; } echo trim($val_d[0]['TaskName']); ?></div>
                                                                             <?php
                                                                             }
                                                                             ?>
                                                                             <?php
                                                                             if(isset($val_d[1])){
                                                                             ?>
-                                                                            <div class="time_display"><span><?php echo trim($val_d[1]['TaskName']); ?></span></div>
+                                                                            <div class="time_display"><span><?php if($val_d[1]['type'] == 'currency') { echo '$ '; } echo trim($val_d[1]['TaskName']); ?></span></div>
                                                                             <?php
                                                                             }
                                                                             ?>

@@ -2775,6 +2775,18 @@ class Listing extends CI_Controller {
             }
 
             if ($addSubList > 0) {
+                $hide_list = '';
+                $show_add_column = '';
+                $style_add_col = 'display: none;';
+                $allow_move_config = 1;
+                $start_collapsed = 1;
+                $is_locked = 1;
+                $show_completed_config = 1;
+                $allow_undo_config = 0;
+                $allow_maybe_config = 0;
+                $show_time = 0;
+                $show_nexup_cmnt = 0;
+                
                 if($this->input->post('list_type') && $this->input->post('list_type') == 'calendar'){
                     if(isset($update_list_local)){
                         $list_details['list_details'] = $update_list_local;
@@ -2782,6 +2794,10 @@ class Listing extends CI_Controller {
                         $list_details['list_details']['list_slug'] = $update_list_local['slug'];
                     }
                     $list_details['list_details']['list_name'] = $this->input->post('list_name');
+                    $list_details['list_details']['allow_move'] = $allow_move_config;
+                    $list_details['list_details']['start_collapsed'] = $start_collapsed;
+                    $list_details['list_details']['is_locked'] = $is_locked;
+                    $list_details['list_details']['show_author'] = 0;
                     $list_details['visit_history'] =  number_format_short($this->TasksModel->count_list_visitors($addSubList));
                     $list_details['columns'] = $this->TasksModel->getColumns($addSubList);
                     $list_details['task_data'] = array();
@@ -2789,15 +2805,6 @@ class Listing extends CI_Controller {
 //                    echo $addSubList;
                     exit;
                 }
-                $hide_list = '';
-                $show_add_column = '';
-                $style_add_col = 'display: none;';
-                $allow_move_config = 1;
-                $show_completed_config = 1;
-                $allow_undo_config = 0;
-                $allow_maybe_config = 0;
-                $show_time = 0;
-                $show_nexup_cmnt = 0;
 
 
                 $return_sublist = '<section id="content_' . $addSubList . '" class="content content_sublist">';
@@ -4763,7 +4770,6 @@ class Listing extends CI_Controller {
             $data_show['visit_history'] = $visit_history;
             $data_show['columns'] = $columns;
             $data_show['task_data'] = $task_data;
-            $data_show['list_details'] = $list_details;
             
             echo $this->load->view('task/json_sublist', $data_show, TRUE);
         }

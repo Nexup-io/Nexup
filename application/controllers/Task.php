@@ -46,7 +46,6 @@ class Task extends CI_Controller {
         }
         $data['type_id'] = 1;
         $data['is_locked'] = 0;
-
         $slug = '';
         if ($this->uri->segment(2) != null) {
             $slug = $this->uri->segment(2);
@@ -118,7 +117,6 @@ class Task extends CI_Controller {
 
             $total_visit_count_long = $this->TasksModel->count_list_visitors($visit_list_id);
             $total_visit_count = number_format_short($total_visit_count_long);
-            
 
             if (isset($_SESSION['id']) && $_SESSION['id'] > 0) {
 
@@ -460,6 +458,7 @@ class Task extends CI_Controller {
         $data['max_order'] = $max_order;
 
         $list_inflo_id = $this->ListsModel->get_list_inflo_id_from_list_id($data['list_id']);
+        
 
         $header = array('Content-Type: application/json');
         if (isset($_SESSION['xauthtoken'])) {
@@ -482,7 +481,7 @@ class Task extends CI_Controller {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $server_output = curl_exec($ch);
         $response = (array) json_decode($server_output);
-
+        
         $list_share_data = array();
         if (isset($response['success']) && $response['success'] == 1) {
             $list_share_data = (array) $response['data'];
@@ -606,13 +605,20 @@ class Task extends CI_Controller {
                     }
                     
                     if(!empty($first_column_id)){
-                        $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        if(count($array_col_ids) > 1){
+                            $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        }else{
+                            $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids),1);
+                        }
+                        
                     }
+//                    p($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids));
+                    
                 }
             }
-//            p($child_list_data); exit;
             $data['child_list_data'] = $child_list_data;
             $data['date_list_names'] = $dates_list_names;
+//            p($dates_list_names); exit;
             
             $this->template->load('default_template_calendar', 'task/week_index', $data);
         }else{
@@ -664,7 +670,12 @@ class Task extends CI_Controller {
                     }
                     
                     if(!empty($first_column_id)){
-                        $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        if(count($array_col_ids) > 1){
+                            $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        }else{
+                            $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 1);
+                        }
+                        
                     }
                 }
             }
@@ -712,12 +723,16 @@ class Task extends CI_Controller {
                 $res .= '<div class="day_content" data-date="' . $data_key . '" data-listid="' . $data_list_id . '">';
                 foreach ($data_val as $key_d => $val_d):
                     $res .= '<div class="data_content_w">';
-                    $res .= '<div class="data_name">';
-                    $res .= trim($val_d[0]['TaskName']);;
-                    $res .= '</div>';
-                    $res .= '<div class="time_display">';
-                    $res .= trim($val_d[1]['TaskName']);;
-                    $res .= '</div>';
+                    if(isset($val_d[0])){
+                        $res .= '<div class="data_name">';
+                        $res .= trim($val_d[0]['TaskName']);;
+                        $res .= '</div>';
+                    }
+                    if(isset($val_d[1])){
+                        $res .= '<div class="time_display">';
+                        $res .= trim($val_d[1]['TaskName']);;
+                        $res .= '</div>';
+                    }
                     $res .= '</div>';
                 endforeach;
                 $res .= '</div>';
@@ -781,7 +796,11 @@ class Task extends CI_Controller {
                     }
                     
                     if(!empty($first_column_id)){
-                        $child_list_data[$pval->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids, 6), 2);
+                        if(count($array_col_ids) > 1){
+                            $child_list_data[$pval->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids, 6), 2);
+                        }else{
+                            $child_list_data[$pval->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids, 6), 1);
+                        }
                     }
                 }
             endforeach;
@@ -840,7 +859,7 @@ class Task extends CI_Controller {
                         $dlist_id = $name_data;
                     }
                     $this_month = date('m', strtotime($name_key));
-                    $res .= '<div class="day_number" data-listid="' . $dlist_id . '">';
+                    $res .= '<div class="day_number" data-listid="' . $dlist_id . '" data-date="' . $name_key . '">';
                     $res .= '<h2 class="date_h2">';
                     if ($count_date == 0) {
                         $date_show = date('M j, Y', strtotime($name_key)) . ' ';
@@ -862,6 +881,9 @@ class Task extends CI_Controller {
                     foreach ($child_list_data[$names_key] as $c_key => $c_data):
                         $res .= '<h2 class="h2_content">';
                         if(!empty($c_data)){
+                            if($c_data[0]['type'] == 'currency'){
+                                $res .= '$ ';
+                            }
                             $res .= $c_data[0]['TaskName'];
                         }else{
                             $res .= '&nbsp;';
@@ -951,7 +973,12 @@ class Task extends CI_Controller {
                     }
                     
                     if(!empty($first_column_id)){
-                        $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        if(count($array_col_ids) > 1){
+                            $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 2);
+                        }else{
+                            $child_list_data[$value->format('m/j/Y')] = array_chunk($this->TasksModel->get_tasks_for_calendar($child_list_id, $array_col_ids), 1);
+                        }
+                        
                     }
                 }
             }
@@ -998,14 +1025,24 @@ class Task extends CI_Controller {
                 $res .= '<div class="day_content" data-date="' . $data_key . '" data-listid="' . $data_sub_list_id . '">';
                 foreach ($data_val as $key_d => $val_d):
                     $res .= '<div class="data_content_w">';
-                    $res .= '<div class="data_name">';
-                    $res .= trim($val_d[0]['TaskName']);
-                    $res .= '</div>';
-                    $res .= '<div class="time_display">';
-                    $res .= '<span>';
-                    $res .= trim($val_d[1]['TaskName']);
-                    $res .= '</span>';
-                    $res .= '</div>';
+                    if(isset($val_d[0])){
+                        $res .= '<div class="data_name">';
+                        if($val_d[0]['type'] == 'currency'){
+                            $res .= '$ ';
+                        }
+                        $res .= trim($val_d[0]['TaskName']);
+                        $res .= '</div>';
+                    }
+                    if(isset($val_d[1])){
+                        $res .= '<div class="time_display">';
+                        $res .= '<span>';
+                        if($val_d[1]['type'] == 'currency'){
+                            $res .= '$ ';
+                        }
+                        $res .= trim($val_d[1]['TaskName']);
+                        $res .= '</span>';
+                        $res .= '</div>';
+                    }
                     $res .= '</div>';
                 endforeach;
                 $res .= '</div>';
@@ -2622,7 +2659,7 @@ class Task extends CI_Controller {
                     $first_col_resp .= '<a class="remove_col custom_cursor" data-colid="' . $add_col_first . '" data-listid="' . $this->input->post('list_id') . '">Remove</a>';
                 }
                 $first_col_resp .= '</div>';
-                $first_col_resp .= '<div class="add-data-title" data-colid="' . $add_col_first . '" data-listid="' . $this->input->post('list_id') . '" data-toggle="tooltip" data-placement="bottom" title="' . $add_first_col['column_name'] . '">';
+                $first_col_resp .= '<div class="add-data-title" data-colid="' . $add_col_first . '" data-listid="' . $this->input->post('list_id') . '" data-toggle="tooltip" data-placement="bottom" data-type="' . $this->input->post('type') . '" title="' . $add_first_col['column_name'] . '">';
                 $first_col_resp .= '<span class="column_name_class" id="col_name_' . $add_col_first . '">' . $current_list_name . '</span>';
                 
                 $first_col_resp .= '</div>';
@@ -2639,7 +2676,11 @@ class Task extends CI_Controller {
                 $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="date_' . $add_col_first . '" name="radio-group-' . $add_col_first . '" value="date" data-col_id="' . $add_col_first . '"><label for="date_' . $add_col_first . '">Date</label></div></li>';
                 $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="time_' . $add_col_first . '" name="radio-group-' . $add_col_first . '" value="time" data-col_id="' . $add_col_first . '"><label for="time_' . $add_col_first . '">Time</label></div></li>';
                 $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="timestamp_' . $add_col_first . '" name="radio-group-' . $add_col_first . '" value="timestamp" data-col_id="' . $add_col_first . '"><label for="timestamp_' . $add_col_first . '">Time Stamp</label></div></li>';
-                $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="inflo_ob_' . $add_col_first . '" name="radio-group-' . $add_col_first . '" value="infloobject" data-col_id="' . $add_col_first . '" disabled="disabled"><label for="inflo_ob_' . $add_col_first . '" style="font-style: italic;">Inflo Object</label></div></li>';
+                
+                $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" class="radio-col-type" id="email_' . $add_col_first . '" name="radio-group-' . $add_col_first . '" value="email" data-col_id="' . $add_col_first . '"><label for="email_' . $add_col_first . '">Email</label></div></li>';
+                $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" class="radio-col-type" id="link_' . $add_col_first . '" name="radio-group-' . $add_col_first . '" value="link" data-col_id="' . $add_col_first . '"><label for="link_' . $add_col_first . '">Link</label></div></li>';
+                
+                $first_col_resp .= '<li class="disabled-radio-class"><div class="custom_radio_class"><input type="radio" id="inflo_ob_' . $add_col_first . '" name="radio-group-' . $add_col_first . '" value="infloobject" data-col_id="' . $add_col_first . '" disabled="disabled"><label for="inflo_ob_' . $add_col_first . '" style="font-style: italic;">Inflo Object</label></div></li>';
                 $first_col_resp .= '</ul>';
                 $first_col_resp .= '</div>';
                 $first_col_resp .= '</th>';
@@ -2657,7 +2698,7 @@ class Task extends CI_Controller {
                     $first_col_resp .= '<a class="remove_col custom_cursor icon-cross-out" data-colid="' . $columns[0]['id'] . '" data-listid="' . $this->input->post('list_id') . '" style="visibility: hidden;"></a>';
                 }
                 $first_col_resp .= '</div>';
-                $first_col_resp .= '<div class="add-data-title" data-colid="' . $columns[0]['id'] . '" data-listid="' . $this->input->post('list_id') . '" data-toggle="tooltip" data-placement="bottom" title="' . $columns[0]['column_name'] . '">';
+                $first_col_resp .= '<div class="add-data-title" data-colid="' . $columns[0]['id'] . '" data-listid="' . $this->input->post('list_id') . '" data-toggle="tooltip" data-placement="bottom" data-type="' . $this->input->post('type') . '" title="' . $columns[0]['column_name'] . '">';
                 $first_col_resp .= '<span class="column_name_class" id="col_name_' . $columns[0]['id'] . '">' . $columns[0]['column_name'] . '</span>';
 
                 $first_col_resp .= '</div>';
@@ -2673,7 +2714,11 @@ class Task extends CI_Controller {
                 $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="date_' . $columns[0]['id'] . '" name="radio-group-' . $columns[0]['id'] . '" value="date" data-col_id="' . $columns[0]['id'] . '"><label for="date_' . $columns[0]['id'] . '">Date</label></div></li>';
                 $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="time_' . $columns[0]['id'] . '" name="radio-group-' . $columns[0]['id'] . '" value="time" data-col_id="' . $columns[0]['id'] . '"><label for="time_' . $columns[0]['id'] . '">Time</label></div></li>';
                 $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="timestamp_' . $columns[0]['id'] . '" name="radio-group-' . $columns[0]['id'] . '" value="timestamp" data-col_id="' . $columns[0]['id'] . '"><label for="timestamp_' . $columns[0]['id'] . '">Time Stamp</label></div></li>';
-                $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" id="inflo_ob_' . $columns[0]['id'] . '" name="radio-group-' . $columns[0]['id'] . '" value="infloobject" data-col_id="' . $columns[0]['id'] . '" disabled="disabled"><label for="inflo_ob_' . $columns[0]['id'] . '" style="font-style: italic;">Inflo Object</label></div></li>';
+                
+                $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" class="radio-col-type" id="email_' . $columns[0]['id'] . '" name="radio-group-' . $columns[0]['id'] . '" value="email" data-col_id="' . $columns[0]['id'] . '"><label for="email_' . $columns[0]['id'] . '">Email</label></div></li>';
+                $first_col_resp .= '<li><div class="custom_radio_class"><input type="radio" class="radio-col-type" id="link_' . $columns[0]['id'] . '" name="radio-group-' . $columns[0]['id'] . '" value="link" data-col_id="' . $columns[0]['id'] . '"><label for="link_' . $columns[0]['id'] . '">Link</label></div></li>';
+                
+                $first_col_resp .= '<li class="disabled-radio-class"><div class="custom_radio_class"><input type="radio" id="inflo_ob_' . $columns[0]['id'] . '" name="radio-group-' . $columns[0]['id'] . '" value="infloobject" data-col_id="' . $columns[0]['id'] . '" disabled="disabled"><label for="inflo_ob_' . $columns[0]['id'] . '" style="font-style: italic;">Inflo Object</label></div></li>';
                 $first_col_resp .= '</ul>';
                 $first_col_resp .= '</div>';
                 $first_col_resp .= '</th>';
@@ -2698,12 +2743,12 @@ class Task extends CI_Controller {
                 $resp_str .= '<a href="" class="icon-more-h ' . $move_class . ' ui-sortable-handle" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="visibility: hidden;"></a>';
                 
                 if($this->input->post('type_column_list') && $this->input->post('type_column_list') == 'child'){
-                    $resp_str .= '<a class="remove_sub_col custom_cursor icon-cross-out" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '" style="visibility: hidden;"></a>';
+                    $resp_str .= '<a class="remove_sub_col remove_col custom_cursor icon-cross-out" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '" style="visibility: hidden;"></a>';
                 }else{
                     $resp_str .= '<a class="remove_col custom_cursor icon-cross-out" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '" style="visibility: hidden;"></a>';
                 }
                 $resp_str .= '</div>';
-                $resp_str .= '<div class="add-data-title" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '" data-toggle="tooltip" data-placement="bottom" title="' . $new_col['column_name'] . '">';
+                $resp_str .= '<div class="add-data-title" data-colid="' . $add_col . '" data-listid="' . $this->input->post('list_id') . '" data-toggle="tooltip" data-placement="bottom" data-type="' . $this->input->post('type') . '" title="' . $new_col['column_name'] . '">';
                 $resp_str .= '<span class="column_name_class" id="col_name_' . $add_col . '">' . $new_col['column_name'] . '</span>';
 
                 $resp_str .= '</div>';
@@ -2720,7 +2765,12 @@ class Task extends CI_Controller {
                 $resp_str .= '<li><div class="custom_radio_class"><input type="radio" id="date_' . $add_col . '" name="radio-group-' . $add_col . '" value="date" data-col_id="' . $add_col . '"><label for="date_' . $add_col . '">Date</label></div></li>';
                 $resp_str .= '<li><div class="custom_radio_class"><input type="radio" id="time_' . $add_col . '" name="radio-group-' . $add_col . '" value="time" data-col_id="' . $add_col . '"><label for="time_' . $add_col . '">Time</label></div></li>';
                 $resp_str .= '<li><div class="custom_radio_class"><input type="radio" id="timestamp_' . $add_col . '" name="radio-group-' . $add_col . '" value="timestamp" data-col_id="' . $add_col . '"><label for="timestamp_' . $add_col . '">Time Stamp</label></div></li>';
-                $resp_str .= '<li><div class="custom_radio_class"><input type="radio" id="inflo_ob_' . $add_col . '" name="radio-group-' . $add_col . '" value="infloobject" data-col_id="' . $add_col . '" disabled="disabled"><label for="inflo_ob_' . $add_col . '" style="font-style: italic;">Inflo Object</label></div></li>';
+                
+                $resp_str .= '<li><div class="custom_radio_class"><input type="radio" class="radio-col-type" id="email_' . $add_col . '" name="radio-group-' . $add_col . '" value="email" data-col_id="' . $add_col . '"><label for="email_' . $add_col . '">Email</label></div></li>';
+                $resp_str .= '<li><div class="custom_radio_class"><input type="radio" class="radio-col-type" id="link_' . $add_col . '" name="radio-group-' . $add_col . '" value="link" data-col_id="' . $add_col . '"><label for="link_' . $add_col . '">Link</label></div></li>';
+                
+                
+                $resp_str .= '<li class="disabled-radio-class"><div class="custom_radio_class"><input type="radio" id="inflo_ob_' . $add_col . '" name="radio-group-' . $add_col . '" value="infloobject" data-col_id="' . $add_col . '" disabled="disabled"><label for="inflo_ob_' . $add_col . '" style="font-style: italic;">Inflo Object</label></div></li>';
                 $resp_str .= '</ul>';
                 $resp_str .= '</div>';
                 
@@ -4303,7 +4353,7 @@ class Task extends CI_Controller {
                         $res_table .= '<a href="" class="icon-more-h move_col ui-sortable-handle" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="visibility: hidden;"></a>';
                         $res_table .= '<a class="remove_col custom_cursor icon-cross-out" data-colid="' . $colData['id'] . '" data-listid="' . $list_id . '" style="visibility: hidden;"></a>';
                         $res_table .= '</div>';
-                        $res_table .= '<div class="add-data-title" data-colid="' . $colData['id'] . '" data-listid="' . $list_id . '">';
+                        $res_table .= '<div class="add-data-title" data-colid="' . $colData['id'] . '" data-listid="' . $list_id . '" data-type="' . $this->input->post('type') . '">';
                         $res_table .= '<span class="column_name_class" id="col_name_' . $colData['id'] . '">' . $colData['column_name'] . '</span>';
                         $res_table .= '</div>';
                         $res_table .= '</th>';
@@ -4778,6 +4828,187 @@ class Task extends CI_Controller {
     public function test_index(){
         echo html_entity_decode($this->security->xss_clean('Hiren&lt;hda@narola.email&gt;;Baber&lt;drghauri@gmail.com&gt;;Nikita&lt;ng@narola.email&gt;;Suresh&lt;sd@narola.email&gt;\nHiren&lt;hda@narola.email&gt;;Baber&lt;drghauri@gmail.com&gt;;Nikita&lt;ng@narola.email&gt;;Suresh&lt;sd@narola.email&gt;')); exit;
         
+    }
+    
+    public function copy_day_list(){
+        if ($this->input->post()) {
+            $parent_list_id = $this->input->post('parent_list_id');
+            $day_list_id = $this->input->post('day_list_id');
+            $new_day_list_name = $this->input->post('new_day_list_name');
+            $now_date = date('Y-m-d H:i:s');
+            
+            $find_list = $this->ListsModel->get_child_list_id_for_cal($parent_list_id, $new_day_list_name);
+            
+            $header = array('Content-Type: application/json');
+            if (isset($_SESSION['xauthtoken'])) {
+                $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+                array_push($header, $val);
+            }
+            
+            if(empty($find_list)){
+                $list = $this->ListsModel->get_list_data_for_copy($day_list_id);
+                $list['name'] = $new_day_list_name;
+                $list['parent_id'] = $parent_list_id;
+                $ssn_user_id = 0;
+                if (isset($_SESSION['id'])) {
+                    $list['user_id'] = $_SESSION['id'];
+                    $ssn_user_id = $_SESSION['id'];
+                }
+                $list['is_private'] = 0;
+                $list['is_locked'] = 0;
+                $list['created'] = $now_date;
+                $list['modified'] = $now_date;
+                $new_list_copy = $this->ListsModel->add_list($list);
+                
+                $header = array('Content-Type: application/json');
+                if (isset($_SESSION['xauthtoken'])) {
+                    $val = 'X-AuthToken: ' . $_SESSION['xauthtoken'];
+                    array_push($header, $val);
+                }
+
+                $send_data['Apikey'] = API_KEY;
+                $send_data['Listname'] = $list['name'];
+                $send_data = json_encode($send_data);
+
+                $ch1 = curl_init();
+                curl_setopt($ch1, CURLOPT_URL, API_URL . "account/CreateList");
+                curl_setopt($ch1, CURLOPT_POST, 1);
+                curl_setopt($ch1, CURLOPT_HTTPHEADER, $header);
+                curl_setopt($ch1, CURLOPT_POSTFIELDS, $send_data);
+                curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch1, CURLOPT_SSL_VERIFYPEER, false);
+                $server_output1 = curl_exec($ch1);
+                $response1 = (array) json_decode($server_output1);
+
+                if (isset($response1['success']) && $response1['success'] == 1) {
+                    $list_inflo_id = $response1['data']->ListId;
+                    $update_list_local['slug'] = $response1['data']->ListSlug;
+                    $update_list_local['url'] = '/' . $response1['data']->ListSlug;
+                    $update_list_local['list_inflo_id'] = $response1['data']->ListId;
+                    $update_list_local['created_user_name'] = $response1['data']->CreateByUserFullName;
+                    $this->ListsModel->update_list_data_from_inflo($new_list_copy, $update_list_local);
+                } else {
+                    $list_inflo_id = null;
+                }
+                
+                
+                
+                $find_list = $this->ListsModel->get_child_list_id_for_cal($parent_list_id, $new_day_list_name);
+                
+            }
+                    
+            if(!empty($find_list)){
+                
+                $list_cols = $this->TasksModel->getColumns($day_list_id);
+                if(!empty($list_cols)){
+                    $del_cols = $this->TasksModel->delete_columns_bulk($find_list['id']);
+                    $new_cols_orders_arr = array();
+                    foreach ($list_cols as $colid => $coldata):
+                        $new_col['list_inflo_id'] = $find_list['list_inflo_id'];
+                        $new_col['list_id'] = $find_list['id'];
+                        $new_col['column_name'] = $coldata['column_name'];
+                        $new_col['order'] = $coldata['order'];
+                        $new_col['is_deleted'] = 0;
+                        $new_col['type'] = $coldata['type'];
+
+                        $new_col['created'] = $now_date;
+                        $new_col['modified'] = $now_date;
+                        $new_column_add = $this->TasksModel->add_new_colum($new_col);
+                        $new_cols_orders_arr[$new_col['order']] = $new_column_add;
+                        if ($new_column_add > 0) {
+                            $api_caol_add['Apikey'] = API_KEY;
+                            $api_caol_add['Listid'] = $find_list['list_inflo_id'];
+                            $api_caol_add['ListColumnName'] = $new_col['column_name'];
+                            $post_col_data = json_encode($api_caol_add);
+                            $ch_col = curl_init();
+                            curl_setopt($ch_col, CURLOPT_URL, API_URL . "account/CreateListColumn");
+                            curl_setopt($ch_col, CURLOPT_POST, 1);
+                            curl_setopt($ch_col, CURLOPT_HTTPHEADER, $header);
+                            curl_setopt($ch_col, CURLOPT_POSTFIELDS, $post_col_data);
+                            curl_setopt($ch_col, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch_col, CURLOPT_SSL_VERIFYPEER, false);
+                            $server_output_col = curl_exec($ch_col);
+                            $response_col = (array) json_decode($server_output_col);
+                            $col_inflo_id = 0;
+                            if (isset($response_col['success']) && $response_col['success'] == 1) {
+                                $col_inflo_id = $response_col['data']->ColumnId;
+                                $col_data['col_inflo_id'] = $col_inflo_id;
+                                $this->TasksModel->update_column_data($find_list['id'], $new_column_add, $col_data);
+                            }
+                        }
+                    endforeach;
+                    
+                    
+                    $find_list_data_to_copy = $this->TasksModel->get_all_items_ordered($day_list_id);
+                    $del_tasks = $this->TasksModel->delete_task_bulk($find_list['id']);
+                    if(!empty($find_list_data_to_copy)){
+                        
+                        $item_cnt = 0;
+                        $max_ord = 0;
+                        $add_task_sub = array();
+                        foreach ($find_list_data_to_copy as $did => $ddata):
+                            $today = date('Y-m-d H:i:s');
+                            $send_data_inflo['Apikey'] = API_KEY;
+                            $send_data_inflo['Taskname'] = $ddata['TaskName'];
+                            $send_data_inflo['Listid'] = $find_list['list_inflo_id'];
+                            $post_data = json_encode($send_data_inflo);
+                            $ch = curl_init();
+                            curl_setopt($ch, CURLOPT_URL, API_URL . "account/CreateTask");
+                            curl_setopt($ch, CURLOPT_POST, 1);
+                            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                            $server_output = curl_exec($ch);
+                            $response = (array) json_decode($server_output);
+                            $task_inflo_id = null;
+                            if (isset($response['success']) && $response['success'] == 1) {
+                                $task_inflo_id = $response['data']->TaskId;
+                            }
+                            curl_close($ch);
+                            $add_task_sub[$item_cnt]['user_id'] = 0;
+                            if (isset($_SESSION['id'])) {
+                                $add_task_sub[$item_cnt]['user_id'] = $_SESSION['id'];
+                            }
+                            $add_task_sub[$item_cnt]['list_inflo_id'] = $find_list['list_inflo_id'];
+                            $add_task_sub[$item_cnt]['is_completed'] = $ddata['IsCompleted'];
+                            $add_task_sub[$item_cnt]['is_present'] = $ddata['IsPresent'];
+                            $add_task_sub[$item_cnt]['list_id'] = $find_list['id'];
+                            $add_task_sub[$item_cnt]['task_inflo_id'] = $task_inflo_id;
+                            $add_task_sub[$item_cnt]['column_id'] = $new_cols_orders_arr[$ddata['col_order']];
+                            $add_task_sub[$item_cnt]['order'] = $ddata['order'];
+                            $add_task_sub[$item_cnt]['value'] = $ddata['TaskName'];
+                            $add_task_sub[$item_cnt]['created'] = $today;
+                            $add_task_sub[$item_cnt]['modified'] = $today;
+                            $item_cnt++;
+                            $max_ord = $ddata['order'];
+                        endforeach;
+                        
+                        if (!empty($add_task_sub)) {
+                            $task_add = $this->TasksModel->add_task($add_task_sub);
+                            for ($i = 0; $i <= $max_ord; $i++) {
+                            $items_added_str = array();
+                            foreach ($add_task_sub as $added_id => $added_items) {
+                                    if ($added_items['order'] == $i) {
+                                        $task_id = $this->TasksModel->get_task_id_from_task_inflo_id($added_items['task_inflo_id']);
+                                        array_push($items_added_str, $task_id);
+                                    }
+                                }
+
+                                $task_ids_for_comments = implode(',', $items_added_str);
+
+                                $add_task_present_data = $this->TasksModel->add_attendance_data($find_list['id'], null, $task_ids_for_comments);
+                            }
+                        }
+                    }
+                    echo $find_list['id'];
+                }
+                    
+            }else{
+                echo 'fail';
+            }
+            exit;
+        }
     }
 
 }

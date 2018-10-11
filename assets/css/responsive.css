@@ -7,6 +7,10 @@
 .week_view_container .date_Detail_week, .week_view_container .day_content {max-width: 100%;}
 }
 
+@media (min-width:1200px) and (max-width:1500px){
+.day_calendar .ui-datepicker-inline, .week_calendar .ui-datepicker-inline, .month_calendar .ui-datepicker-inline {width: 16em;}
+}
+
 @media (min-width:1350px){
     .added_div.add-data-left .add-data-head-r {position: relative !important;float: none;display: inline-block;vertical-align: top;}
     .added_div.add-data-left div#addTaskDiv, .added_div.add-data-left div#addSubTaskDiv {display: block;width: 100%;max-width: 100% !important;}
@@ -142,6 +146,7 @@ h2.date_h2 {padding-right: 3px;}
 
 
 
+
 }
 
 @media(max-width:991px){
@@ -210,6 +215,8 @@ h2.date_h2 {padding-right: 3px;}
 .left_div .day_calendar .ui-datepicker-inline {margin: 0 auto;}
 .div_new_data {width: 100%;float: none;margin-top: 20px;}
 .left_div {width: 100%;float: none;}
+
+
     
 }
 
@@ -419,7 +426,7 @@ h2.date_h2 {padding-right: 3px;}
     .day_w {font-size: 12px;line-height: 22px;margin-left: 0;width: 100%;box-sizing: border-box;text-align: center;}
     .day_date {font-size: 12px;line-height: 20px;margin-left: 0;width: 100%;text-align: center;}
     .data_content_w {padding: 0;display: block;margin-bottom: 10px !important;margin-left: 3px;}
-    .data_name {font-size: 10px;box-sizing: border-box;display: block;width: 100%;margin-bottom: 3px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+    .data_name {font-size: 10px;box-sizing: border-box;display: block;width: 100%;margin-bottom: 0;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
     .time_display {margin-left: auto;font-size: 10px;display: block;color: #999;width: 100%;}
     .div_left_one {width: 100%;text-align: center;top: 0;z-index: 999999;background: #fff;}
     .week_calendar {max-height: 300px;margin: 0 auto 20px;}
@@ -722,6 +729,15 @@ label.option_list_type {margin-right: 5px;font-size: 13px;}
 .img_lock img {max-width: 42px;}
 .listing_not_view_inner_content, .listing_pass_view_inner_content {position: relative;top: 0;left: 0;transform: none;padding: 20px 10px;width: 250px;margin: 0 auto;}
 .listing_not_view, .listing_pass_view {position: relative;padding-top: 50px;padding-bottom: 50px;}
+.add-data-head.sub_list_title_head h2 {font-size: 18px;max-width: 100%;margin-right: 0;line-height: normal;}
+.add-data-head a.prev_day {margin-left: 0;margin-right: 5px;}
+.add-data-head a {font-size: 12px;margin-left: 5px;width: 20px;height: 20px;line-height: 21px;}
+.add-data-head h2 span {font-size: 16px !important;line-height: normal;}
+span#count_visit_span {min-width: 30px;height: 30px;min-height: 30px;line-height: 30px;    font-size: 12px;}
+.add-data-head a {font-size: 12px;margin-left: 0;width: 20px;height: 20px;line-height: 21px;}
+.add-data-head.sub_list_title_head h2 span.date_select_bpx_span input {max-width: 120px;width: 100%;padding: 6px 6px;line-height: normal;font-size: 14px;}
+.add-data-input input {line-height: normal;}
+.month_view_class .timestamp-btn {font-size: 10px !important;width: 90%;}
 
 }
 

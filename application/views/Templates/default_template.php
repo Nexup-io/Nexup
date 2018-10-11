@@ -204,6 +204,9 @@ if (isset($response['success']) && $response['success'] == 1) {
         <link href="<?php echo base_url() . 'assets/css/tabledragdrop.css'; ?>" rel="stylesheet" />
         <link href="<?php // echo base_url() . 'assets/css/bootstrap-responsive-tabs.css';  ?>" rel="stylesheet" />
         <link rel="icon" href="<?php echo base_url(); ?>assets/img/favicon.ico" type="image/ico">
+        <style>
+            #test_table.table>tbody>tr>td:first-child {padding-left: 0;}
+        </style>
     </head>
     <body>
         <div class="wrapper">
@@ -453,7 +456,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                         event.preventDefault();
-                    }).tooltip();
+                    }).tooltip({delay: { "hide": 100 }});
                 }
 
                 $(document).on('click touch', '#customize_btn', function (e) {
@@ -1385,19 +1388,21 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     $('#nexup_cmnt_span').removeClass('hide_box');
                                 }
                             }
-                            if (show_comment_attendance == 0) {
-//                                if (!$('#enable_attendance_comment').hasClass('hide_box')) {
-//                                    $('#enable_attendance_comment').addClass('hide_box');
-//                                }
-                                if (!$('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
-                                    $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
-                                }
-                            } else {
-//                                if ($('#enable_attendance_comment').hasClass('hide_box')) {
-//                                    $('#enable_attendance_comment').removeClass('hide_box');
-//                                }
-                                if ($('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
-                                    $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                            if($('#config_lnk').attr('data-typeid') == 11){
+                                if (show_comment_attendance == 0) {
+    //                                if (!$('#enable_attendance_comment').hasClass('hide_box')) {
+    //                                    $('#enable_attendance_comment').addClass('hide_box');
+    //                                }
+                                    if (!$('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
+                                        $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
+                                    }
+                                } else {
+    //                                if ($('#enable_attendance_comment').hasClass('hide_box')) {
+    //                                    $('#enable_attendance_comment').removeClass('hide_box');
+    //                                }
+                                    if ($('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
+                                        $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                                    }
                                 }
                             }
                             $('#listConfig_lnk').attr('data-allowedattendancecomment', show_comment_attendance);
@@ -1603,7 +1608,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                 event.preventDefault()
-                                                            }).tooltip();
+                                                            }).tooltip({delay: { "hide": 100 }});
                                                         }
                                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                             $('.tooltip').remove()
@@ -2064,6 +2069,35 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 $('#edit_list_name').addClass('list-error');
                             }
                         } else {
+                            console.log('i am here');
+                            var password_fields = '<div class="input-outer lock_outer">';
+                            password_fields += '<span class="inflo_share_group_head">Lock:</span>';
+                            password_fields += '<div class="checkbox-outer" style="float: right;">';
+                            password_fields += '<div class="checkbox">';
+                            password_fields += '<input type="checkbox" value="1" name="is_locked_list" id="is_locked_list" class="is_locked_list_class">';
+                            password_fields += '<label for="is_locked_list">&nbsp;</label>';
+                            password_fields += '</div>';
+                            password_fields += '</div>';
+                            password_fields += '<div class="input-outer object_outer input-sub-outer-cls">';
+                            password_fields += '<div class="share_pass_div">';
+                            password_fields += '<div class="share_input_wrap">';
+                            password_fields += '<label>Password to view list:</label>';
+                            password_fields += '<input type="password" name="password_list" id="password_list" class="password_list_class" placeholder="View Password">';
+                            password_fields += '</div>';
+                            password_fields += '<div class="share_input_wrap">';
+                            password_fields += '<label>Password to modify list data:</label>';
+                            password_fields += '<input type="password" name="password_list_modify" id="password_list_modify" class="password_list_class" placeholder="Modification Password">';
+                            password_fields += '</div>';
+                            password_fields += '<div class="share_btn_wrap">';
+                            password_fields += '<a class="btn btn-default save_pass_btn" id="save_pass_btn">Save</a>';
+                            password_fields += '</div>';
+                            password_fields += '</div>';
+                            password_fields += '</div>';
+                            password_fields += '</div>';
+
+                            $('#share-contact').find('.sharemodal-body').find('.inner-outer-first-child').after(password_fields);
+                        
+                        
                             $('#delete_list_builder').show();
                             $('#delete_list_builder').removeClass('disabled_btn');
                             $('.plus-category').attr('data-access', 1);
@@ -2690,56 +2724,58 @@ if (isset($response['success']) && $response['success'] == 1) {
                             var json_cnt = 0;
 
 
-                            $('.task_name').each(function () {
-                                var valuse_store = $(this).val();
-                                var display_val = $(this).val();
-                                display_val = display_val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                                url = display_val.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
-//                                url = display_val.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)/g);
-                                if (url == 'null' || url == null || url == 'undefined') {
-                                    url = display_val.match(/([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g);
-                                }
-                                var display_url = '';
-                                var display_txt = '';
-                                var title_text = '';
-
-                                if (isAnchor(display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
-                                    display_val = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                                    display_url = '';
-                                    display_txt = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                                } else {
-                                    if (url != null && url != 'null' && url != 'undefined' && url != '') {
-                                        $.each(url, function (i, v) {
-                                            v = v.split(' ')[0];
-                                            display_url = v;
-
-                                            title_text = display_val.replace(v, '|url|');
-                                            display_txt = display_val.replace(v, '');
-                                            var url_http = v;
-                                            if (v.indexOf('http://') != 0) {
-                                                if (v.indexOf('https://') != 0) {
-                                                    url_http = 'http://' + v;
-                                                }
-                                            }
-                                            display_val = display_val.replace(v, '<a class="link_clickable" href="' + url_http + '">' + v + '</a>');
-                                            title_text = title_text.replace('|url|', v);
-                                        });
-                                    }
-                                }
-
-                                td_val += '<td class="list-table-view">';
-                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top">';
-//                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="' + title_text + '">';
-
-                                td_val += '<span id="span_task_' + task_ids[json_cnt] + '" class="task_name_span">' + display_val.replace(/\n/g, "<br />") + '</span>';
-
-                                td_val += '<div class="opertaions pull-right">';
-
-                                td_val += '</div>';
-                                td_val += '</div>';
-                                td_val += '</td>';
-                                json_cnt++;
-                            });
+//                            $('.task_name').each(function () {
+//                                var valuse_store = $(this).val();
+//                                var display_val = $(this).val();
+//                                display_val = display_val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+//                                url = display_val.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
+////                                url = display_val.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)/g);
+//                                if (url == 'null' || url == null || url == 'undefined') {
+//                                    url = display_val.match(/([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g);
+//                                }
+//                                var display_url = '';
+//                                var display_txt = '';
+//                                var title_text = '';
+//
+//                                if (isAnchor(display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
+//                                    display_val = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+//                                    display_url = '';
+//                                    display_txt = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+//                                } else {
+//                                    if (url != null && url != 'null' && url != 'undefined' && url != '') {
+//                                        $.each(url, function (i, v) {
+//                                            v = v.split(' ')[0];
+//                                            display_url = v;
+//
+//                                            title_text = display_val.replace(v, '|url|');
+//                                            display_txt = display_val.replace(v, '');
+//                                            var url_http = v;
+//                                            if (v.indexOf('http://') != 0) {
+//                                                if (v.indexOf('https://') != 0) {
+//                                                    url_http = 'http://' + v;
+//                                                }
+//                                            }
+//                                            display_val = display_val.replace(v, '<a class="link_clickable" href="' + url_http + '">' + v + '</a>');
+//                                            title_text = title_text.replace('|url|', v);
+//                                        });
+//                                    }
+//                                }
+//
+//                                td_val += '<td class="list-table-view">';
+//                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top">';
+////                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="' + title_text + '">';
+//                                if(display_val == 'checked'){
+//                                    display_val = '';
+//                                }
+//                                td_val += '<span id="span_task_' + task_ids[json_cnt] + '" class="task_name_span">' + display_val.replace(/\n/g, "<br />") + '</span>';
+//
+//                                td_val += '<div class="opertaions pull-right">';
+//
+//                                td_val += '</div>';
+//                                td_val += '</div>';
+//                                td_val += '</td>';
+//                                json_cnt++;
+//                            });
                             td_val += '<td class="list-table-view-attend' + hidden_comment_class + '">';
                             td_val += '<div class="add-comment-div edit_comment" data-id="' + resp['extra_id'] + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="">';
                             td_val += '<span id="span_comment_' + resp['extra_id'] + '" class="comment_name_span">&nbsp;</span>';
@@ -2936,7 +2972,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -2960,6 +2996,21 @@ if (isset($response['success']) && $response['success'] == 1) {
             //Add task for a list
             $(document).on('keydown', '.task_name', function (evt) {
                 var key_code = evt.keyCode;
+                
+                if($(this).attr('data-type') == 'currency' || $(this).attr('data-type') == 'number'){
+                    $(this).val($(this).val().replace(/[^0-9\.]/g,''));
+                    if ((evt.keyCode >= 48 && evt.keyCode <= 57) || 
+                        (evt.keyCode >= 96 && evt.keyCode <= 105) || 
+                        evt.keyCode == 8 || evt.keyCode == 9 || evt.keyCode == 37 ||
+                        evt.keyCode == 39 || evt.keyCode == 46 || evt.keyCode == 110 || evt.keyCode == 190) {
+                        if((evt.keyCode == 110 || evt.keyCode == 190) && $(this).val().indexOf('.') != -1){
+                            evt.preventDefault();
+                        }
+                    } else {
+                        evt.preventDefault();
+                    }
+                }
+                
                 if(key_code == 9){
                     if($(this).val() != ''){
                         if($(this).attr('data-type') == 'number'){
@@ -3091,7 +3142,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     }
                                 }
                             } else if($(this).attr('data-type') == 'email'){
-                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                                 if (!testEmail.test($(this).val())){
                                     alert('Please enter a valid email');
                                     $(this).val('');
@@ -3474,7 +3525,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                     event.preventDefault()
-                                                }).tooltip();
+                                                }).tooltip({delay: { "hide": 100 }});
                                             }
                                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                 $('.tooltip').remove()
@@ -3528,7 +3579,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                             }
                             
                             if($('#span_task_' + did_edit).closest('div.edit_task').attr('data-type') == 'memo' || $('#span_task_' + did_edit).closest('div.edit_task').attr('data-type') == 'text'){
-                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                                 if (testEmail.test(edit_task_name)){
                                     display_task_name = '<a class="mail_url" href="mailto:' + edit_task_name + '">' + edit_task_name + '</a>'
                                 }else{
@@ -3633,7 +3684,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                 }
                 if($(this).attr('data-type') == 'email'){
                     if($(this).val() != ''){
-                        var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                        var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                         if (!testEmail.test($(this).val())){
                             alert('Please enter a valid email');
                             $(this).val('');
@@ -3862,7 +3913,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                 event.preventDefault()
-                                                            }).tooltip();
+                                                            }).tooltip({delay: { "hide": 100 }});
                                                         }
                                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                             $('#tabs-' + ListId).find('.tooltip').remove()
@@ -4639,7 +4690,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                 $('.tooltip').remove();
@@ -4943,7 +4994,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -5048,7 +5099,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             if($('.list_title_head').length > 0){
                                 if($('#listConfig_lnk').attr('data-collapsed') != 1){
@@ -5138,9 +5189,11 @@ if (isset($response['success']) && $response['success'] == 1) {
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             $('#addTaskDiv').accordion("destroy");
+                            var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                            window.history.pushState({path:newurl},'',newurl);
                             $('div#TaskListDiv').css('width', $('#test_table').width());
 //                            if ($('#test_table').width() > 1200) {
 //                                $('#TaskListDiv .my_table').removeClass('my_scroll_table');
@@ -5224,7 +5277,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                         event.preventDefault()
-                                    }).tooltip();
+                                    }).tooltip({delay: { "hide": 100 }});
                                 }
                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                     $('.tooltip').remove()
@@ -5341,7 +5394,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                     event.preventDefault()
-                                                }).tooltip();
+                                                }).tooltip({delay: { "hide": 100 }});
                                             }
                                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                 $('.tooltip').remove()
@@ -5405,7 +5458,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove();
@@ -5597,7 +5650,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                     event.preventDefault()
-                                                }).tooltip();
+                                                }).tooltip({delay: { "hide": 100 }});
                                             }
                                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                 $('.tooltip').remove()
@@ -5624,7 +5677,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -5979,7 +6032,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                         event.preventDefault()
-                                                    }).tooltip();
+                                                    }).tooltip({delay: { "hide": 100 }});
                                                 }
                                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                     $('.tooltip').remove()
@@ -6161,23 +6214,24 @@ if (isset($response['success']) && $response['success'] == 1) {
 
             $(document).on('keydown', '#values_items', function (e) {
                 if (e.keyCode === 9) {
-                    var range = document.createRange();
-                    var start = window.getSelection().anchorOffset;
-                    var end = window.getSelection().extentOffset;
-                    var $this = $(this);
-                    var value = $this.html();
-                    $this.html(value.substring(0, start)
-                            + "\t"
-                            + value.substring(end));
-                    this.selectionStart = this.selectionEnd = start + 1;
+                    
                     e.preventDefault();
-
-                    var sel = window.getSelection();
-                    range.setStart(document.getElementById('values_items').childNodes[0], start + 1);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                    var range = document.createRange();
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    
+                    var text = $(this).val();
+                    var selText = text.substring(start, end);
+                    
+                    $(this).val(
+                        text.substring(0, start) +
+                        "\t" + selText.replace(/\n/g, "\n\t") +
+                        text.substring(end)
+                    );
+                    this.selectionStart = this.selectionEnd = start + 1;
                     $('#values_items').focus();
+                    
+                    
                 }
                 if (e.keyCode === 13) {
                     var start = window.getSelection().anchorOffset;
@@ -6613,7 +6667,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     }
                                 }
                             } else if($(this).attr('data-type') == 'email'){
-                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                                 if (!testEmail.test($(this).val())){
                                     alert('Please enter a valid email');
                                     $(this).val('');
@@ -6730,7 +6784,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                         event.preventDefault();
-                                    }).tooltip();
+                                    }).tooltip({delay: { "hide": 100 }});
                                 }
                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                     $('.tooltip').remove();

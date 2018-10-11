@@ -518,7 +518,7 @@ if(isset($response['success']) && $response['success'] == 1){
                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                         event.preventDefault();
-                    }).tooltip();
+                    }).tooltip({delay: { "hide": 100 }});
                 }
 
                 $(document).on('click touch', '#customize_btn', function () {
@@ -1669,7 +1669,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                                        if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                event.preventDefault()
-                                                           }).tooltip();
+                                                           }).tooltip({delay: { "hide": 100 }});
                                                        }
                                                        $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                            $('.tooltip').remove()
@@ -3088,7 +3088,7 @@ if(isset($response['success']) && $response['success'] == 1){
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -3221,55 +3221,57 @@ if(isset($response['success']) && $response['success'] == 1){
                             var json_cnt = 0;
 
 
-                            $('#test_table_' + list_id).find('.task_sub_name').each(function () {
-                                var valuse_store = $(this).val();
-                                var display_val = $(this).val();
-                                display_val = display_val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                                url = display_val.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
-                                if (url == 'null' || url == null || url == 'undefined') {
-                                    url = display_val.match(/([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g);
-                                }
-                                var display_url = '';
-                                var display_txt = '';
-                                var title_text = '';
-
-                                if (isAnchor(display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
-                                    display_val = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                                    display_url = '';
-                                    display_txt = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                                } else {
-                                    if (url != null && url != 'null' && url != 'undefined' && url != '') {
-                                        $.each(url, function (i, v) {
-                                            v = v.split(' ')[0];
-                                            display_url = v;
-                                            
-                                            title_text = display_val.replace(v, '|url|');
-                                            display_txt = display_val.replace(v, '');
-                                            var url_http = v;
-                                            if(v.indexOf('http://') != 0){
-                                                if(v.indexOf('https://') != 0){
-                                                    url_http = 'http://' + v;
-                                                }
-                                            }
-                                            display_val = display_val.replace(v, '<a class="link_clickable" href="' + url_http + '">' + v + '</a>');
-                                            title_text = title_text.replace('|url|', v);
-                                        });
-                                    }
-                                }
-                                            
-
-                                td_val += '<td class="list-table-view">';
-                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="' + title_text + '">';
-
-                                td_val += '<span id="span_task_' + task_ids[json_cnt] + '" class="task_name_span">' + display_val + '</span>';
-
-                                td_val += '<div class="opertaions pull-right">';
-
-                                td_val += '</div>';
-                                td_val += '</div>';
-                                td_val += '</td>';
-                                json_cnt++;
-                            });
+//                            $('#test_table_' + list_id).find('.task_sub_name').each(function () {
+//                                var valuse_store = $(this).val();
+//                                var display_val = $(this).val();
+//                                display_val = display_val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+//                                url = display_val.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
+//                                if (url == 'null' || url == null || url == 'undefined') {
+//                                    url = display_val.match(/([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g);
+//                                }
+//                                var display_url = '';
+//                                var display_txt = '';
+//                                var title_text = '';
+//
+//                                if (isAnchor(display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
+//                                    display_val = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+//                                    display_url = '';
+//                                    display_txt = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+//                                } else {
+//                                    if (url != null && url != 'null' && url != 'undefined' && url != '') {
+//                                        $.each(url, function (i, v) {
+//                                            v = v.split(' ')[0];
+//                                            display_url = v;
+//                                            
+//                                            title_text = display_val.replace(v, '|url|');
+//                                            display_txt = display_val.replace(v, '');
+//                                            var url_http = v;
+//                                            if(v.indexOf('http://') != 0){
+//                                                if(v.indexOf('https://') != 0){
+//                                                    url_http = 'http://' + v;
+//                                                }
+//                                            }
+//                                            display_val = display_val.replace(v, '<a class="link_clickable" href="' + url_http + '">' + v + '</a>');
+//                                            title_text = title_text.replace('|url|', v);
+//                                        });
+//                                    }
+//                                }
+//                                            
+//
+//                                td_val += '<td class="list-table-view">';
+//                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="' + title_text + '">';
+//                                if(display_val == 'checked'){
+//                                    display_val = '';
+//                                }
+//                                td_val += '<span id="span_task_' + task_ids[json_cnt] + '" class="task_name_span">' + display_val + '</span>';
+//
+//                                td_val += '<div class="opertaions pull-right">';
+//
+//                                td_val += '</div>';
+//                                td_val += '</div>';
+//                                td_val += '</td>';
+//                                json_cnt++;
+//                            });
                             td_val += '<td class="list-table-view-attend' + hidden_comment_class + '">';
                             td_val += '<div class="add-comment-div edit_comment" data-id="' + resp['extra_id'] + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="">';
                             td_val += '<span id="span_comment_' + resp['extra_id'] + '" class="comment_name_span">&nbsp;</span>';
@@ -3489,7 +3491,7 @@ if(isset($response['success']) && $response['success'] == 1){
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -3567,6 +3569,21 @@ if(isset($response['success']) && $response['success'] == 1){
             
             $(document).on('keydown', '.task_sub_name', function (evt) {
                 var key_code = evt.keyCode;
+                
+                if($(this).attr('data-type') == 'currency' || $(this).attr('data-type') == 'number'){
+                    $(this).val($(this).val().replace(/[^0-9\.]/g,''));
+                    if ((evt.keyCode >= 48 && evt.keyCode <= 57) || 
+                        (evt.keyCode >= 96 && evt.keyCode <= 105) || 
+                        evt.keyCode == 8 || evt.keyCode == 9 || evt.keyCode == 37 ||
+                        evt.keyCode == 39 || evt.keyCode == 46 || evt.keyCode == 110 || evt.keyCode == 190) {
+                        if((evt.keyCode == 110 || evt.keyCode == 190) && $(this).val().indexOf('.') != -1){
+                            evt.preventDefault();
+                        }
+                    } else {
+                        evt.preventDefault();
+                    }
+                }
+                
                 var did_edit = $(this).attr('data-id');
                 if(key_code == 27){
                     $(this).trigger('blur');
@@ -3628,7 +3645,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                 }
                             }
                         } else if($(this).attr('data-type') == 'email'){
-                            var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                            var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                             if (!testEmail.test($(this).val())){
                                 alert('Please enter a valid email');
                                 $(this).val('');
@@ -3992,7 +4009,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove()
@@ -4046,7 +4063,7 @@ if(isset($response['success']) && $response['success'] == 1){
 //                                display_task_name = display_task_name;
                             }
                             if($('#test_table_' + list_id).find('#span_task_' + did_edit).closest('div.edit_task').attr('data-type') == 'memo' || $('#test_table_' + list_id).find('#span_task_' + did_edit).closest('div.edit_task').attr('data-type') == 'text'){
-                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                                 if (testEmail.test(edit_task_name)){
                                     display_task_name = '<a class="mail_url" href="mailto:' + edit_task_name + '">' + edit_task_name + '</a>'
                                 }else{
@@ -4153,7 +4170,7 @@ if(isset($response['success']) && $response['success'] == 1){
                 
                 if($(this).attr('data-type') == 'email'){
                     if($(this).val() != ''){
-                        var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                        var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                         if (!testEmail.test($(this).val())){
                             alert('Please enter a valid email');
                             $(this).val('');
@@ -4299,9 +4316,9 @@ if(isset($response['success']) && $response['success'] == 1){
                 var indx = $(this).parent().parent().index();
                 var ul_id = $(this).parent().parent().parent().attr('id');
                 var cnfrm = confirm('Are you sure want to delete this item?');
+                var task_id = $(this).attr('data-id');
+                var ListId = $(this).attr('data-listid');
                 if (cnfrm) {
-                    var task_id = $(this).attr('data-id');
-                    var ListId = $(this).attr('data-listid');
                     var orders = [];
                     var del_order = $(this).closest('.icon-more-holder').attr('data-order');
                     $('#test_table_' + ListId).find('.icon-more-holder').each(function () {
@@ -4410,7 +4427,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                     event.preventDefault()
-                                                                }).tooltip();
+                                                                }).tooltip({delay: { "hide": 100 }});
                                                             }
                                                            $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                                $('.tooltip').remove()
@@ -4475,9 +4492,10 @@ if(isset($response['success']) && $response['success'] == 1){
 
 
                                         }
+                                        $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'all');
                                     },
                                     complete: function (data) {
-
+                                        $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'all');
                                     }
                                 });
                                 
@@ -4487,15 +4505,16 @@ if(isset($response['success']) && $response['success'] == 1){
 //                                alert('You are not allowed to delete this item');
 //                                return false;
 //                            }
-                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'auto');
+                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'all');
                         },
                         error: function (textStatus, errorThrown) {
                             alert('something went wrong. Plese try again!');
-                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'auto');
+                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'all');
 //                            $('.delete_task').prop('disabled', false);
                         },
                         complete: function (data) {
-                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'auto');
+                            $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'all');
+                            console.log($('#test_table_' + ListId).find('.icon-more-holder').attr('style'));
 //                            $('.delete_task').prop('disabled', false);
                         }
                     });
@@ -5161,7 +5180,7 @@ if(isset($response['success']) && $response['success'] == 1){
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                 $('.tooltip').remove();
@@ -5461,7 +5480,7 @@ if(isset($response['success']) && $response['success'] == 1){
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -5564,7 +5583,7 @@ if(isset($response['success']) && $response['success'] == 1){
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
 //                            $('#addTaskDiv').mCustomScrollbar("destroy");
                             $('#addTaskDiv').accordion({
@@ -5641,7 +5660,7 @@ if(isset($response['success']) && $response['success'] == 1){
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
 //                            $('#addTaskDiv').mCustomScrollbar("destroy");
                             if($('#listConfig_lnk_' + list_id).attr('data-collapsed') == 1){
@@ -5726,9 +5745,11 @@ if(isset($response['success']) && $response['success'] == 1){
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             $('#addTaskDiv').accordion("destroy");
+                            var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                            window.history.pushState({path:newurl},'',newurl);
                             $('div#TaskListDiv').css('width', $('#test_table').width());
                             $('.add-data-head-r').removeClass('hide_add');
                             $.ajax({
@@ -5774,9 +5795,11 @@ if(isset($response['success']) && $response['success'] == 1){
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             $('#tabs-' + list_id).find('#addSubTaskDiv').accordion("destroy");
+                            var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                            window.history.pushState({path:newurl},'',newurl);
                             $('#tabs-' + list_id).find('div#TaskListDiv').css('width', $('#test_table').width());
                             $('#tabs-' + list_id).find('.add-data-head-r').removeClass('hide_add');
                             $.ajax({
@@ -5821,7 +5844,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                 var row_indx = $('#span_task_' + res).parent().parent().parent().index();
                                 if($('.icon-settings').attr('data-typeid') == 2){
                                     $('.nexup-sub-group-one').find('#next_task_name').text($.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
-                                                                                $('.nexup-sub-group-one').attr('data-original-title', $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
+                                    $('.nexup-sub-group-one').attr('data-original-title', $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()));
                                     var item_list_nexup_data = '<tr><td>' + $.trim($('#test_table').find('tbody').find('tr:eq(' + row_indx + ')').find('td.list-table-view:eq(0)').find('.add-data-div').find('.task_name_span').text()) + '</td></tr>';
                                     var grp_two = '';
                                     for(s = 1; s < 4; s++){
@@ -5841,7 +5864,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                         event.preventDefault()
-                                    }).tooltip();
+                                    }).tooltip({delay: { "hide": 100 }});
                                 }
                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                     $('.tooltip').remove()
@@ -5954,7 +5977,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                            if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                     event.preventDefault()
-                                                }).tooltip();
+                                                }).tooltip({delay: { "hide": 100 }});
                                             }
                                            $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                $('.tooltip').remove()
@@ -6018,7 +6041,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove();
@@ -6222,7 +6245,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove()
@@ -6249,7 +6272,7 @@ if(isset($response['success']) && $response['success'] == 1){
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -6464,7 +6487,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove()
@@ -6492,7 +6515,7 @@ if(isset($response['success']) && $response['success'] == 1){
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -6872,7 +6895,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove()
@@ -7137,24 +7160,23 @@ if(isset($response['success']) && $response['success'] == 1){
             });
             $(document).on('keydown', '#values_sub_items', function (e) {
                 if (e.keyCode === 9) {
-                    var range = document.createRange();
-                    var start = window.getSelection().anchorOffset;
-                    var end = window.getSelection().extentOffset;
-                    var $this = $(this);
-                    var value = $this.html();
-                    $this.html(value.substring(0, start)
-                            + "\t"
-                            + value.substring(end));
-                    this.selectionStart = this.selectionEnd = start + 1;
-                    
-                    var sel = window.getSelection();
-                    range.setStart(document.getElementById('values_sub_items').childNodes[0], start + 1);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                    $('#values_sub_items').focus();
                     
                     e.preventDefault();
+                    var range = document.createRange();
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    
+                    var text = $(this).val();
+                    var selText = text.substring(start, end);
+                    
+                    $(this).val(
+                        text.substring(0, start) +
+                        "\t" + selText.replace(/\n/g, "\n\t") +
+                        text.substring(end)
+                    );
+                    this.selectionStart = this.selectionEnd = start + 1;
+                    $('#values_sub_items').focus();
+                    
                 }
                 if (e.keyCode === 13) {
                     var start = window.getSelection().anchorOffset;
@@ -7790,7 +7812,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                         event.preventDefault();
-                                    }).tooltip();
+                                    }).tooltip({delay: { "hide": 100 }});
                                 }
                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                     $('.tooltip').remove();
@@ -7838,7 +7860,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                         event.preventDefault();
-                                    }).tooltip();
+                                    }).tooltip({delay: { "hide": 100 }});
                                 }
                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                     $('.tooltip').remove();
@@ -8277,7 +8299,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                                            if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                    event.preventDefault()
-                                                               }).tooltip();
+                                                               }).tooltip({delay: { "hide": 100 }});
                                                            }
                                                            $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                                $('.tooltip').remove()
@@ -8550,6 +8572,11 @@ if(isset($response['success']) && $response['success'] == 1){
                     start_collapsed = '1';
                 }
                 
+                var visible_in_search = '0';
+                if ($('#visible_in_search').is(':checked')) {
+                    visible_in_search = '1';
+                }
+                
                 $.ajax({
                     url: '<?php echo base_url() . 'update_config' ?>',
                     type: 'POST',
@@ -8565,7 +8592,8 @@ if(isset($response['success']) && $response['success'] == 1){
                         'show_author': show_author,
                         'allow_append_locked': allow_append_locked,
                         'show_comment_attendance': show_comment_attendance,
-                        'start_collapsed': start_collapsed
+                        'start_collapsed': start_collapsed,
+                        'visible_in_search': visible_in_search
                     },
                     success: function (res) {
                         if (res == 'success') {
@@ -8806,14 +8834,15 @@ if(isset($response['success']) && $response['success'] == 1){
                                     $('#tabs-' + list_id).find('#nexup_cmnt_span').removeClass('hide_box');
                                 }
                             }
-                            
-                            if (show_comment_attendance == 0) {
-                                if(!$('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
-                                    $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
-                                }
-                            } else {
-                                if($('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
-                                    $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                            if($('#config_lnk_sub').attr('data-typeid') == 11){
+                                if (show_comment_attendance == 0) {
+                                    if(!$('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
+                                        $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
+                                    }
+                                } else {
+                                    if($('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
+                                        $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                                    }
                                 }
                             }
                             
@@ -9001,7 +9030,7 @@ if(isset($response['success']) && $response['success'] == 1){
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove()

@@ -774,7 +774,7 @@ class TasksModel extends CI_Model {
      */
 
     public function get_all_items($list_id) {
-        $condition = array('list_data.list_id' => $list_id, 'list_data.is_deleted' => 0);
+        $condition = array('list_data.list_id' => $list_id, 'list_data.is_deleted' => 0, 'list_columns.is_deleted' => 0);
         $rst = $this->db->select('value as TaskName, list_data.id as TaskId, is_completed as IsCompleted, is_present as IsPresent, list_data.order as order, column_id, list_columns.order as col_order');
         $this->db->join('list_columns', 'list_columns.id = list_data.column_id', 'left');
         $this->db->where($condition);

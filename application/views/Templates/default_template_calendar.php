@@ -438,6 +438,9 @@ if (isset($response['success']) && $response['success'] == 1) {
             }
             
             function week_calendar_init(){
+                
+                $('.week_calendar').datepicker("destroy");
+                
                 var startDate;
                 var endDate;
 
@@ -548,11 +551,12 @@ if (isset($response['success']) && $response['success'] == 1) {
             function convert(str) {
                 var date = new Date(str),
                     mnth = ("0" + (date.getMonth()+1)).slice(-2),
-                    day  = ("0" + date.getDate()).slice(-2);
+                    day  = ("" + date.getDate()).slice(-2);
                 return [ mnth, day, date.getFullYear() ].join("/");
             }
             
             function month_calendar_init(){
+                $('.month_calendar').datepicker("destroy");
                     var startDate;
                     var endDate;
 
@@ -602,6 +606,12 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     if(!$('#add_bulk_data').hasClass('hdn_bulk')){
                                         $('#add_bulk_data').addClass('hdn_bulk');
                                     }
+                                    if(!$('.add_column_url').hasClass('hdn_bulk')){
+                                        $('.add_column_url').addClass('hdn_bulk');
+                                    }
+                                    if(!$('#copy_list_btn').hasClass('hdn_bulk')){
+                                        $('#copy_list_btn').addClass('hdn_bulk');
+                                    }
 //                                    console.log(res);
                                     $('#TaskListDiv').find('.div_right_one.month_view_class').html(res);
 //                                    month_calendar_init();
@@ -629,6 +639,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                     
                     
                     $(document).on('click', '.day_content, .date_Detail_week, .day_number', function(){
+                        $('.body_loader').show();
                         var list_id = $(this).attr('data-listid');
                         var parent_list_id = $('.edit_list_task').attr('data-id');
                         var list_name = $(this).attr('data-date');
@@ -642,13 +653,35 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         'list_name': list_name
                                     },
                                 success: function (res) {
+                                    $('.body_loader').hide();
                                     if(res != '' || res != 'undefined'){
                                         $('#TaskListDiv').html(res);
                                         day_calendar_init();
+                                        
                                         $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
                                         sortable_tbl();
-                                        sortable_head_tbl()
+                                        sortable_head_tbl();
+                                        
+                                        if($('.add_column_url').hasClass('hdn_bulk')){
+                                            $('.add_column_url').removeClass('hdn_bulk');
+                                        }
+                                        if($('#config_icons').hasClass('hdn_bulk')){
+                                            $('#config_icons').removeClass('hdn_bulk');
+                                        }
+                                        if($('#add_bulk_data').hasClass('hdn_bulk')){
+                                            $('#add_bulk_data').removeClass('hdn_bulk');
+                                        }
+                                        if($('#copy_list_btn').hasClass('hdn_bulk')){
+                                            $('#copy_list_btn').removeClass('hdn_bulk');
+                                        }
+                                        
                                     }
+                                },
+                                error: function (textStatus, errorThrown) {
+                                    $('.body_loader').hide();
+                                },
+                                complete: function (data) {
+                                    $('.body_loader').hide();
                                 }
                             });
                         }else{
@@ -661,21 +694,87 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         'list_name': list_name
                                     },
                                 success: function (res) {
+                                    $('.body_loader').hide();
                                     if(res != '' || res != 'undefined'){
                                         if($('#add_bulk_data').hasClass('hdn_bulk')){
                                             $('#add_bulk_data').removeClass('hdn_bulk');
                                         }
                                         $('#TaskListDiv').html(res);
                                         day_calendar_init();
+                                        $('.task_sub_name').each(function(e){
+                                            if($(this).attr('data-type') == 'datetime'){
+                                                $(this).datetimepicker({
+                                                    format: 'MM/DD/YYYY HH:mm',
+                                                    widgetParent: $(this).parent(),
+                                                    widgetPositioning: {
+                                                        horizontal: 'auto',
+                                                        vertical: 'bottom'
+                                                    }
+                                                });
+                                                $('.bootstrap-datetimepicker-widget').removeClass('dropdown-menu');
+                                            }else if($(this).attr('data-type') == 'date'){
+                                                $(this).datetimepicker({
+                                                    format: 'MM/DD/YYYY',
+                                                    widgetParent: $(this).parent(),
+                                                    widgetPositioning: {
+                                                        horizontal: 'auto',
+                                                        vertical: 'bottom'
+                                                    }
+                                                });
+                                            }else if($(this).attr('data-type') == 'time'){
+                                                $(this).datetimepicker({
+                                                    format: 'HH:mm',
+                                                    widgetParent: $(this).parent(),
+                                                    widgetPositioning: {
+                                                        horizontal: 'auto',
+                                                        vertical: 'bottom'
+                                                    }
+                                                });
+                                            }
+                                        });
                                         $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
                                         sortable_tbl();
-                                        sortable_head_tbl()
-//                                        console.log(res);
+                                        sortable_head_tbl();
+                                        
+                                        if($('.add_column_url').hasClass('hdn_bulk')){
+                                            $('.add_column_url').removeClass('hdn_bulk');
+                                        }
+                                        if($('#config_icons').hasClass('hdn_bulk')){
+                                            $('#config_icons').removeClass('hdn_bulk');
+                                        }
+                                        if($('#copy_list_btn').hasClass('hdn_bulk')){
+                                            $('#copy_list_btn').removeClass('hdn_bulk');
+                                        }
+                                        
+                                        if($('.my_calendar_table').hasClass('locked_list')){
+                                            if($('.my_calendar_table').hasClass('collapsible_div')){
+                                                $('#addTaskDiv').accordion({
+                                                    collapsible: true,
+                                                    heightStyle: "content",
+                                                });
+                                            }else{
+                                                $('#addTaskDiv').accordion({
+                                                    collapsible: true,
+                                                    heightStyle: "content",
+                                                    active: false
+                                                });
+                                            }
+                                        }else{
+                                            if($('#addTaskDiv').hasClass('ui-accordion')){
+                                                $('#addTaskDiv').accordion("destroy");
+                                            }
+                                        }
                                     }
+                                },
+                                error: function (textStatus, errorThrown) {
+                                    $('.body_loader').hide();
+                                },
+                                complete: function (data) {
+                                    $('.body_loader').hide();
                                 }
                             });
+                            
                         }
-                        
                         
                     });
                     
@@ -724,7 +823,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                         event.preventDefault();
-                    }).tooltip();
+                    }).tooltip({delay: { "hide": 100 }});
                 }
 
                 $(document).on('click touch', '#customize_btn', function (e) {
@@ -913,7 +1012,9 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 if (resp_data != null) {
                                     resp = resp_data[0]['data'];
                                 }
-                                document.getElementById("list_desc_text").innerHtml = res;
+//                                document.getElementById("list_desc_text")[0].innerHtml = res;
+                                $("#list_desc_text").html(resp);
+//                                $('#list_desc_text').text(res);
 //                                $('#list_desc_text').textContent = resp;
                                 $('#list_desc').val(resp);
                             }
@@ -1080,6 +1181,19 @@ if (isset($response['success']) && $response['success'] == 1) {
                 }
                 
                 
+                $(".date_to_copy").datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    dateFormat:'mm/d/yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-100:+100",
+                    onClose: function(dateText, inst) {
+                        $('.date_select_bpx_span').remove();
+                        $('.sub_list_name_span_calendar').show();
+                    }
+                });
+                
             });
 
             $(document).on('click', 'ul.nav.nav-tabs  a', function (e) {
@@ -1145,11 +1259,32 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     if($('#add_bulk_data').hasClass('hdn_bulk')){
                                         $('#add_bulk_data').removeClass('hdn_bulk');
                                     }
+                                    if($('#copy_list_btn').hasClass('hdn_bulk')){
+                                        $('#copy_list_btn').removeClass('hdn_bulk');
+                                    }
                                     $('#TaskListDiv').html(res);
                                     day_calendar_init();
                                     $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
                                     sortable_tbl();
                                     sortable_head_tbl();
+                                    if($('.my_calendar_table').hasClass('locked_list')){
+                                        if($('.my_calendar_table').hasClass('collapsible_div')){
+                                            $('#addTaskDiv').accordion({
+                                                collapsible: true,
+                                                heightStyle: "content",
+                                            });
+                                        }else{
+                                            $('#addTaskDiv').accordion({
+                                                collapsible: true,
+                                                heightStyle: "content",
+                                                active: false
+                                            });
+                                        }
+                                    }else{
+                                        if($('#addTaskDiv').hasClass('ui-accordion')){
+                                            $('#addTaskDiv').accordion("destroy");
+                                        }
+                                    }
                                 }
                             }
                         });
@@ -1675,28 +1810,26 @@ if (isset($response['success']) && $response['success'] == 1) {
 
                                 }
                             });
-                            if (enable_comment == 0) {
-                                if (!$('#nexup_cmnt_span').hasClass('hide_box')) {
-                                    $('#nexup_cmnt_span').addClass('hide_box');
-                                }
-                            } else {
-                                if ($('#nexup_cmnt_span').hasClass('hide_box')) {
-                                    $('#nexup_cmnt_span').removeClass('hide_box');
+                            if($('#config_lnk').attr('data-typeid') == 11){
+                                if (enable_comment == 0) {
+                                    if (!$('#nexup_cmnt_span').hasClass('hide_box')) {
+                                        $('#nexup_cmnt_span').addClass('hide_box');
+                                    }
+                                } else {
+                                    if ($('#nexup_cmnt_span').hasClass('hide_box')) {
+                                        $('#nexup_cmnt_span').removeClass('hide_box');
+                                    }
                                 }
                             }
-                            if (show_comment_attendance == 0) {
-//                                if (!$('#enable_attendance_comment').hasClass('hide_box')) {
-//                                    $('#enable_attendance_comment').addClass('hide_box');
-//                                }
-                                if (!$('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
-                                    $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
-                                }
-                            } else {
-//                                if ($('#enable_attendance_comment').hasClass('hide_box')) {
-//                                    $('#enable_attendance_comment').removeClass('hide_box');
-//                                }
-                                if ($('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
-                                    $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                            if($('#config_lnk').attr('data-typeid') == 11){
+                                if (show_comment_attendance == 0) {
+                                    if (!$('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
+                                        $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
+                                    }
+                                } else {
+                                    if ($('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')) {
+                                        $('#test_table').find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                                    }
                                 }
                             }
                             $('#listConfig_lnk').attr('data-allowedattendancecomment', show_comment_attendance);
@@ -1902,7 +2035,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                 event.preventDefault()
-                                                            }).tooltip();
+                                                            }).tooltip({delay: { "hide": 100 }});
                                                         }
                                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                             $('.tooltip').remove()
@@ -3227,7 +3360,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -3382,7 +3515,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     }
                                 }
                             } else if($(this).attr('data-type') == 'email'){
-                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                                 if (!testEmail.test($(this).val())){
                                     alert('Please enter a valid email');
                                     $(this).val('');
@@ -3616,7 +3749,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         widgetParent: $('#edit_task_name[data-id="' + task_id + '"]').parent().parent(),
                                         widgetPositioning: {
                                             horizontal: 'auto',
-                                            vertical: 'bottom'
+                                            vertical: 'top'
                                         }
                                     });
                                 } else if($('#edit_task_name[data-id="' + task_id + '"]').attr('data-type') == 'date'){
@@ -3627,7 +3760,7 @@ if (isset($response['success']) && $response['success'] == 1) {
 //                                        widgetParent: $('#test_table').find('tbody'),
                                         widgetPositioning: {
                                             horizontal: 'auto',
-                                            vertical: 'bottom'
+                                            vertical: 'top'
                                         }
                                     });
                                 } else if($('#edit_task_name[data-id="' + task_id + '"]').attr('data-type') == 'time'){
@@ -3636,7 +3769,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         widgetParent: $('#edit_task_name[data-id="' + task_id + '"]').parent().parent(),
                                         widgetPositioning: {
                                             horizontal: 'auto',
-                                            vertical: 'bottom'
+                                            vertical: 'top'
                                         }
                                     });
                                 }
@@ -3762,7 +3895,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                     event.preventDefault()
-                                                }).tooltip();
+                                                }).tooltip({delay: { "hide": 100 }});
                                             }
                                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                 $('.tooltip').remove()
@@ -3921,7 +4054,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                 }
                 if($(this).attr('data-type') == 'email'){
                     if($(this).val() != ''){
-                        var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                        var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                         if (!testEmail.test($(this).val())){
                             alert('Please enter a valid email');
                             $(this).val('');
@@ -4078,6 +4211,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         alert('You are not allowed to delete this item');
                                         return false;
                                     } else if (res != 'fail') {
+                                        $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'auto');
                                         var ord_change = 1;
                                         var resp = JSON.parse(res);
                                         var del_ids = resp['remove'];
@@ -4153,7 +4287,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                 event.preventDefault()
-                                                            }).tooltip();
+                                                            }).tooltip({delay: { "hide": 100 }});
                                                         }
                                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                             $('#tabs-' + ListId).find('.tooltip').remove()
@@ -4224,12 +4358,6 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 }
                             });
 
-//                            } else if (res == 'fail') {
-//                                alert('Something went wrong. Please try again!');
-//                            } else if (res == 'not allowed') {
-//                                alert('You are not allowed to delete this item');
-//                                return false;
-//                            }
                             $('#test_table_' + ListId).find('.icon-more-holder').css('pointer-events', 'auto');
                         },
                         error: function (textStatus, errorThrown) {
@@ -4651,9 +4779,6 @@ if (isset($response['success']) && $response['success'] == 1) {
                         return false;
                     }
                 }
-                if (($('.nexup-sub-group-single').length > 0) && (type_id == 8)) {
-                } else if (($('.nexup-sub-group-one').length > 0) && (type_id == 2)) {
-                } else {
                     $.ajax({
                         url: '<?php echo base_url() . 'change_listType'; ?>',
                         type: 'POST',
@@ -4664,285 +4789,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         },
                         success: function (res) {
                             if (res != 'fail' && res != 'not allowed') {
-                                if(type_id == 2){
-                                    $('#listConfig_lnk').attr('data-collapsed', 1);
-                                    $('#start_collapsed').prop('checked', true);
-                                }
-                                if (type_id == 12) {
-                                    window.location.replace(old_url.substring(0, old_url.indexOf('?')));
-                                }
-                                $('.icon-settings').attr('data-typeid', type_id);
-                                if (type_id == 5) {
-                                    $('#start_collapsed').parent().parent().addClass('hidden_checkbox');
-                                    $('#show_completed_item').parent().parent().removeClass('hidden_checkbox');
-                                    if ($('.complete_task').length > 0) {
-                                        $('.complete_task').remove();
-                                        $('.complete_lbl').remove();
-                                    }
-                                    if ($('.present_task').length > 0) {
-                                        $('.present_task').remove();
-                                        $('.present_lbl').remove();
-                                    }
-
-                                    if ($('.count_box').length > 0) {
-                                        $('.count_box').remove();
-                                    }
-                                    if ($('.reset_list').length > 0) {
-                                        $('.reset_list').remove();
-                                    }
-
-                                    if (!$('#test_table').hasClass('check_box_table')) {
-                                        $('#test_table').addClass('check_box_table')
-                                    }
-
-                                } else if (type_id == 11) {
-                                    $('#start_collapsed').parent().parent().removeClass('hidden_checkbox');
-                                    $('#show_completed_item').closest('checkbox-outer').addClass('hidden_checkbox');
-                                    $('#maybe_allowed').closest('checkbox-outer').addClass('hidden_checkbox');
-                                    var res_data = []
-                                    if (res != '') {
-                                        res_data = JSON.parse(res);
-                                    }
-                                    if ($('.count_box').length == 0) {
-                                        $('.config_icons').after(res_data['box']);
-                                    }
-                                    if ($('#reset_list').length == 0) {
-//                                        $('#config_icons2').append(res_data['reset_btn']);
-                                        $(res_data['reset_btn']).insertBefore('#delete_list_builder');
-                                    }
-                                    if (!$('#test_table').hasClass('check_box_table')) {
-                                        $('#test_table').addClass('check_box_table')
-                                    }
-                                    if ($('#enable_attendance_comment').parent().parent().hasClass('hidden_checkbox')) {
-                                        $('#enable_attendance_comment').parent().parent().removeClass('hidden_checkbox');
-                                    }
-                                } else {
-                                    $('#start_collapsed').parent().parent().addClass('hidden_checkbox');
-                                    $('#show_completed_item').closest('checkbox-outer').addClass('hidden_checkbox');
-                                    if ($('.reset_list').length > 0) {
-                                        $('.reset_list').remove();
-                                    }
-                                    if ($('.count_box').length > 0) {
-                                        $('.count_box').remove();
-                                    }
-                                    if ($('#test_table').hasClass('check_box_table')) {
-                                        $('#test_table').removeClass('check_box_table')
-                                    }
-                                }
-
-
-                                if (type_id != 3) {
-                                    $('.rank_th_head').remove();
-                                    $('.rank_th').remove();
-                                }
-                                if (type_id != 2 && type_id != 8) {
-                                    $('.whoisnext-div').remove();
-                                    if (type_id == 3) {
-                                        $('.rank_th_head').remove();
-                                        $('.rank_th').remove();
-                                        var rank_item = 1;
-                                        $('#test_table tbody tr').each(function () {
-                                            var first_th = $(this).find('.icon-more-holder');
-                                            if (first_th != '') {
-                                                var list_rank = '<td class="rank_th">' + rank_item + '</td>'
-                                                rank_item++;
-                                                $(first_th).after(list_rank);
-                                            }
-                                        });
-                                        $('#test_table thead tr').each(function () {
-                                            var first_th_head = $(this).children('th:eq(0)');
-                                            if (first_th_head != '') {
-                                                var list_rank_head = '<th class="noDrag rank_th_head"></th>';
-                                                $(first_th_head).after(list_rank_head);
-                                            }
-                                        });
-                                    }
-                                } else {
-                                    var resp = JSON.parse(res);
-                                    var task_name = '';
-                                    if ($('#test_table').length > 0) {
-                                        var next_elem_found = $('#test_table tbody').children('tr:first').children('td:first').children('div:first');
-                                        if (res != '') {
-                                            next_elem_found = $("#test_table").find("[data-id='" + resp['last_log'] + "']");
-                                        }
-                                        task_name = $(next_elem_found).children().text()
-//                                        task_name = $('#test_table tbody').children('tr:first').children('td:first').children('div:first').children('span:first').text();
-
-                                    }
-                                    var total_cols = $('#test_table tbody tr:first-child td .add-data-div').length;
-                                    var nexup_div = '<div class="whoisnext-div">';
-                                    nexup_div += '<div class="nexup-group">';
-                                    nexup_div += '<div class="nexup-group-two">';
-                                    nexup_div += '<div class="button-outer custom_cursor">';
-                                    if (type_id == 2) {
-                                        nexup_div += '<div class="nexup-sub-group nexup-sub-group-one" data-toggle="tooltip" title="' + $.trim(task_name) + '">';
-                                        nexup_div += '<span id="next_task_name" style="font-size: 50px;">' + task_name + '</span>';
-                                        nexup_div += '</div>';
-                                    } else if (type_id == 8) {
-                                        nexup_div += '<div class="nexup-sub-group nexup-sub-group-single" data-toggle="tooltip" title="' + $.trim(task_name) + '">';
-                                        nexup_div += '<span id="next_task_name" style="font-size: 50px;">' + task_name + '</span>';
-                                        nexup_div += '</div>';
-                                    }
-                                    if (type_id == 2) {
-                                        if (total_cols > 1) {
-                                            nexup_div += '<div class="nexup-sub-group nexup-sub-group-two">';
-                                            var index_row = $(next_elem_found).parent('td').parent().index();
-                                            var loop_max = (total_cols - 1);
-                                            if (total_cols > 4) {
-                                                var loop_max = 3;
-                                            }
-                                            for (j = 0; j < loop_max; j++) {
-                                                var show_indx = j + 2;
-                                                nexup_div += '<span data-toggle="tooltip" title="' + $.trim($('#test_table tbody tr:nth-child(' + (index_row + 1) + ') td:eq(' + show_indx + ') .add-data-div .task_name_span').text()) + '">';
-                                                nexup_div += $('#test_table tbody tr:nth-child(' + (index_row + 1) + ') td:eq(' + show_indx + ') .add-data-div .task_name_span').text();
-                                                nexup_div += '</span>';
-                                            }
-                                            nexup_div += '<p data-toggle="modal" data-target="#items-list" id="items_model_p" data-rowid="' + (index_row + 1) + '"><img src="<?php echo base_url() . 'assets/img/information-button-icon-23.png'; ?>" data-toggle="tooltip" data-placement="top" title="Show all items"></p>';
-                                            nexup_div += '</div>';
-                                        }
-                                    }
-
-
-                                    nexup_div += '</div>';
-                                    nexup_div += '<div id="nexup_btns">';
-
-                                    nexup_div += '<div class="cmnt-btn-div cmnt-btn-div_change">';
-                                    nexup_div += '<div class="next_btn_div">';
-                                    nexup_div += '<a class="whoisnext-btn-cmnt custom_cursor" data-toggle="tooltip" data-placement="top" title="Nexup"><span id="nexup_icon_cmnt" class=""><img class="defult_arrow" src="/assets/img/next-arrow.png"><img class="hover_arrow" src="/assets/img/next-arrow-white.png"></span></span></a>';
-                                    var cmnt_disable_cls = '';
-                                    if ($('#listConfig_lnk').attr('data-allowcmnt') == 0) {
-                                        cmnt_disable_cls = ' hide_box';
-                                    }
-                                    nexup_div += '<span class="add-data-div add_comment_box' + cmnt_disable_cls + '" id="nexup_cmnt_span">';
-                                    nexup_div += '<input type="text" id="nexup_comment" class="nexup_comment" placeholder="Comment...">';
-                                    nexup_div += '</span>';
-                                    nexup_div += '</div>';
-                                    var move_disable_cls = '';
-                                    if ($('#listConfig_lnk').attr('data-allowundo') == 0) {
-                                        move_disable_cls = ' disabled_undo';
-                                    }
-                                    nexup_div += '<a class="undo-btn custom_cursor' + move_disable_cls + '" data-listid="' + list_id + '"  data-toggle="tooltip" data-placement="top" title="Backup"><span id="undo_icon" class=""><img class="defult_arrow" src="/assets/img/prev-arrow.png"><img class="hover_arrow" src="/assets/img/prev-arrow-white.png"><img class="grey_arrow" src="/assets/img/prev-arrow-grey.png"></span></a>';
-                                    nexup_div += '<div class="h-nav dropdown log_icon_btn">';
-                                    nexup_div += '<a title="Log" class="custom_cursor" id="dropdownMenuLog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="defult_arrow" src="/assets/img/log_icon.png"><img class="hover_arrow" src="/assets/img/log_icon-white.png"></i></a>';
-                                    if (resp['log_list'] != '') {
-                                        nexup_div += resp['log_list'];
-                                    }
-                                    nexup_div += '</div>';
-
-//                                    nexup_div += '<span class="add-data-div hide_box" id="nexup_cmnt_span">';
-//                                    nexup_div += '<input type="text" id="nexup_comment" class="nexup_comment" placeholder="Comment...">';
-//                                    nexup_div += '</span>';
-                                    nexup_div += '</div>';
-                                    nexup_div += '</div>';
-                                    nexup_div += '</div>';
-                                    nexup_div += '</div>';
-                                    nexup_div += '</div>';
-                                    if ($('.whoisnext-div').length == 0) {
-                                        $('#content .config_icons').after(nexup_div);
-                                        var next_task = $(".whoisnext-div #next_task_name");
-                                        var numWords = next_task.text().trim().length;
-                                        if ((numWords >= 1) && (numWords < 10)) {
-                                            next_task.css("font-size", "50px");
-                                        }
-                                        else if ((numWords >= 10) && (numWords < 20)) {
-                                            next_task.css("font-size", "36px");
-                                        }
-                                        else if ((numWords >= 20) && (numWords < 30)) {
-                                            next_task.css("font-size", "30px");
-                                        }
-                                        else if ((numWords >= 30) && (numWords < 40)) {
-                                            next_task.css("font-size", "26px");
-                                        }
-                                        else {
-                                            next_task.css("font-size", "20px");
-                                        }
-                                    } else if (type_id == 2 || type_id == 8) {
-                                        $('.whoisnext-div').remove();
-                                        $('#content .config_icons').after(nexup_div);
-                                        var next_task = $(".whoisnext-div #next_task_name");
-                                        var numWords = next_task.text().trim().length;
-                                        if ((numWords >= 1) && (numWords < 10)) {
-                                            next_task.css("font-size", "50px");
-                                        }
-                                        else if ((numWords >= 10) && (numWords < 20)) {
-                                            next_task.css("font-size", "36px");
-                                        }
-                                        else if ((numWords >= 20) && (numWords < 30)) {
-                                            next_task.css("font-size", "30px");
-                                        }
-                                        else if ((numWords >= 30) && (numWords < 40)) {
-                                            next_task.css("font-size", "26px");
-                                        }
-                                        else {
-                                            next_task.css("font-size", "20px");
-                                        }
-                                    }
-                                }
-                                $('#ListType_msg').html('You have successfully changed list type.');
-                                $('#ListType_msg').removeClass('alert-danger');
-                                $('#ListType_msg').addClass('alert-success');
-                                $('#ListType_msg').show();
-                                $.ajax({
-                                    url: '<?php echo base_url() . 'update_listType'; ?>',
-                                    type: 'POST',
-                                    data: {
-                                        'list_id': list_id,
-                                        'type_id': type_id
-                                    },
-                                    success: function (res) {
-                                    }
-                                });
-
-
-
-                                if (type_id == 11) {
-                                    var first_col_title = '<div class="add-data-title-nodrag status-column" data-toggle="tooltip" data-placement="bottom">';
-//                                    first_col_title += '<span class="column_name_class" id="col_name_fixed">Status</span>';
-                                    first_col_title += '</div>';
-                                    $('#test_table thead tr.td_arrange_tr').find('th.nodrag_actions').html(first_col_title);
-                                    $('.nodrag_time').removeClass('hidden_nodrag');
-                                    $('.nodrag_comment').removeClass('hidden_nodrag');
-                                    $('.list-table-view-attend').removeClass('hidden_nodrag');
-                                } else {
-                                    $('#test_table thead tr.td_arrange_tr').find('th.nodrag_actions').children('.add-data-title-nodrag').remove();
-                                    $('.nodrag_time').removeClass('hidden_nodrag');
-                                    $('.nodrag_comment').removeClass('hidden_nodrag');
-                                    $('.list-table-view-attend').removeClass('hidden_nodrag');
-                                    $('.nodrag_time').addClass('hidden_nodrag');
-                                    $('.nodrag_comment').addClass('hidden_nodrag');
-                                    $('.list-table-view-attend').addClass('hidden_nodrag');
-                                    $('list-table-view-attend').hide();
-
-                                }
-
-
-                                if (type_id == 11) {
-                                    if ($('#listConfig_lnk').attr('data-showtime') == 1) {
-                                        $('.nodrag_time').removeClass('hidden_nodrag');
-
-                                        $('.check_date').each(function () {
-                                            $(this).parent().removeClass('hidden_nodrag');
-                                        });
-                                    } else {
-                                        $('.my_table').find('.nodrag_time').addClass('hidden_nodrag');
-
-                                        $('.check_date').each(function () {
-//                                            $('.nodrag_time').removeClass('hidden_nodrag');
-                                            $(this).parent().addClass('hidden_nodrag');
-                                        });
-                                    }
-
-                                } else {
-                                    if (!$('.nodrag_time').hasClass('hidden_nodrag')) {
-                                        $('.nodrag_time').addClass('hidden_nodrag');
-                                    }
-                                    $('.check_date').each(function () {
-                                        if (!$(this).parent().hasClass('hidden_nodrag')) {
-                                            $(this).parent().addClass('hidden_nodrag');
-                                        }
-                                    });
-
-                                }
+                                window.location.reload();
                             } else if (res == 'not allowed') {
                                 if ($('#edit_list_name').length == 1) {
                                     alert('Please name the list first.');
@@ -4966,7 +4813,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                 $('.tooltip').remove();
@@ -5123,7 +4970,6 @@ if (isset($response['success']) && $response['success'] == 1) {
                             }
                         }
                     });
-                }
             });
 
             $(document).on('click', '.whoisnext-btn-cmnt, .whoisnext-div .button-outer', function () {
@@ -5270,7 +5116,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -5345,7 +5191,7 @@ if (isset($response['success']) && $response['success'] == 1) {
 
             //Lock the list
             $(document).on('click', '#listLock_lnk', function () {
-                var list_id = $(this).attr('data-id');
+                var list_id = $('.edit_list_task_sub').attr('data-id');
                 var list_slug = $(this).attr('data-slug');
                 $.ajax({
                     url: '<?php echo base_url() . 'lock_nexup_list'; ?>',
@@ -5375,7 +5221,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
                             if($('.list_title_head').length > 0){
                                 if('<?php if(isset($type_id)){ echo $type_id; } else { echo 1; } ?>' == 11 && $('#listConfig_lnk').attr('data-collapsed') == 1){
@@ -5436,7 +5282,7 @@ if (isset($response['success']) && $response['success'] == 1) {
             //Unlock the list
             $(document).on('click', '#listUnlock_lnk', function () {
                 $(this).css('pointer-events', 'none');
-                var list_id = $(this).attr('data-id');
+                var list_id = $('.edit_list_task_sub').attr('data-id');
                 var list_slug = $(this).attr('data-slug');
                 $.ajax({
                     url: '<?php echo base_url() . 'lock_nexup_list'; ?>',
@@ -5465,9 +5311,13 @@ if (isset($response['success']) && $response['success'] == 1) {
                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                     event.preventDefault()
-                                }).tooltip();
+                                }).tooltip({delay: { "hide": 100 }});
                             }
-                            $('#addTaskDiv').accordion("destroy");
+                            if($('#addTaskDiv').hasClass('ui-accordion')){
+                                $('#addTaskDiv').accordion("destroy");
+                            }
+                            var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                            window.history.pushState({path:newurl},'',newurl);
                             $('div#TaskListDiv').css('width', $('#test_table').width());
 //                            if ($('#test_table').width() > 1200) {
 //                                $('#TaskListDiv .my_table').removeClass('my_scroll_table');
@@ -5551,7 +5401,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                         event.preventDefault()
-                                    }).tooltip();
+                                    }).tooltip({delay: { "hide": 100 }});
                                 }
                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                     $('.tooltip').remove()
@@ -5668,7 +5518,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                     event.preventDefault()
-                                                }).tooltip();
+                                                }).tooltip({delay: { "hide": 100 }});
                                             }
                                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                 $('.tooltip').remove()
@@ -5732,7 +5582,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                 event.preventDefault()
-                                            }).tooltip();
+                                            }).tooltip({delay: { "hide": 100 }});
                                         }
                                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                             $('.tooltip').remove();
@@ -5796,6 +5646,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         'yes_items': yes_items,
                         'no_items': no_items,
                         'maybe_items': maybe_items,
+                        'type_column_list': 'child',
                     },
                     success: function (res) {
                         if (res == 'not_allowed') {
@@ -5875,9 +5726,12 @@ if (isset($response['success']) && $response['success'] == 1) {
                             var max_col = resp.new_col_data.length;
                             for (j = 0; j <= max_col; j++) {
                                 var k = j + 1;
-                                $('#test_table tbody tr').each(function () {
+                                
+                                $('#test_table_' + list_id + ' tbody tr').each(function () {
                                     var ord = $(this).find('.icon-more-holder').attr('data-order');
+                                    
                                     if (ord == k) {
+                                        
                                         $(this).find('.list-table-view:last').after(resp.new_col_data[j]);
                                     }
                                 });
@@ -5924,7 +5778,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                 $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                     event.preventDefault()
-                                                }).tooltip();
+                                                }).tooltip({delay: { "hide": 100 }});
                                             }
                                             $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                 $('.tooltip').remove()
@@ -5951,7 +5805,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -6115,6 +5969,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 var indx = $(this).parent().parent().index();
                                 $(this).remove();
                                 $('#col_name_' + column_id).html(column_name);
+                                $('#col_name_' + column_id).parent().attr('data-original-title', column_name);
                                 $('#col_name_' + column_id).closest('th').attr('title', column_name);
 //                                $('.column_name_class').html(column_name);
                                 $('.column_name_class').show();
@@ -6295,7 +6150,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                 if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                         event.preventDefault()
-                                                    }).tooltip();
+                                                    }).tooltip({delay: { "hide": 100 }});
                                                 }
                                                 $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                     $('.tooltip').remove()
@@ -6477,22 +6332,20 @@ if (isset($response['success']) && $response['success'] == 1) {
 
             $(document).on('keydown', '#values_items', function (e) {
                 if (e.keyCode === 9) {
-                    var range = document.createRange();
-                    var start = window.getSelection().anchorOffset;
-                    var end = window.getSelection().extentOffset;
-                    var $this = $(this);
-                    var value = $this.html();
-                    $this.html(value.substring(0, start)
-                            + "\t"
-                            + value.substring(end));
-                    this.selectionStart = this.selectionEnd = start + 1;
                     e.preventDefault();
-
-                    var sel = window.getSelection();
-                    range.setStart(document.getElementById('values_items').childNodes[0], start + 1);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                    var range = document.createRange();
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    
+                    var text = $(this).val();
+                    var selText = text.substring(start, end);
+                    
+                    $(this).val(
+                        text.substring(0, start) +
+                        "\t" + selText.replace(/\n/g, "\n\t") +
+                        text.substring(end)
+                    );
+                    this.selectionStart = this.selectionEnd = start + 1;
                     $('#values_items').focus();
                 }
                 if (e.keyCode === 13) {
@@ -6511,6 +6364,9 @@ if (isset($response['success']) && $response['success'] == 1) {
             });
 
             $(document).on('click', '#add_bulk_data', function () {
+                $('.bulk_loader').hide();
+                
+                $('.body_loader').show();
                 $('#type_option_cb_email').prop('checked', false);
                 $('#type_option_normal').prop('checked', true);
                 $('#spearator_options').show();
@@ -6530,7 +6386,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                     },
                     success: function (resp) {
                         $('#values_items').prop('disabled', false);
-                        $('#values_items').html(resp);
+                        $('#values_items').text(resp);
                         $('#init_value_items').html(resp);
                         $('#bulk_preloader').remove();
                         $("#values_items").animate({
@@ -6545,7 +6401,13 @@ if (isset($response['success']) && $response['success'] == 1) {
 //                        range.collapse(true);
                         sel.removeAllRanges();
                         sel.addRange(range);
-                        
+                        $('.body_loader').hide();
+                    },
+                    error: function (textStatus, errorThrown) {
+                        $('.body_loader').hide();
+                    },
+                    complete: function (data) {
+                        $('.body_loader').hide();
                     }
                 });
                 $('#bulk_data_modal #data_msg').val('');
@@ -6623,31 +6485,40 @@ if (isset($response['success']) && $response['success'] == 1) {
                             $('.bulk_loader').css('display', 'none');
                             $('.bulk_loader').hide();
                         } else {
-                            var type_id = $('#config_lnk').attr('data-typeid');
-                            $.ajax({
-                                url: '<?php echo base_url() . 'listing/get_list_body'; ?>',
-                                type: 'POST',
-                                data: {
-                                    'Listid': list_id,
-                                },
-                                success: function (res) {
-                                    var resp = JSON.parse(res);
-                                    $('#test_table_' + list_id + ' tbody').html(resp['body']);
-                                    $('#bulk_data_modal').modal('toggle');
-//                                    $('#test_table tbody').append(resp);
+                            
+                            if(btn_click == ''){
+                                $('.bulk_loader').hide();
+                                var type_id = $('#config_lnk').attr('data-typeid');
+                                $.ajax({
+                                    url: '<?php echo base_url() . 'listing/get_list_body'; ?>',
+                                    type: 'POST',
+                                    data: {
+                                        'Listid': list_id,
+                                    },
+                                    success: function (res) {
+                                        var resp = JSON.parse(res);
+                                        $('#test_table_' + list_id + ' tbody').html(resp['body']);
+                                        $('#bulk_data_modal').modal('toggle');
+    //                                    $('#test_table tbody').append(resp);
 
-                                    if (type_id == 11) {
-                                        $("#test_table tbody").sortable("disable");
-                                    } else {
-                                        $("#test_table tbody").sortable("enable");
+                                        if (type_id == 11) {
+                                            $("#test_table tbody").sortable("disable");
+                                        } else {
+                                            $("#test_table tbody").sortable("enable");
+                                        }
+    //                                    $("#test_table tbody").sortable("disable");
+    //                                    $("#test_table tbody").sortable("enable");
+                                        if ($('#listConfig_lnk').attr('data-moveallow') == 0) {
+                                            $("#test_table tbody").sortable("disable");
+                                        }
                                     }
-//                                    $("#test_table tbody").sortable("disable");
-//                                    $("#test_table tbody").sortable("enable");
-                                    if ($('#listConfig_lnk').attr('data-moveallow') == 0) {
-                                        $("#test_table tbody").sortable("disable");
-                                    }
-                                }
-                            });
+                                });
+                            }else{
+                                var parent_list_id = $('.edit_list_task').attr('data-id');
+                                var list_name = $('.sub_list_name_span_calendar').attr('data-listname');
+                                get_day_list(parent_list_id, list_name);
+                                $('#bulk_data_modal').modal('toggle');
+                            }
                             
                             
 //                            $('.bulk_loader').css('display', 'none');
@@ -6950,7 +6821,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     }
                                 }
                             } else if($(this).attr('data-type') == 'email'){
-                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                                var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                                 if (!testEmail.test($(this).val())){
                                     alert('Please enter a valid email');
                                     $(this).val('');
@@ -7024,59 +6895,90 @@ if (isset($response['success']) && $response['success'] == 1) {
 
 
             /*
-             * Copy list
+             * Copy day list
              * @author SG
              */
             $(document).on('click', '#copy_list_btn', function (e) {
-                if ($(this).hasClass('copy-list-btn-items-page')) {
-                    $(this).css('pointer-events', 'none');
-                    var cnf = confirm('Are you sure want to copy this list?');
-                    if (cnf != 1) {
-                        $(this).css('pointer-events', 'all');
-                        return false;
-                    }
-                    else {
-                        $(this).css('pointer-events', 'none');
-                    }
-                }
-                var list_id = $(this).attr('data-id');
-                if (list_id > 0) {
-                    $.ajax({
-                        url: '<?php echo base_url() . 'copy_list' ?>',
-                        type: 'POST',
-                        context: this,
-                        data: {list_id: list_id},
-                        success: function (res) {
-                            if (res == 'unauthorised') {
-                                alert('You are not allowed to perform this action!');
-                                return false;
-                            }
-                            if (res != 'fail' && res != 'unauthorised') {
-                                var resp = JSON.parse(res);
-                                if ($(this).hasClass('copy-list-btn-items-page')) {
-                                    window.location.href = resp['url'];
-                                } else {
-                                    if ($('li.own-li-list').length > 0) {
-                                        $('li.own-li-list:last').after(resp['list']);
-                                    } else if ($('li.shared-list-li').length > 0) {
-                                        $('li.shared-list-li:first').before(resp['list']);
-                                    } else if ($('li.visited-list-li').length > 0) {
-                                        $('li.visited-list-li:first').before(resp['list']);
+                $('#date_to_copy').val('');
+                $('#copy_list_calendar_modal').modal('show');
+                return false;
+            });
+            
+            $(document).on('click', '#copy_list_confirm_btn', function(){
+                $('.body_loader').show();
+                var parent_list_id = $('.edit_list_task').attr('data-id');
+                var day_list_id = $('.edit_list_task_sub').attr('data-id');
+                var new_day_list_name = $('#date_to_copy').val();
+                
+                $.ajax({
+                    url: "<?php echo base_url() . 'task/copy_day_list'; ?>",
+                    type: 'POST',
+                    context: this,
+                    data: {
+                        'parent_list_id': parent_list_id,
+                        'day_list_id': day_list_id,
+                        'new_day_list_name': new_day_list_name
+                    },
+                    success: function (res) {
+                        $('.body_loader').hide();
+                        if (res != 'empty' && res != 'null' && res != 'not_allowed' && res != 'fail') {
+                            
+                            $.ajax({
+                                url: '<?php echo base_url() . 'listing/get_list_cal_date'; ?>',
+                                type: 'POST',
+                                data: {
+                                        'list_id' : res,
+                                        'list_type': 'calendar',
+                                        'list_name': new_day_list_name  
+                                    },
+                                success: function (res) {
+                                    if(res != '' || res != 'undefined'){
+                                        if($('#add_bulk_data').hasClass('hdn_bulk')){
+                                            $('#add_bulk_data').removeClass('hdn_bulk');
+                                        }
+                                        if($('#copy_list_btn').hasClass('hdn_bulk')){
+                                            $('#copy_list_btn').removeClass('hdn_bulk');
+                                        }
+                                        $('#TaskListDiv').html(res);
+                                        day_calendar_init();
+                                        $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
+                                        sortable_tbl();
+                                        sortable_head_tbl();
+                                        if($('.my_calendar_table').hasClass('locked_list')){
+                                            if($('.my_calendar_table').hasClass('collapsible_div')){
+                                                $('#addTaskDiv').accordion({
+                                                    collapsible: true,
+                                                    heightStyle: "content",
+                                                });
+                                            }else{
+                                                $('#addTaskDiv').accordion({
+                                                    collapsible: true,
+                                                    heightStyle: "content",
+                                                    active: false
+                                                });
+                                            }
+                                        }else{
+                                            if($('#addTaskDiv').hasClass('ui-accordion')){
+                                                $('#addTaskDiv').accordion("destroy");
+                                            }
+                                        }
                                     }
                                 }
-                                if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
-                                    $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
-                                        event.preventDefault();
-                                    }).tooltip();
-                                }
-                                $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
-                                    $('.tooltip').remove();
-                                });
-                                alert('List copied successfully.');
-                            }
+                            });
+                            
+                        }else{
+                            alert('Something went wrong. Your list was not copied. Please try again!');
                         }
-                    });
-                }
+                    },
+                    error: function (textStatus, errorThrown) {
+                        $('#copy_list_calendar_modal').modal('hide');
+                        $('.body_loader').hide();
+                    },
+                    complete: function (data) {
+                        $('#copy_list_calendar_modal').modal('hide');
+                        $('.body_loader').hide();
+                    }
+                });
             });
 
 
@@ -7521,7 +7423,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                 var new_type = $(this).val();
                 var cnf = 0;
                 var clear_data = 1;
-                if((current_type == 'text' && new_type == 'memo') || (current_type == 'memo' && new_type == 'text') || (current_type == 'number' && (new_type == 'memo'|| new_type == 'text'))){
+                if((current_type == 'text' && new_type == 'memo') || (current_type == 'memo' && new_type == 'text') || (current_type == 'number' && (new_type == 'memo'|| new_type == 'text'))|| (current_type == 'number' && new_type == 'currency') || (current_type == 'currency' && new_type == 'number')){
                         cnf = 1;
                         clear_data = 0;
                 }else{
@@ -7540,6 +7442,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                     $.ajax({
                         url: '<?php echo base_url() . 'listing/update_col_type'; ?>',
                         type: 'POST',
+                        context: this,
                         data: {
                             list_id: list_id,
                             col_id: col_id,
@@ -7551,16 +7454,21 @@ if (isset($response['success']) && $response['success'] == 1) {
                             if(res == 'success'){
                                 var input_var = '';
                                 if(new_type == 'memo'){
-                                    input_var = '<textarea name="task_name" id="task_name" class="task_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="Add ' + col_name + '" data-type="memo" data-gramm_editor="false" rows="' + height_col + '"></textarea>';
+                                    input_var = '<textarea name="task_name" id="task_name" class="task_sub_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="Add ' + col_name + '" data-type="memo" data-gramm_editor="false" rows="' + height_col + '"></textarea>';
                                 } else if(new_type == 'number'){
-                                    input_var = '<input type="number" name="task_name" id="task_name" class="task_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="Add ' + col_name + '" data-type="number">';
+                                    input_var = '<input type="number" name="task_name" id="task_name" class="task_sub_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="Add ' + col_name + '" data-type="number">';
                                 } else if(new_type == 'email'){
-                                    input_var = '<input type="text" name="task_name" id="task_name" class="task_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="username@domain.com" data-type="email">';
+                                    input_var = '<input type="text" name="task_name" id="task_name" class="task_sub_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="username@domain.com" data-type="email">';
                                 } else if(new_type == 'link'){
-                                    input_var = '<input type="text" name="task_name" id="task_name" class="task_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="http://example.com" data-type="link">';
+                                    input_var = '<input type="text" name="task_name" id="task_name" class="task_sub_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="http://example.com" data-type="link">';
                                 } else {
-                                    input_var = '<input type="text" name="task_name" id="task_name" class="task_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="Add ' + col_name + '" data-type="text">';
+                                    if(new_type != 'checkbox' && new_type != 'timestamp'){
+                                        input_var = '<input type="text" name="task_name" id="task_name" class="task_sub_name" data-listid="' + list_id + '" data-colid="' + col_id + '" placeholder="Add ' + col_name + '" data-type="text">';
+                                    }else{
+                                        input_var = '';
+                                    }
                                 }
+                                
                                 if(input_var != ''){
                                     $('.heading_items_col_add[data-colid=' + col_id + ']').find('.add-data-input').find('#task_name').remove();
                                     $('.heading_items_col_add[data-colid=' + col_id + ']').find('.add-data-input').prepend(input_var);
@@ -7583,20 +7491,29 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 } else if($('#col_name_' + col_id).parent().attr('data-type') == 'link'){
                                     place_holder = 'http://example.com';
                                 }
+                                
+                                if(new_type == 'currency'){
+                                    $('.edit_task').each(function(){
+                                        if(!$(this).hasClass('center_text')){
+                                            $(this).addClass('center_text')
+                                        }
+                                    });
+                                }
                                 $('.task_name[data-colid="' + col_id + '"]').attr('placeholder', place_holder);
                                 $.ajax({
                                     url: '<?php echo base_url() . 'listing/get_list_body'; ?>',
                                     type: 'POST',
+                                    context: this,
                                     data: {
                                         'Listid': list_id,
                                     },
                                     success: function (res) {
                                         var resp = JSON.parse(res);
-                                        $('#test_table tbody').html(resp['body']);
+                                        $('#test_table_' + list_id +' tbody').html(resp['body']);
                                         if ($('#config_lnk').attr('data-typeid') == 11) {
-                                            $("#test_table tbody").sortable("disable");
+                                            $("#test_table_" + list_id +" tbody").sortable("disable");
                                         } else {
-                                            $("#test_table tbody").sortable("enable");
+                                            $("#test_table_" + list_id +" tbody").sortable("enable");
                                         }
                                         if ($('#config_lnk').attr('data-showowner') == 1) {
                                             if ($('.list_title_head').find('.list_author_cls').length == 1) {
@@ -7609,7 +7526,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         }
 
                                         if ($('#listConfig_lnk').attr('data-moveallow') == 0) {
-                                            $("#test_table tbody").sortable("disable");
+                                            $("#test_table_" + list_id +" tbody").sortable("disable");
                                         }
                                         if(new_type != 'checkbox' && new_type != 'timestamp'){
                                             if(new_type != 'checkbox'){
@@ -7620,9 +7537,9 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                     $('.heading_items_col_add[data-colid=' + col_id + ']').find('.add-data-input').find('.timestamp-all-btn').remove();
                                                 }
                                             }
-                                            $('.heading_items_col_add[data-colid=' + col_id + ']').find('div.add-data-input').find('.task_name').show();
+                                            $('.heading_items_col_add[data-colid=' + col_id + ']').find('div.add-data-input').find('.task_sub_name').show();
                                         }else{
-                                            $('.heading_items_col_add[data-colid=' + col_id + ']').find('div.add-data-input').find('.task_name').hide();
+                                            $('.heading_items_col_add[data-colid=' + col_id + ']').find('div.add-data-input').find('.task_sub_name').hide();
                                             if(new_type == 'checkbox'){
                                                 var check_all_box = '<input type="checkbox" id="check_all_' + col_id + '" class="check_all_check_box" data-colid="' + col_id + '">';
                                                 if($('.heading_items_col_add[data-colid=' + col_id + ']').find('.add-data-input').find('.check_all_check_box').length == 0){
@@ -7635,10 +7552,14 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                     $('.heading_items_col_add[data-colid=' + col_id + ']').find('.add-data-input').append(timestamp_all_btn);
                                                 }
                                             }
+//                                            if($('.heading_items_col_add[data-colid=' + col_id + ']').find('.add-data-input').find('.task_sub_name').length > 0){
+//                                                    $('.heading_items_col_add[data-colid=' + col_id + ']').find('.add-data-input').find('.task_sub_name').remove();
+//                                                }
                                         }
                                         if(new_type == 'memo'){
-                                            var col_indx = $('.td_arrange_tr').find('th.heading_items_col').find('.add-data-title[data-colid="' + col_id + '"]').index();
-                                            console.log(col_indx);
+//                                            var col_indx = $('.td_arrange_tr').find('th.heading_items_col').find('.add-data-title[data-colid="' + col_id + '"]').index();
+                                            var col_indx = $(this).parent().parent().parent().parent().parent().index();
+//                                            console.log(col_indx);
                                             var div_css = '';
                                             if(height_col == 1){
                                                 div_css = '50px';
@@ -7650,10 +7571,10 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                 var height = 110 + (30 * (height_col - 3)) + 'px';
                                                 div_css = height;
                                             }
-                                            $('#test_table').find('tbody').find('tr').each(function(){
+                                            $('#test_table_' + list_id).find('tbody').find('tr').each(function(){
                                                 $(this).find('.list-table-view:eq(' + (col_indx - 1) + ')').find('.add-data-div').css('padding', '11px 20px;');
                                             });
-                                            $('#test_table').find('tbody').find('tr').each(function(){
+                                            $('#test_table_' + list_id).find('tbody').find('tr').each(function(){
                                                 $(this).find('.list-table-view:eq(' + (col_indx - 1) + ')').find('.add-data-div').css('height', div_css);
                                             });
                                         }
@@ -7686,9 +7607,9 @@ if (isset($response['success']) && $response['success'] == 1) {
             
             $(document).on('change', '.check_all_check_box', function(){
                 if($(this).is(':checked')){
-                    $(this).parent().find('.task_name').val('checked');
+                    $(this).parent().find('.task_sub_name').val('checked');
                 }else{
-                    $(this).parent().find('.task_name').val('');
+                    $(this).parent().find('.task_sub_name').val('');
                 }
             });
             
@@ -7903,6 +7824,12 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if(!$('#add_bulk_data').hasClass('hdn_bulk')){
                             $('#add_bulk_data').addClass('hdn_bulk');
                         }
+                        if(!$('.add_column_url').hasClass('hdn_bulk')){
+                            $('.add_column_url').addClass('hdn_bulk');
+                        }
+                        if(!$('#copy_list_btn').hasClass('hdn_bulk')){
+                            $('#copy_list_btn').addClass('hdn_bulk');
+                        }
                         $('#TaskListDiv').html(res);
                         month_calendar_init();
                     }
@@ -7929,6 +7856,12 @@ if (isset($response['success']) && $response['success'] == 1) {
 //                        return false;
                         if(!$('#add_bulk_data').hasClass('hdn_bulk')){
                             $('#add_bulk_data').addClass('hdn_bulk');
+                        }
+                        if(!$('.add_column_url').hasClass('hdn_bulk')){
+                            $('.add_column_url').addClass('hdn_bulk');
+                        }
+                        if(!$('#copy_list_btn').hasClass('hdn_bulk')){
+                            $('#copy_list_btn').addClass('hdn_bulk');
                         }
                         $('#TaskListDiv').html(res);
                         week_calendar_init();
@@ -7985,10 +7918,34 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     if($('#add_bulk_data').hasClass('hdn_bulk')){
                                         $('#add_bulk_data').removeClass('hdn_bulk');
                                     }
+                                    if($('.add_column_url').hasClass('hdn_bulk')){
+                                        $('.add_column_url').removeClass('hdn_bulk');
+                                    }
+                                    if($('#copy_list_btn').hasClass('hdn_bulk')){
+                                        $('#copy_list_btn').removeClass('hdn_bulk');
+                                    }
                                     $('#TaskListDiv').html(res);
                                     day_calendar_init();
                                     sortable_tbl();
                                     sortable_head_tbl();
+                                    if($('.my_calendar_table').hasClass('locked_list')){
+                                        if($('.my_calendar_table').hasClass('collapsible_div')){
+                                            $('#addTaskDiv').accordion({
+                                                collapsible: true,
+                                                heightStyle: "content",
+                                            });
+                                        }else{
+                                            $('#addTaskDiv').accordion({
+                                                collapsible: true,
+                                                heightStyle: "content",
+                                                active: false
+                                            });
+                                        }
+                                    }else{
+                                        if($('#addTaskDiv').hasClass('ui-accordion')){
+                                            $('#addTaskDiv').accordion("destroy");
+                                        }
+                                    }
 //                                    $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
 
                                 }
@@ -8001,6 +7958,21 @@ if (isset($response['success']) && $response['success'] == 1) {
             
             $(document).on('keydown', '.task_sub_name', function (evt) {
                 var key_code = evt.keyCode;
+                    if($(this).attr('data-type') == 'currency' || $(this).attr('data-type') == 'number'){
+                        $(this).val($(this).val().replace(/[^0-9\.]/g,''));
+                        if ((evt.keyCode >= 48 && evt.keyCode <= 57) || 
+                            (evt.keyCode >= 96 && evt.keyCode <= 105) || 
+                            evt.keyCode == 8 || evt.keyCode == 9 || evt.keyCode == 37 ||
+                            evt.keyCode == 39 || evt.keyCode == 46 || evt.keyCode == 110 || evt.keyCode == 190) {
+                            if((evt.keyCode == 110 || evt.keyCode == 190) && $(this).val().indexOf('.') != -1){
+                                evt.preventDefault();
+                            }
+                        } else {
+                            evt.preventDefault();
+                        }
+                    }
+                
+                
                 var did_edit = $(this).attr('data-id');
                 if(key_code == 27){
                     $(this).trigger('blur');
@@ -8062,7 +8034,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 }
                             }
                         } else if($(this).attr('data-type') == 'email'){
-                            var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+                            var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
                             if (!testEmail.test($(this).val())){
                                 alert('Please enter a valid email');
                                 $(this).val('');
@@ -8248,55 +8220,57 @@ if (isset($response['success']) && $response['success'] == 1) {
                             var json_cnt = 0;
 
 
-                            $('#test_table_' + list_id).find('.task_sub_name').each(function () {
-                                var valuse_store = $(this).val();
-                                var display_val = $(this).val();
-                                display_val = display_val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                                url = display_val.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
-                                if (url == 'null' || url == null || url == 'undefined') {
-                                    url = display_val.match(/([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g);
-                                }
-                                var display_url = '';
-                                var display_txt = '';
-                                var title_text = '';
-
-                                if (isAnchor(display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
-                                    display_val = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                                    display_url = '';
-                                    display_txt = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                                } else {
-                                    if (url != null && url != 'null' && url != 'undefined' && url != '') {
-                                        $.each(url, function (i, v) {
-                                            v = v.split(' ')[0];
-                                            display_url = v;
-                                            
-                                            title_text = display_val.replace(v, '|url|');
-                                            display_txt = display_val.replace(v, '');
-                                            var url_http = v;
-                                            if(v.indexOf('http://') != 0){
-                                                if(v.indexOf('https://') != 0){
-                                                    url_http = 'http://' + v;
-                                                }
-                                            }
-                                            display_val = display_val.replace(v, '<a class="link_clickable" href="' + url_http + '">' + v + '</a>');
-                                            title_text = title_text.replace('|url|', v);
-                                        });
-                                    }
-                                }
-                                            
-
-                                td_val += '<td class="list-table-view">';
-                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="' + title_text + '">';
-
-                                td_val += '<span id="span_task_' + task_ids[json_cnt] + '" class="task_name_span">' + display_val + '</span>';
-
-                                td_val += '<div class="opertaions pull-right">';
-
-                                td_val += '</div>';
-                                td_val += '</div>';
-                                td_val += '</td>';
-                                json_cnt++;
-                            });
+//                            $('#test_table_' + list_id).find('.task_sub_name').each(function () {
+//                                var valuse_store = $(this).val();
+//                                var display_val = $(this).val();
+//                                display_val = display_val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+//                                url = display_val.match(/(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g);
+//                                if (url == 'null' || url == null || url == 'undefined') {
+//                                    url = display_val.match(/([a-zA-Z0-9]+(\.[a-zA-Z0-9]{2,3})+.*)$/g);
+//                                }
+//                                var display_url = '';
+//                                var display_txt = '';
+//                                var title_text = '';
+//
+//                                if (isAnchor(display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">"))) {
+//                                    display_val = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+//                                    display_url = '';
+//                                    display_txt = display_val.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+//                                } else {
+//                                    if (url != null && url != 'null' && url != 'undefined' && url != '') {
+//                                        $.each(url, function (i, v) {
+//                                            v = v.split(' ')[0];
+//                                            display_url = v;
+//                                            
+//                                            title_text = display_val.replace(v, '|url|');
+//                                            display_txt = display_val.replace(v, '');
+//                                            var url_http = v;
+//                                            if(v.indexOf('http://') != 0){
+//                                                if(v.indexOf('https://') != 0){
+//                                                    url_http = 'http://' + v;
+//                                                }
+//                                            }
+//                                            display_val = display_val.replace(v, '<a class="link_clickable" href="' + url_http + '">' + v + '</a>');
+//                                            title_text = title_text.replace('|url|', v);
+//                                        });
+//                                    }
+//                                }
+//                                            
+//
+//                                td_val += '<td class="list-table-view">';
+//                                td_val += '<div class="add-data-div edit_task" data-id="' + task_ids[json_cnt] + '" data-task="' + display_txt + display_url + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="' + title_text + '">';
+//                                if(display_val == 'checked'){
+//                                    display_val = '';
+//                                }
+//                                td_val += '<span id="span_task_' + task_ids[json_cnt] + '" class="task_name_span">' + display_val + '</span>';
+//
+//                                td_val += '<div class="opertaions pull-right">';
+//
+//                                td_val += '</div>';
+//                                td_val += '</div>';
+//                                td_val += '</td>';
+//                                json_cnt++;
+//                            });
                             td_val += '<td class="list-table-view-attend' + hidden_comment_class + '">';
                             td_val += '<div class="add-comment-div edit_comment" data-id="' + resp['extra_id'] + '" data-listid="' + resp[2] + '" data-toggle="tooltip" data-placement="top" title="">';
                             td_val += '<span id="span_comment_' + resp['extra_id'] + '" class="comment_name_span">&nbsp;</span>';
@@ -8516,7 +8490,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                         if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                             $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                 event.preventDefault()
-                            }).tooltip();
+                            }).tooltip({delay: { "hide": 100 }});
                         }
                         $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                             $('.tooltip').remove();
@@ -8538,7 +8512,7 @@ if (isset($response['success']) && $response['success'] == 1) {
             }
             
             function day_calendar_init(date = null){
-                        
+                        $('.day_calendar').datepicker("destroy");
                 var startDate;
 
                 $('.day_calendar').datepicker( {
@@ -8591,6 +8565,7 @@ if (isset($response['success']) && $response['success'] == 1) {
 
                         var parent_list_id = $('.edit_list_task').attr('data-id');
                         var list_name = convert(new Date($('.day_calendar').datepicker( "getDate" )));
+                        
                         $.ajax({
                             url: '<?php echo base_url() . 'listing/get_list_id_cal' ?>',
                             type: 'POST',
@@ -8613,11 +8588,32 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             if($('#add_bulk_data').hasClass('hdn_bulk')){
                                                 $('#add_bulk_data').removeClass('hdn_bulk');
                                             }
+                                            if($('#copy_list_btn').hasClass('hdn_bulk')){
+                                                $('#copy_list_btn').removeClass('hdn_bulk');
+                                            }
                                             $('#TaskListDiv').html(res);
                                             day_calendar_init();
                                             $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
                                             sortable_tbl();
                                             sortable_head_tbl();
+                                            if($('.my_calendar_table').hasClass('locked_list')){
+                                                if($('.my_calendar_table').hasClass('collapsible_div')){
+                                                    $('#addTaskDiv').accordion({
+                                                        collapsible: true,
+                                                        heightStyle: "content",
+                                                    });
+                                                }else{
+                                                    $('#addTaskDiv').accordion({
+                                                        collapsible: true,
+                                                        heightStyle: "content",
+                                                        active: false
+                                                    });
+                                                }
+                                            }else{
+                                                if($('#addTaskDiv').hasClass('ui-accordion')){
+                                                    $('#addTaskDiv').accordion("destroy");
+                                                }
+                                            }
                                         }
                                     }
                                 });
@@ -8834,7 +8830,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                                                                if (!navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                                                                     $('[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list').on('mouseout focusout', function (event) {
                                                                        event.preventDefault()
-                                                                   }).tooltip();
+                                                                   }).tooltip({delay: { "hide": 100 }});
                                                                }
                                                                $(document).on('click', '[data-toggle="tooltip"], #listTypes_lnk, #listConfig_lnk, #share_list', function (event) {
                                                                    $('.tooltip').remove()
@@ -8946,11 +8942,32 @@ if (isset($response['success']) && $response['success'] == 1) {
                                         if($('#add_bulk_data').hasClass('hdn_bulk')){
                                             $('#add_bulk_data').removeClass('hdn_bulk');
                                         }
+                                        if($('#copy_list_btn').hasClass('hdn_bulk')){
+                                            $('#copy_list_btn').removeClass('hdn_bulk');
+                                        }
                                         $('#TaskListDiv').html(res);
                                         day_calendar_init();
                                         $('.day_calendar').datepicker('setDate', new Date($('.edit_list_task_sub').attr('data-original-title')));
                                         sortable_tbl();
                                         sortable_head_tbl();
+                                        if($('.my_calendar_table').hasClass('locked_list')){
+                                            if($('.my_calendar_table').hasClass('collapsible_div')){
+                                                $('#addTaskDiv').accordion({
+                                                    collapsible: true,
+                                                    heightStyle: "content",
+                                                });
+                                            }else{
+                                                $('#addTaskDiv').accordion({
+                                                    collapsible: true,
+                                                    heightStyle: "content",
+                                                    active: false
+                                                });
+                                            }
+                                        }else{
+                                            if($('#addTaskDiv').hasClass('ui-accordion')){
+                                                $('#addTaskDiv').accordion("destroy");
+                                            }
+                                        }
                                     }
                                 }
                             });
@@ -8962,7 +8979,7 @@ if (isset($response['success']) && $response['success'] == 1) {
                 
                 $(document).on('click', '.sub_list_name_span_calendar', function(e){
                     var list_name = $(this).attr('data-listname');
-                    var date_box = '<span class="date_select_bpx_span"><input type="text" id="custom_date_list_name" class="custom_date_list_name" placeholder="mm/dd/yyyy" value="' + list_name + '"></span>';
+                    var date_box = '<span class="date_select_bpx_span"><input type="text" id="custom_date_list_name" class="custom_date_list_name" placeholder="mm/dd/yyyy" value="' + list_name + '" readonly="true"></span>';
                     $('.sub_list_name_span_calendar').after(date_box);
                     $('.sub_list_name_span_calendar').hide();
                     $(".custom_date_list_name").datepicker({
@@ -9065,6 +9082,10 @@ if (isset($response['success']) && $response['success'] == 1) {
                     if ($('#start_collapsed').is(':checked')) {
                         start_collapsed = '1';
                     }
+                    var visible_in_search = '0';
+                    if ($('#visible_in_search').is(':checked')) {
+                        visible_in_search = '1';
+                    }
                     
                     $.ajax({
                         url: '<?php echo base_url() . 'update_config' ?>',
@@ -9081,7 +9102,8 @@ if (isset($response['success']) && $response['success'] == 1) {
                             'show_author': show_author,
                             'allow_append_locked': allow_append_locked,
                             'show_comment_attendance': show_comment_attendance,
-                            'start_collapsed': start_collapsed
+                            'start_collapsed': start_collapsed,
+                            'visible_in_search': visible_in_search
                         },
                         success: function (res) {
                             if (res == 'success') {
@@ -9239,13 +9261,13 @@ if (isset($response['success']) && $response['success'] == 1) {
                                 }
                                 
                                 if(show_author == 1){
-                                    $('#listConfig_lnk').attr('data-showowner', '1');
+                                    $('#config_lnk').attr('data-showowner', '1');
                                 }else{
-                                    $('#listConfig_lnk').attr('data-showowner', '0');
+                                    $('#config_lnk').attr('data-showowner', '0');
                                 }
                                 
                                 if(allow_append_locked == 1){
-                                    $find('#listConfig_lnk').attr('data-allowappendLocked', '1');
+                                    $('#listConfig_lnk').attr('data-allowappendLocked', '1');
                                 }else{
                                     $('#listConfig_lnk').attr('data-allowappendLocked', '0');
                                 }
@@ -9283,6 +9305,18 @@ if (isset($response['success']) && $response['success'] == 1) {
                                     },
                                     success: function (res) {
                                         var resp = JSON.parse(res);
+                                        if(show_author == 1){
+                                        
+                                            if($('.list_author_cls').length == 0){
+                                                console.log(resp['owner']);
+                                                var list_author = '<div class="list_author_cls list_author_cls_calendar">' + resp['owner'] + '</div>';
+                                                $('.head_custom_sublist').after(list_author);
+                                            }
+                                        }else{
+                                            $('.list_author_cls').remove();
+                                        }
+                                        
+                                        
                                         $('#test_table_' + list_id).find('tbody').html(resp['body']);
                                         if ($('#listConfig_lnk').attr('data-typeid') == 11) {
                                             $('#test_table_' + list_id).find("tbody").sortable("disable");
@@ -9306,14 +9340,15 @@ if (isset($response['success']) && $response['success'] == 1) {
                                             $('#nexup_cmnt_span').removeClass('hide_box');
                                         }
                                     }
-                                    
-                                    if (show_comment_attendance == 0) {
-                                        if(!$('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
-                                            $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
-                                        }
-                                    } else {
-                                        if($('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
-                                            $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                                    if($('#config_lnk').attr('data-typeid') == 11){
+                                        if (show_comment_attendance == 0) {
+                                            if(!$('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
+                                                $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').addClass('hidden_nodrag');
+                                            }
+                                        } else {
+                                            if($('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').hasClass('hidden_nodrag')){
+                                                $('#test_table_' + list_id).find('thead').find('.td_arrange_tr').find('.nodrag_comment').removeClass('hidden_nodrag');
+                                            }
                                         }
                                     }
                                     
@@ -9400,18 +9435,43 @@ if (isset($response['success']) && $response['success'] == 1) {
             <?php
         }
         ?>
-<div class="modal fade config-modal-sub-list" id="config_sub_list_calendar" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="configmodal-head">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
-                <h2>List Configuration</h2>
-            </div>
-            <div class="configmodal-body config-submodal-calendar-body">
+    <div class="modal fade config-modal-sub-list" id="config_sub_list_calendar" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="configmodal-head">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
+                    <h2>List Configuration</h2>
+                </div>
+                <div class="configmodal-body config-submodal-calendar-body">
 
+                </div>
             </div>
         </div>
     </div>
-</div>
+            
+    <div class="modal fade copy-list-calendar-modal" id="copy_list_calendar_modal" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="configmodal-head copy-list-calendar-modal-head">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="icon-cross-out"></span></button>
+                    <h2>Copy List</h2>
+                </div>
+                <div class="configmodal-body copy-list-calendar-modal-body">
+                    <div class="date_select_box_div" style="margin: 0 0 25px 8px;">
+                        <input type="text" id="date_to_copy" class="date_to_copy" placeholder="mm/d/yyyy" readonly="true">
+                    </div>
+                    
+                    <div class="button-outer" id="config_btn_div">
+                        <button type="submit" name="copy_list_confirm_btn" id="copy_list_confirm_btn">Copy</button>
+                        <button type="submit" name="close_btn" id="close_sub_config" class="close_config close_sub_config" data-dismiss="modal">Cancel</button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="body_loader" style="display: none;">
+        <div class="boy_loader_span"><img src="/assets/img/loader.gif"></div>
+    </div>
     </body>
 </html>

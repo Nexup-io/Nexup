@@ -242,7 +242,7 @@ class ListsModel extends CI_Model {
 
     public function find_list_details_by_id($list_id) {
         $condition = array('lists.id' => $list_id);
-        $this->db->select('lists.name as list_name, lists.id as list_id, lists.parent_id, lists.list_inflo_id as list_inflo_id, lists.slug as list_slug, lists.list_type_id as type_id, lists.show_completed as show_completed, lists.allow_move as allow_move, lists.allow_undo as allow_undo, , lists.visible_in_search, lists.allow_maybe as allow_maybe, lists.show_time as show_time, lists.show_author, lists.enable_comment as enable_comment, lists.enable_attendance_comment as enable_attendance_comment, lists.user_id as list_owner_id, lists.is_locked as is_locked, lists.show_preview as show_preview, lists.allow_append_locked, lists.start_collapsed, lists.is_deleted as is_deleted, lists.user_id as user_id');
+        $this->db->select('lists.name as list_name, lists.id as list_id, lists.parent_id, lists.list_inflo_id as list_inflo_id, lists.slug as list_slug, lists.list_type_id as type_id, lists.show_completed as show_completed, lists.allow_move as allow_move, lists.allow_undo as allow_undo, , lists.visible_in_search, lists.allow_maybe as allow_maybe, lists.show_time as show_time, lists.show_author, lists.enable_comment as enable_comment, lists.enable_attendance_comment as enable_attendance_comment, lists.user_id as list_owner_id, lists.is_locked as is_locked, lists.show_preview as show_preview, lists.allow_append_locked, lists.start_collapsed, lists.is_deleted as is_deleted, lists.user_id as user_id, lists.created_user_name');
         
 //        $this->db->select('lists.name as list_name, lists.id as list_id, lists.slug as list_slug, lists.list_type_id as type_id, lists.show_completed as show_completed, lists.allow_move as allow_move, lists.allow_undo as allow_undo, lists.user_id as list_owner_id, lists.is_locked as is_locked, lists.is_deleted as is_deleted');
         $this->db->where($condition);
@@ -857,6 +857,18 @@ class ListsModel extends CI_Model {
         $query = $this->db->get('lists');
         $list_details = $query->row_array();
         return $list_details['id'];
+    }
+    /*
+     * Function to get list id from list name
+     * @author: SG
+     */
+    public function get_child_list_id_for_cal($parent_list_id, $list_name){
+        $condition = array('lists.parent_id' => $parent_list_id, 'name' => $list_name);
+        $this->db->select('id, list_inflo_id');
+        $this->db->where($condition);
+        $query = $this->db->get('lists');
+        $list_details = $query->row_array();
+        return $list_details;
     }
 
 }
