@@ -1,74 +1,68 @@
 $(document)
-    .ready(function () {
+        .ready(function () {
+			
+            GetEncryptedAPIKey("4C4BB187-5913-46F3-AFAA-45E8AAA81B96");
 
-//        GetEncryptedAPIKey("4C4BB187-5913-46F3-AFAA-45E8AAA81B96");
+            //Redirect to Inflo for Login
+            $("a.inflologinlink")
+                    .click(function () {
+                        var ref_url = window.location.href;
+                        $.ajax({
+                            type: "POST",
+                            crossDomain: true,
+                            url: 'http://nexup.io/save_ref',
+                            dataType: "json",
+                            data: {ref: ref_url},
+                            cache: false,
+                            success: function (data) {
+                            }
+                        });
+                        
+                        
+                         var infloUrl = 'https://inflo.io/Login.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=http://nexup.io/inflo_login/';
 
-        //Redirect to Inflo for Login
-        $("a.inflologinlink")
-            .click(function () {
-                var ref_url = window.location.href;
-                $.ajax({
-                    type: "POST",
-                    crossDomain: true,
-                    url: 'http://nexup.io/save_ref',
-                    dataType: "json",
-                    data: { ref: ref_url },
-                    cache: false,
-                    success: function (data) {
-                    }
-                });
-
-
-                var infloUrl = 'https://inflo.io/Login.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=http://nexup.io/inflo_login/';
-
-                var myWin = window.open(infloUrl, 'InfloLogin', 'height=700, width=600, left=300, top=100, resizable=no, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
-
-
-
-            });
-
-        var mytoken = GetToken();
+                                var myWin = window.open(infloUrl, 'InfloLogin', 'height=700, width=600, left=300, top=100, resizable=no, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
 
 
 
-
-        //Redirect to Inflo for Login
+                    });
+			
+			var mytoken = GetToken();
+			
+			
+			
+			
+			//Redirect to Inflo for Login
         $(document)
             .on('click',
                 ".share-btn",
                 function (e) {
-                    if ($('.inflologinlink').length == 1) {
-                        e.preventDefault();
-                        $('.inflologinlink').trigger('click');
+                    if($(this).hasClass('noevents')){
                         return false;
                     }
-                    $('#hidden_share_click').val('1');
-                    if ($(this).hasClass('noevents')) {
-                        return false;
-                    }
-
-                    var listId = $(this).attr("data-id");
-                    var userId = $("#hdnuserid").val();
-                    if (listId > 0) {
-
-                        var redirectUrl = window.location.href;
-                        var infloShareUrl = 'https://inflo.io/ShareWithInflo/ShareWithInfloPage.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=' + redirectUrl + "&UserId=" + userId + "&SmartListingId=" + listId + "&SmartListingType=List";
-                        var myWin = window.open(infloShareUrl,
-                            'infloShareUrl',
-                            'height=600, width=998, left=300, top=100, resizable=0, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
-
-
-
-                    } else {
-                        alert("Invalid List");
-                    }
-                });
-
-
-    });
+                    
+                var listId = $(this).attr("data-id");
+				var userId = $("#hdnuserid").val();
+                if (listId > 0) {
+					
+					var redirectUrl = window.location.href;
+                    var infloShareUrl = 'https://inflo.io/ShareWithInflo/ShareWithInfloPage.aspx?SkipApiLogin=1&ApiKey=' + $("#hndautoid").val() + '&RedirectUrl=' + redirectUrl + "&UserId=" + userId+ "&ListId=" + listId;
+                    var myWin = window.open(infloShareUrl,
+                        'infloShareUrl',
+                        'height=600, width=998, left=300, top=100, resizable=0, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
+						
+				
+						
+                } else {
+                    alert("Invalid List");
+                }
+            });
+			
+			
+        });
 
 
-
+		
 function GetInfloCredentials(apicode) {
 
     var objInput = {};

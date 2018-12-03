@@ -1,13 +1,7 @@
-var call_url = '';
-if(location.protocol == 'http:'){
-    call_url = 'http://test.nexup.io';
-}else{
-    call_url = 'https://test.nexup.io';
-}
-
 $(document)
     .ready(function () {
-        GetEncryptedAPIKey("974CB208-48DD-41D4-99C1-53599EB107DA");
+
+        GetEncryptedAPIKey("4C4BB187-5913-46F3-AFAA-45E8AAA81B96");
 
         //Redirect to Inflo for Login
         $("a.inflologinlink")
@@ -16,7 +10,7 @@ $(document)
                 $.ajax({
                     type: "POST",
                     crossDomain: true,
-                    url: call_url + '/save_ref',
+                    url: 'https://nexup.io/save_ref',
                     dataType: "json",
                     data: { ref: ref_url },
                     cache: false,
@@ -24,7 +18,7 @@ $(document)
                     }
                 });
 
-                var redirectUrl = encodeURIComponent(call_url + "/inflo_login/");
+                var redirectUrl = encodeURIComponent("https://nexup.io/inflo_login/");
                 var infloUrl = 'https://inflo.io/Login.aspx?SkipApiLogin=1&ApiKey=' + encodeURIComponent($("#hndautoid").val()) + '&RedirectUrl=' + redirectUrl;
 
                 var myWin = window.open(infloUrl, 'Popup', 'height=700, width=600, left=300, top=100, resizable=no, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
@@ -61,6 +55,9 @@ $(document)
                         var myWin = window.open(infloShareUrl,
                             'infloShareUrl',
                             'height=600, width=998, left=300, top=100, resizable=0, scrollbars=yes, toolbar=no, menubar=no, location=no, directories=no, status=no');
+
+
+
                     } else {
                         alert("Invalid List");
                     }
@@ -115,7 +112,7 @@ function GetInfloCredentials(apicode) {
 
 function GetToken() {
     $.ajax({
-        url: call_url + '/user/get_api_code',
+        url: 'https://nexup.io/user/get_api_code',
         type: 'POST',
         data: {
             'operation': 'Get data'

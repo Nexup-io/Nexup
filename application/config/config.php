@@ -24,26 +24,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 //$config['base_url'] = '';
-if(isset($_SERVER['HTTP_HOST'])){
-    if ($_SERVER['HTTP_HOST'] == 'nexup.io') {
-        if($_SERVER['REQUEST_SCHEME'] == 'https'){
-            $base_url = 'https://nexup.io/';
-        }else{
-            $base_url = 'http://nexup.io/';
-        }
-    }elseif ($_SERVER['HTTP_HOST'] == 'test.nexup.io') {
-        if($_SERVER['REQUEST_SCHEME'] == 'https'){
-            $base_url = 'https://test.nexup.io/';
-        }else{
-            $base_url = 'http://test.nexup.io/';
-        }
-    }elseif ($_SERVER['HTTP_HOST'] == 'dev.nexup.io') {
-      $base_url = 'http://dev.nexup.io/';
+if ($_SERVER['HTTP_HOST'] == 'nexup.io') {
+  if($_SERVER['REQUEST_SCHEME'] == 'https'){
+        $base_url = 'https://nexup.io/';
     }else{
-      $base_url = 'http://34.206.184.180/';
+        $base_url = 'http://nexup.io/';
     }
+}elseif ($_SERVER['HTTP_HOST'] == 'test.nexup.io') {
+    if($_SERVER['REQUEST_SCHEME'] == 'https'){
+        $base_url = 'https://nexup.io/';
+    }else{
+        $base_url = 'http://nexup.io/';
+    }
+}elseif ($_SERVER['HTTP_HOST'] == 'dev.nexup.io') {
+  $base_url = 'http://dev.nexup.io/';
 }else{
-    $base_url = 'http://test.nexup.io/';
+  $base_url = 'http://34.206.184.180/';
 }
 $config['base_url'] = $base_url;
 
